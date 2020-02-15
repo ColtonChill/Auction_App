@@ -1,4 +1,6 @@
 # Thomas Edison Auction
+This project is a potential product meant to help facilitate and improve the Thomas Edison Middle School Fundraiser Auction. In particular, this application is designed to digitize and expand the Silent auction position of the Fundraiser. It is our goal to provide a streamlined system that will encourage more use and charity by participants, thereby benefiting Thomas Edison and its students. In an effort to provide a holistic framework, Live Auction support is provided, however, the majority of the functionality is found for Silent Auction items to minimize obtrusion into an existing system.
+For specific explanation of features/functionality, please refer to the documentation. Instructions for installation, general use, testing, etc, are found below.
 
 ## Tool Stack
 * Docker
@@ -35,3 +37,9 @@ Follow the Google Java Style guide and the Kotlin style guide.
 ```
 gradle test
 ```
+
+## System Test
+0. Insure all Unit & Integrations Tests have been passed.
+1. JUnit Stuff
+2. Utilize built in Spring System Testing (Dabase interactions, API calls, Volume testing, etc).
+3. More Techo jargon laden double speak.
