@@ -26,10 +26,10 @@ Follow the Google Java Style guide and the Kotlin style guide.
 
 A source file consists of, in order:
 
-License or copyright information, if present
-Package statement
-Import statements
-Exactly one top-level class
+1. License or copyright information, if present 
+2. Package statement
+3. Import statements
+4. Exactly one top-level class
 Exactly one blank line separates each section that is present.
 
 Lower Camel case will be used for naming variables, methods and parameters. Constants should have all characters capitalized.
