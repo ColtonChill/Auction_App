@@ -52,7 +52,7 @@ gradle test
 ```
 
 ## System Test    
-0. Insure all Unit & Integration Tests have been passed.
+0. Ensure all Unit & Integration Tests have been passed.
 1. Use the Admin account operation to verify persistence with add, remove, and edit options.
 2. Test the Auction timer by using the client to attempt to bid on items before and after the timer has resolved.
 3. Use multiple instances of a client to simultaneously bid on an item to insure proper error handling.
