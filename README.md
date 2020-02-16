@@ -51,10 +51,11 @@ When a class has multiple constructors, or multiple methods with the same name, 
 gradle test
 ```
 
-## System Test
-0. Insure all Unit & Integrations Tests have been passed.
-1. Use the Admin account opperation to verify persistance with add, remove, and edit option.
+## System Test    
+0. Insure all Unit & Integration Tests have been passed.
+1. Use the Admin account operation to verify persistence with add, remove, and edit option.
 2. Test the Auction timer by using the client to attempt to bid on items before and after the time has resolved.
-3. Use mutiple instances of a client to simaltaniouslly bid on and item to insure proper error handleing.
-3. Test the client on various platforms (Android/Apple, Chrome/Safari, etc)
-3. Utilize built in Spring System Testing (Dabase interactions, API calls, Volume testing, etc).
+3. Use multiple instances of a client to simultaneously bid on an item to insure proper error handling.
+4. Test the client on various platforms (Android/Apple, Chrome/Safari, etc)
+5. Utilize the built in Spring System Testing verify abstracted dependancies (DataBase interactions, API calls, Volume testing, etc).
+
