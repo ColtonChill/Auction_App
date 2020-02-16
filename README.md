@@ -30,6 +30,7 @@ A source file consists of, in order:
 2. Package statement
 3. Import statements
 4. Exactly one top-level class
+
 Exactly one blank line separates each section that is present.
 
 Lower Camel case will be used for naming variables, methods and parameters. Constants should have all characters capitalized.
