@@ -21,8 +21,20 @@ docker start thomasedisonauction
 
 ## Configuration Management Policies
 
-## Naming Conventions
+## Naming Conventions and Organization
 Follow the Google Java Style guide and the Kotlin style guide.
+
+A source file consists of, in order:
+
+License or copyright information, if present
+Package statement
+Import statements
+Exactly one top-level class
+Exactly one blank line separates each section that is present.
+
+Lower Camel case will be used for naming variables, methods and parameters. Constants should have all characters capitalized.
+
+When a class has multiple constructors, or multiple methods with the same name, these appear sequentially, with no other code in between.
 
 ## Version Control Procedures
 * Every person works on a separate branch for each feature.
