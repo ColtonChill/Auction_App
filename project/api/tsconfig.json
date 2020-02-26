@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "allowJs": true,
+        "outDir": "build",
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "noEmitOnError": false
+    },
+    "exclude": [
+        "node_modules",
+        "build",
+        "**/*.pug",
+    ],
+    "include": [
+        "src"
+    ]
+}
