@@ -26,14 +26,13 @@ services:
       - auction_net
   
   web: # Proxy to merge our services together.
-    image: nginx:latest
+    build: ./frontend
     container_name: auction_proxy
     depends_on: 
       - api
     volumes: 
       - ./static:/static
       - ./user:/user
-      - ./frontend:/frontend
       - ./config/nginx:/etc/nginx/conf.d
     ports:
       - "80:80"
@@ -41,9 +40,9 @@ services:
     networks:
       - auction_net
 
-  # redis: # Caching
-  #   image: redis:latest
-  #   container_name: auction_cache
+  redis: # Caching
+    image: redis:latest
+    container_name: auction_cache
 
 networks:
   auction_net:

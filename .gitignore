@@ -1,2 +1,3 @@
-project/api/node_modules/**/*
-project/api/build/**/*
+project/**/node_modules/**/*
+project/**/build/**/*
+project/**/dist/**/*

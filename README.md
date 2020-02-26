@@ -20,7 +20,6 @@ docker-compose up --build
 
 ## Configuration Management Policies
 
-<<<<<<< HEAD
 ## Naming Conventions
 Follow the [Google JavaScript Style](https://github.com/google/eslint-config-google) guide and follow eslint's suggestions.
 

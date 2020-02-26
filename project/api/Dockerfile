@@ -6,7 +6,7 @@ WORKDIR /home/auction
 # Copy our dependencies
 COPY package*.json /home/auction/
 # Install dependencies
-RUN npm ci
+RUN npm ci --quiet
 # Copy configs.
 COPY knexfile.js /home/auction/
 COPY tsconfig.json /home/auction/
