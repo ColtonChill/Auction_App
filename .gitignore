@@ -1,1 +1,2 @@
 project/api/node_modules/**/*
+project/api/build/**/*
