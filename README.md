@@ -2,25 +2,24 @@
 
 ## Tool Stack
 * Docker
-* Java/Kotlin
-* Gradle
-* Hibernate
-* Spring
+* Node
+* Postgres
 
 ## Setup Instructions
 
-1. Install Docker
+1. Install Docker and Docker-Compose
 2. Run the following commands:
 ```
 git clone https://github.com/usu-cs-3450/Repo-2.8
-docker build ./ -t thomasedisonauction
-docker start thomasedisonauction
+cd project
+docker-compose up --build
 ```
+3. The server is running on port 80.
 
 ## Configuration Management Policies
 
 ## Naming Conventions
-Follow the Google Java Style guide and the Kotlin style guide.
+Follow the [Google JavaScript Style](https://github.com/google/eslint-config-google) guide and follow eslint's suggestions.
 
 ## Version Control Procedures
 * Every person works on a separate branch for each feature.
@@ -30,8 +29,8 @@ Follow the Google Java Style guide and the Kotlin style guide.
     then wait for another person to merge their changes in.
 
 ## Unit Testing
-1. Install gradle on your system.
-2. Run the following commands:
+1. Run the following commands:
 ```
-gradle test
+cd project
+docker-compose run api npm run test
 ```
