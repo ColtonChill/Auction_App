@@ -26,10 +26,14 @@
   "homepage": "https://github.com/usu-cs-3450/Repo-2.8#readme",
   "devDependencies": {
     "@types/koa": "^2.11.2",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "concurrently": "^5.1.0",
     "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
     "mocha": "^7.0.1",
     "nodemon": "^2.0.2",
     "typescript": "^3.8.2"
