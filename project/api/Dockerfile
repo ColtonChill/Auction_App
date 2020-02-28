@@ -18,4 +18,4 @@ COPY tests /home/auction/tests/
 RUN npm run build
 # Run it
 EXPOSE 3000
-CMD ["node", "build/index.js"]
+CMD ["npm", "start"]
