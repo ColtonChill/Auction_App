@@ -13,6 +13,8 @@ services:
       - "3000:3000"
     networks:
       - auction_net
+    env_file:
+      - local.env
     
   postgres: # Database.
     image: postgres:11.2-alpine
