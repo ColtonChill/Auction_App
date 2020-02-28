@@ -13,7 +13,7 @@ COPY tsconfig.json /home/auction/
 # Copy files.
 COPY src /home/auction/src/
 COPY db /home/auction/db/
-COPY tests /home/auction/tests/
+COPY test /home/auction/test/
 # Build the server
 RUN npm run build
 # Run it
