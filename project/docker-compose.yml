@@ -1,0 +1,51 @@
+version: "3"
+services:
+  api: # API.
+    container_name: auction_api
+    build: ./api
+    depends_on: 
+      - postgres
+    volumes:
+      - ./static:/static
+      - ./user:/user
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - auction_net
+    env_file:
+      - local.env
+    
+  postgres: # Database.
+    image: postgres:11.2-alpine
+    container_name: auction_db
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auction
+      POSTGRES_USER: postgres
+    restart: unless-stopped
+    networks:
+      - auction_net
+  
+  web: # Proxy to merge our services together.
+    build: ./frontend
+    container_name: auction_proxy
+    depends_on: 
+      - api
+    volumes: 
+      - ./static:/static
+      - ./user:/user
+      - ./config/nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - auction_net
+
+  redis: # Caching
+    image: redis:latest
+    container_name: auction_cache
+
+networks:
+  auction_net:
+    driver: bridge

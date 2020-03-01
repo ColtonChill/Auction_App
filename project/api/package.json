@@ -1,0 +1,57 @@
+{
+  "name": "auction-api",
+  "version": "1.0.0",
+  "description": "A site that runs auctions.",
+  "main": "build/Index.js",
+  "scripts": {
+    "dev": "concurrently -k \"npm run build:watch\" \"npm run start:dev\"",
+    "start": "node build/Index.js",
+    "start:watch": "nodemon build/Index.js",
+    "build": "tsc",
+    "build:watch": "concurrently -k \"tsc -w\"",
+    "migrate": "knex migrate:latest",
+    "remigrate": "knex migrate:rollback && knex migrate:latest && knex seed:run",
+    "test": "node node_modules/mocha/bin/mocha -r ts-node/register test/**/*.ts --exit",
+    "clean": "rm -rf build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usu-cs-3450/Repo-2.8.git"
+  },
+  "author": "Group 8",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/usu-cs-3450/Repo-2.8/issues"
+  },
+  "homepage": "https://github.com/usu-cs-3450/Repo-2.8#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.9",
+    "@types/chai-http": "^4.2.0",
+    "@types/koa": "^2.11.2",
+    "@types/koa-router": "^7.4.0",
+    "@types/mocha": "^7.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "concurrently": "^5.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "mocha": "^7.0.1",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.2"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "knex": "^0.20.10",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^8.0.8",
+    "libpq": "^1.8.9",
+    "pg": "^7.18.2",
+    "pg-native": "^3.0.0",
+    "winston": "^3.2.1"
+  }
+}
