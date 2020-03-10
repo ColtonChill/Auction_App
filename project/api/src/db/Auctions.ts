@@ -68,6 +68,13 @@ import User from './User';
         return Auction.fromObject(dbObject);
     }
 
+    static async fromDataBaseAllAuctions() : Promise<Auction[]>{
+        const dbObject = await connection("auctions").where({"inviteCode": pin});
+        if (dbObject === undefined){
+            throw new InvalidKeyError(`Hon...? You be trippin? Ain't no Auction wif da code ${pin}.`)
+        }
+        return Auction.fromObject(dbObject);
+    }
     // static async fromDataBaseInviteCodes() : Promise<Auction> {
     //     const dbAuctionArray = await connection("auctions");
     //     if (dbAuctionArray === undefined){
