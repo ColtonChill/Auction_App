@@ -95,14 +95,17 @@ import User from './User';
             return Promise.resolve();
         }
     }
-    
+
     //Method toggles the privacy of the auction.
-    public async togglePrivacy(object: Auction){
-        if(this._hidden == true){
+    public async togglePrivacy(object: Auction, user: User){
+        if(user.id == this.owner.id){
+
+            if(this._hidden == true){
             this._hidden = false;
-        }
-        else{
+            }
+            else{
             this._hidden = true;
+            }
         }
         
     }
@@ -141,13 +144,18 @@ import User from './User';
         this._dirtyBit = true;
     }
     public set hidden(value: boolean) {
+        if(!this._hidden && value){
+            this.resetPin;
+        }
         this._hidden = value;
         this._dirtyBit = true;
     }
-    public async resetPin() : Promise<String>{
+    public async resetPin(user: User) : Promise<String>{
+        if(user.id == this.owner.id){
         const pin = await genPin();
         this._inviteCode = pin;
         return pin;
+        }
     }
     public get name() {
         return this._name;
