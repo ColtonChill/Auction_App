@@ -18,22 +18,13 @@ export function evalPin(testPin: String, auctionPin: String) : Boolean {
  * @TODO make sure the primaryKey->pin is unique
  */
 export function genPin() : String {
-    // var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-    // var stringChars = new char[6];
-    // var random = new Random();
-
-    // for (int i = 0; i < stringChars.Length; i++)
-    // {
-    // stringChars[i] = chars[random.Next(chars.Length)];
-    // }
-
-    // var finalString = new String(stringChars);
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     let pin = '';
     let unique = false;
     while (!unique){
         pin = '';
-        for (let i = 0; i<10; ++i){
-            pin += Math.floor(Math.random() * 10);  
+        for (let i = 0; i<6; ++i){
+            pin += chars.charAt(Math.floor(Math.random() * 36));  
         }
         if (checkExistingPins(pin)){
             unique = true
@@ -47,8 +38,8 @@ export function genPin() : String {
  * @TODO Figure out how to parse of the pins of the db array
  */
 async function checkExistingPins(testPin: String) : Promise<boolean>{
-    const dbAuction = await connection("auctions").where({"invitecode": testPin}).first();
-    if (dbAuction === undefined){
+    const dbAuction = await connection("auctions").select('invitecode').where({"invitecode": testPin}).count("invitecode");
+    if (dbAuction['invitecode'] === 0) {
         return true;
     }else{ 
         return false;

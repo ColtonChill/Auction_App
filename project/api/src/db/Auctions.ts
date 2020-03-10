@@ -67,6 +67,7 @@ import User from './User';
         }
         return Auction.fromObject(dbObject);
     }
+
     // static async fromDataBaseInviteCodes() : Promise<Auction> {
     //     const dbAuctionArray = await connection("auctions");
     //     if (dbAuctionArray === undefined){
@@ -75,12 +76,12 @@ import User from './User';
     //     return Auction.fromObject(dbAuctionArray);
     // }
 
-    private static fromObject(object: Object){
-        const auction = new Auction(object["id"],object["name"],object["description"],object["location"],object["owner"],object["url"],object["hidden"],object["inviteCode"])
+    private static async fromObject(object: Object) : Promise<Auction> {
+        const auction = new Auction(object["id"],object["name"],object["description"],object["location"],await User.getFromId(object["owner"]),object["url"],object["hidden"],object["inviteCode"])
         return auction;
     }
 
-    public async update(){
+    public async update() : Promise<void>{
         if (this._dirtyBit){
             await connection('auctions').where({"id": this._id}).update({
                 "name": this._name,
@@ -95,7 +96,7 @@ import User from './User';
         }
     }
 
-    public async reload(){
+    public async reload() : Promise<void>{
         const dbObject = await connection("auctions").where({"id": this._id}).update({
             "name": this._name,
             "inviteCode": this._inviteCode,
@@ -131,6 +132,11 @@ import User from './User';
     public set hidden(value: boolean) {
         this._hidden = value;
         this._dirtyBit = true;
+    }
+    public async resetPin() : Promise<String>{
+        const pin = await genPin();
+        this._inviteCode = pin;
+        return pin;
     }
     public get name() {
         return this._name;
