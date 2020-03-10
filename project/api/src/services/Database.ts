@@ -4,6 +4,10 @@ import Knex from 'knex';
 
 export const connection : Knex = Knex(config as Knex.Config);
 
-export const migrate = function(){
-    connection.migrate.latest();
+export const migrate = function() : Promise<void> {
+    return connection.migrate.latest();
+}
+
+export const rollback = function() : Promise<void> {
+    return connection.migrate.rollback();
 }
