@@ -26,6 +26,7 @@
   "homepage": "https://github.com/usu-cs-3450/Repo-2.8#readme",
   "devDependencies": {
     "@types/chai": "^4.2.9",
+    "@types/chai-as-promised": "^7.1.2",
     "@types/chai-http": "^4.2.0",
     "@types/koa": "^2.11.2",
     "@types/koa-router": "^7.4.0",
@@ -33,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.21.0",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
     "concurrently": "^5.1.0",
     "eslint": "^6.8.0",

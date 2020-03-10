@@ -69,7 +69,7 @@ export default class User {
      * @param lastName 
      * @param rawPassword 
      */
-    static async createUser(email: String, firstName: String, lastName: String, rawPassword: String) : User {
+    static async createUser(email: String, firstName: String, lastName: String, rawPassword: String) : Promise<User> {
         const hash = await encryptPassword(rawPassword); 
         const dbObject = await connection('users').insert({
             'email': email,
@@ -77,7 +77,7 @@ export default class User {
             'last_name': lastName,
             'password_hash': hash
         }).returning('*');
-        return this.fromObject(dbObject);
+        return this.fromObject(dbObject[0]);
     } 
 
     /**
@@ -87,7 +87,7 @@ export default class User {
     static async fromDatabaseId(id: Number) : Promise<User> {
         const dbObject = await connection('users').where({id}).first();
         if (dbObject === undefined) {
-            throw new InvalidKeyError(`No user exists with the id ${id}.`)
+            return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));
         }
         return User.fromObject(dbObject);
     }
@@ -98,11 +98,11 @@ export default class User {
      * @param attempt The user's password attempt.
      */
     static async fromDatabaseEmailPassword(email: String, attempt: String) : Promise<User> {
-        const dbObject = await connection('users').where({
+        const dbObject = await connection('users').select('*').where({
             'email': email,
         }).first();
-        if (dbObject === undefined || !comparePassword(dbObject['password_hash'], attempt)) {
-            throw new InvalidKeyError(`No user exists with this username/password population.`)
+        if (dbObject === undefined || !comparePassword(attempt, dbObject['password_hash'])) {
+            return Promise.reject(new InvalidKeyError(`No user exists with this username/password combination.`));
         }
         return User.fromObject(dbObject);
     }
@@ -116,11 +116,20 @@ export default class User {
         return user;
     }
 
+    public toJson() : Object {
+        return {
+            'id': this._id,
+            'firstName': this._firstName,
+            'lastName': this._lastName,
+            'email': this._email
+        }
+    }
+
 
     /**
      * Updates the database with any changed information on the user.
      */
-    public async update() {
+    public async save() {
         if (this._dirty) {
             await connection('users').where({ 'id': this._id }).update({
                 'first_name': this._firstName,
@@ -135,15 +144,14 @@ export default class User {
     /**
      * Reloads this user's information from the database.
      */
-    public async reload() {
-        const dbObject = await connection('users').where({'id': this._id}).update({
-            'first_name': this._firstName,
-            'last_name': this._lastName
-        }).returning('*').then(_ => this._dirty = false);
-        this._firstName = dbObject['first_name'];
-        this._lastName = dbObject['last_name'];
-        this._email = dbObject['email'];
-        this._id = dbObject['id']; // If this changes something has gone horribly wrong.
+    public async load() : Promise<void> {
+        return connection('users').where({'id': this._id}).first().then(dbObject => {
+            this._dirty = false
+            this._firstName = dbObject['first_name'];
+            this._lastName = dbObject['last_name'];
+            this._email = dbObject['email'];
+            this._id = dbObject['id']; // If this changes something has gone horribly wrong.
+        });
     }
 
     /**
