@@ -18,6 +18,16 @@ export function evalPin(testPin: String, auctionPin: String) : Boolean {
  * @TODO make sure the primaryKey->pin is unique
  */
 export function genPin() : String {
+    // var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    // var stringChars = new char[6];
+    // var random = new Random();
+
+    // for (int i = 0; i < stringChars.Length; i++)
+    // {
+    // stringChars[i] = chars[random.Next(chars.Length)];
+    // }
+
+    // var finalString = new String(stringChars);
     let pin = '';
     let unique = false;
     while (!unique){
