@@ -29,3 +29,5 @@ passport.use(new LocalStrategy(options, (username, password, done) => {
         return done(err, false); // Something happened that was bad.
     }
 }))
+
+export default passport;
