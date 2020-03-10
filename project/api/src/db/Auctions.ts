@@ -95,6 +95,17 @@ import User from './User';
             return Promise.resolve();
         }
     }
+    
+    //Method toggles the privacy of the auction.
+    public async togglePrivacy(object: Auction){
+        if(this._hidden == true){
+            this._hidden = false;
+        }
+        else{
+            this._hidden = true;
+        }
+        
+    }
 
     public async reload() : Promise<void>{
         const dbObject = await connection("auctions").where({"id": this._id}).update({
