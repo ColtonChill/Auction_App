@@ -4,6 +4,7 @@ import passport from '../services/LocalAuthentication'
 import User from '../db/User'
 const router : Router = new Router();
 
+
 router.get('/', async ctx =>{
     ctx.body = "Welcome to the authorization api!";
     ctx.status = 200; 
@@ -14,7 +15,7 @@ router.get('/login/success', async ctx =>{
 })
 
 router.post('/login/failure', async ctx =>{
-    ctx.body = 'sorry unauthorized';
+    ctx.body = `sorry unauthorized: ${ctx.request.body.Error}`;
 })
 
 //This checks whether you are authorized. 
@@ -45,12 +46,9 @@ router.post('/login', async ctx =>{
         else{
             ctx.status = 401
             //you probably redirect here as well
-            ctx.redirect('/login/failure')  
+            ctx.redirect(`/login/failure?Error=${err}`)  
         }
-    })
-    
-    
-    
+    });
     /*
     ctx.request.body.username;
     ctx.request.body.password;
@@ -67,51 +65,64 @@ router.post ('/register', async ctx =>{
         var fname = ctx.request.body.fname;
     }
     else{
-        return "error : No special symbols and must be under 30 characters"             
+        ctx.status = 400;
+        ctx.message = "No special symbols and must be under 30 characters"
+        return;             
     }
 
     //same as first name
     if(ctx.request.body.lname === null){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'Last Name' line"
+        ctx.message = "Nothing was inputed in the 'Last Name' line";
+        return; 
     }
 
-    if(ctx.request.body.lname){
+    else if(!(ctx.request.body.lname.length > 30)){
         var lname = ctx.request.body.lname;
     }
     else{
-        return "error : Last name should have no special symbols and be under 30 characters"
+        ctx.status = 400;
+        ctx.message = "error : Last name should have no special symbols and be under 30 characters";
+        return;
     }
+
 
     //make sure it has an @ sign and possibly ends with a website.
     if(ctx.request.body.email === null){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'Email' line"
+        ctx.message = "Nothing was inputed in the 'Email' line";
+        return;
     } 
-    if(ctx.request.body.email.includes('@')){
+    else if(ctx.request.body.email.includes('@')){
         var email = ctx.request.body.email;
     }
     else{
-        return "error : email needs to have an @ and look like an email"
+        ctx.status = 400; 
+        ctx.message = "email needs to have an @";
+        return;
     }
+
 
     //make sure certain symbols aren't in here and above a certain amount of characters 
     if(ctx.request.body.password === null){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'Password' line"
+        ctx.message = "Nothing was inputed in the 'Password' line";
+        return; 
     }
-    if(ctx.request.body.password){
+    if(!(ctx.request.body.password > 30)){
         var password = ctx.request.body.password;
     }
     else{
-        return "error : Must not include (forbidden symbols),  "
+        ctx.status = 400;
+        ctx.message = " Must not include (forbidden symbols)";  
+        return;
     }
     
-    User.createUser(email, fname, lname, password)
+    User.createUser(email, fname, lname, password);
     
 
 
-})
+});
 
 //needs to be done, link to authorization, 
 //There is information about authentication at: https://www.npmjs.com/package/koa-passport
