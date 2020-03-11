@@ -59,14 +59,17 @@ router.post ('/register', async ctx =>{
     //inside this make sure the name is nothing but letters and is only a certain length
     if(ctx.request.body.fname === null){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'First Name' line"
+        ctx.message = "Nothing was inputed in the 'First Name' line";
+        ctx.redirect('/login/failure');
+        return 
     }
     else if (!(ctx.request.body.fname.length > 30)){
         var fname = ctx.request.body.fname;
     }
     else{
         ctx.status = 400;
-        ctx.message = "No special symbols and must be under 30 characters"
+        ctx.message = "No special symbols and must be under 30 characters";
+        ctx.redirect('/login/failure');
         return;             
     }
 
@@ -74,6 +77,7 @@ router.post ('/register', async ctx =>{
     if(ctx.request.body.lname === null){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Last Name' line";
+        ctx.redirect('/login/failure');
         return; 
     }
 
@@ -83,6 +87,7 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400;
         ctx.message = "error : Last name should have no special symbols and be under 30 characters";
+        ctx.redirect('/login/failure');
         return;
     }
 
@@ -91,6 +96,7 @@ router.post ('/register', async ctx =>{
     if(ctx.request.body.email === null){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Email' line";
+        ctx.redirect('/login/failure');
         return;
     } 
     else if(ctx.request.body.email.includes('@')){
@@ -99,14 +105,16 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400; 
         ctx.message = "email needs to have an @";
+        ctx.redirect('/login/failure');
         return;
     }
 
 
     //make sure certain symbols aren't in here and above a certain amount of characters 
-    if(ctx.request.body.password === null){
+    if(ctx.request.body.password === null||ctx.request.body.password === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Password' line";
+        ctx.redirect('/login/failure');
         return; 
     }
     if(!(ctx.request.body.password > 30)){
@@ -115,11 +123,14 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400;
         ctx.message = " Must not include (forbidden symbols)";  
+        ctx.redirect('/login/failure');
         return;
     }
     
     User.createUser(email, fname, lname, password);
     
+    //I want to redirect to the login page here if possible
+    ctx.redirect('/login/success')
 
 
 });
