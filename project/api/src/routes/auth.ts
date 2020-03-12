@@ -1,22 +1,29 @@
 //Author: Jace Longhurst 
 import Router from 'koa-router';
-import passport from '../services/LocalAuthentication'
-import User from '../db/User'
+//import passport from '../services/LocalAuthentication';
+import passport from 'koa-passport';
+import User from '../db/User';
+import bodyParser from 'koa-bodyparser';
 const router : Router = new Router();
+router.use(bodyParser());
 
-
+//Proof that you made it
+//Not really nessecary  
 router.get('/', async ctx =>{
-    ctx.body = "Welcome to the authorization api!";
+    ctx.response.body = "Welcome to the authorization api!";
     ctx.status = 200; 
 })
-
+/*
+testing screens for the api until I know what to do with them. 
+*/
 router.get('/login/success', async ctx =>{
-    ctx.body = "Yay!!!";
+    ctx.response.body = "Yay!!!";
 })
 
 router.post('/login/failure', async ctx =>{
-    ctx.body = `sorry unauthorized: ${ctx.request.body.Error}`;
+    ctx.response.body = `sorry unauthorized: ${ctx.request.body.Error}`;
 })
+
 
 //This checks whether you are authorized. 
 router.get('/login', async ctx =>{
@@ -30,9 +37,10 @@ router.get('/login', async ctx =>{
     }
 })
 
-//takes username and password through post and 
+//takes username and password through post and logs you in 
 router.post('/login', async ctx =>{
     //await ctx.login()
+    //ctx.authenticate()
 
     //This is where the actual authentication happens 
     return passport.authenticate('local', (err,user)=>{
@@ -48,7 +56,7 @@ router.post('/login', async ctx =>{
             //you probably redirect here as well
             ctx.redirect(`/login/failure?Error=${err}`)  
         }
-    });
+    })(ctx);
     /*
     ctx.request.body.username;
     ctx.request.body.password;
