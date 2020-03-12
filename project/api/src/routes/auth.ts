@@ -1,28 +1,31 @@
 //Author: Jace Longhurst 
-import Router from 'koa-router';
+const Router =  require('koa-router');
 //import passport from '../services/LocalAuthentication';
-import passport from 'koa-passport';
+const passport = require('koa-passport');
 import User from '../db/User';
-import bodyParser from 'koa-bodyparser';
-const router : Router = new Router();
+const bodyParser = require('koa-bodyparser');
+const router = new Router();
 router.use(bodyParser());
+
+//api/v1/auth
 
 //Proof that you made it
 //Not really nessecary  
 router.get('/', async ctx =>{
     ctx.response.body = "Welcome to the authorization api!";
     ctx.status = 200; 
-})
+});
+
 /*
 testing screens for the api until I know what to do with them. 
 */
 router.get('/login/success', async ctx =>{
     ctx.response.body = "Yay!!!";
-})
+});
 
 router.post('/login/failure', async ctx =>{
     ctx.response.body = `sorry unauthorized: ${ctx.request.body.Error}`;
-})
+});
 
 
 //This checks whether you are authorized. 
@@ -35,7 +38,7 @@ router.get('/login', async ctx =>{
         //ctx.status = 401 
         ctx.redirect('/login/failure')
     }
-})
+});
 
 //takes username and password through post and logs you in 
 router.post('/login', async ctx =>{
@@ -61,15 +64,15 @@ router.post('/login', async ctx =>{
     ctx.request.body.username;
     ctx.request.body.password;
     */
-})
+});
 
 router.post ('/register', async ctx =>{
     //inside this make sure the name is nothing but letters and is only a certain length
-    if(ctx.request.body.fname === null){
+    if(ctx.request.body.fname === null|| ctx.request.body.fname === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'First Name' line";
         ctx.redirect('/login/failure');
-        return 
+        return; 
     }
     else if (!(ctx.request.body.fname.length > 30)){
         var fname = ctx.request.body.fname;
@@ -82,7 +85,7 @@ router.post ('/register', async ctx =>{
     }
 
     //same as first name
-    if(ctx.request.body.lname === null){
+    if(ctx.request.body.lname === null ||ctx.request.body.lname === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Last Name' line";
         ctx.redirect('/login/failure');
@@ -101,7 +104,7 @@ router.post ('/register', async ctx =>{
 
 
     //make sure it has an @ sign and possibly ends with a website.
-    if(ctx.request.body.email === null){
+    if(ctx.request.body.email === null||ctx.request.body.email === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Email' line";
         ctx.redirect('/login/failure');
@@ -138,15 +141,16 @@ router.post ('/register', async ctx =>{
     User.createUser(email, fname, lname, password);
     
     //I want to redirect to the login page here if possible
-    ctx.redirect('/login/success')
+    ctx.redirect('/login/success');
 
 
 });
 
 //needs to be done, link to authorization, 
-//There is information about authentication at: https://www.npmjs.com/package/koa-passport
-//You now have what you need to be able to add these together
+//Fix the error that is not letting body parser do its thing, also passport
+//add a logout, 
+//make a test
+//check the other functionality that we need 
 
-//For the register tag you need to sanitize before just sticking it into a database
 
 export default router;
