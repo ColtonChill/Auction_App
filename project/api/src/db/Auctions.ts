@@ -68,10 +68,10 @@ import User from './User';
         return Auction.fromObject(dbObject);
     }
 
-    static async fromDataBaseAllAuctions() : Promise<Auction[]>{
-        const dbObject = await connection("auctions").where({"inviteCode": pin});
+    static async fromDataBaseAllAuctions() : Promise<Auction>{
+        const dbObject = await connection("auctions").select({"inviteCode"});
         if (dbObject === undefined){
-            throw new InvalidKeyError(`Hon...? You be trippin? Ain't no Auction wif da code ${pin}.`)
+            throw new InvalidKeyError(`Hon...? You be trippin? Ain't no Auctions.`)
         }
         return Auction.fromObject(dbObject);
     }
@@ -88,7 +88,18 @@ import User from './User';
         return auction;
     }
 
-    public async update() : Promise<void>{
+    public toJson() : Object {
+        return {
+            "name": this._name,
+            "inviteCode": this._inviteCode,
+            "Owner": this._owner,
+            "hidden": this._hidden,
+            "description": this._description,
+            "location": this._location
+        }
+    }
+
+    public async save() : Promise<void>{
         if (this._dirtyBit){
             await connection('auctions').where({"id": this._id}).update({
                 "name": this._name,
@@ -103,7 +114,7 @@ import User from './User';
         }
     }
 
-    public async reload() : Promise<void>{
+    public async load() : Promise<void>{
         const dbObject = await connection("auctions").where({"id": this._id}).update({
             "name": this._name,
             "inviteCode": this._inviteCode,
@@ -144,6 +155,12 @@ import User from './User';
         const pin = await genPin();
         this._inviteCode = pin;
         return pin;
+    }
+    public get pin(){
+        return this._inviteCode;
+    }
+    public get id(){
+        return this._id;
     }
     public get name() {
         return this._name;
