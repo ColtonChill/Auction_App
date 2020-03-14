@@ -3,9 +3,9 @@ const Router =  require('koa-router');
 //import passport from '../services/LocalAuthentication';
 const passport = require('koa-passport');
 import User from '../db/User';
-const bodyParser = require('koa-bodyparser');
+//const bodyParser = require('koa-bodyparser');
 const router = new Router();
-router.use(bodyParser());
+//router.use(bodyParser());
 
 //api/v1/auth
 
@@ -56,8 +56,9 @@ router.post('/login', async ctx =>{
         }
         else{
             ctx.status = 401
+            ctx.message = err
             //you probably redirect here as well
-            ctx.redirect(`/login/failure?Error=${err}`)  
+           // ctx.redirect(`/login/failure?Error=${err}`)  
         }
     })(ctx);
     /*
@@ -66,12 +67,19 @@ router.post('/login', async ctx =>{
     */
 });
 
-router.post ('/register', async ctx =>{
+//do i need this?
+router.get('/register', async ctx =>{
+    ctx.body = "hello";
+});
+
+router.post('/register', async ctx =>{
+//requires fname, lname, email, password
+
     //inside this make sure the name is nothing but letters and is only a certain length
     if(ctx.request.body.fname === null|| ctx.request.body.fname === undefined){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'First Name' line";
-        ctx.redirect('/login/failure');
+        ctx.message = "Nothing was inputed in the 'First Name' line" + ctx.request.body;
+        //ctx.redirect('/login/failure');
         return; 
     }
     else if (!(ctx.request.body.fname.length > 30)){
@@ -80,7 +88,7 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400;
         ctx.message = "No special symbols and must be under 30 characters";
-        ctx.redirect('/login/failure');
+        //ctx.redirect('/login/failure');
         return;             
     }
 
@@ -88,7 +96,7 @@ router.post ('/register', async ctx =>{
     if(ctx.request.body.lname === null ||ctx.request.body.lname === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Last Name' line";
-        ctx.redirect('/login/failure');
+        //ctx.redirect('/login/failure');
         return; 
     }
 
@@ -98,7 +106,7 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400;
         ctx.message = "error : Last name should have no special symbols and be under 30 characters";
-        ctx.redirect('/login/failure');
+        //ctx.redirect('/login/failure');
         return;
     }
 
@@ -107,7 +115,7 @@ router.post ('/register', async ctx =>{
     if(ctx.request.body.email === null||ctx.request.body.email === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Email' line";
-        ctx.redirect('/login/failure');
+        //ctx.redirect('/login/failure');
         return;
     } 
     else if(ctx.request.body.email.includes('@')){
@@ -116,7 +124,7 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400; 
         ctx.message = "email needs to have an @";
-        ctx.redirect('/login/failure');
+        //ctx.redirect('/login/failure');
         return;
     }
 
@@ -125,7 +133,7 @@ router.post ('/register', async ctx =>{
     if(ctx.request.body.password === null||ctx.request.body.password === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'Password' line";
-        ctx.redirect('/login/failure');
+       // ctx.redirect('/login/failure');
         return; 
     }
     if(!(ctx.request.body.password > 30)){
@@ -134,11 +142,18 @@ router.post ('/register', async ctx =>{
     else{
         ctx.status = 400;
         ctx.message = " Must not include (forbidden symbols)";  
-        ctx.redirect('/login/failure');
+       // ctx.redirect('/login/failure');
         return;
     }
     
-    User.createUser(email, fname, lname, password);
+    User.createUser(email, fname, lname, password).then(()=>{
+        ctx.status = 200;
+        //ctx.redirect('/login/success')
+    }).catch(err =>{
+        ctx.message = JSON.stringify(err);
+        ctx.status = 400;
+
+    })
     
     //I want to redirect to the login page here if possible
     ctx.redirect('/login/success');
