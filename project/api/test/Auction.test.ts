@@ -7,10 +7,10 @@ import User from '../src/db/User';
 
 chai.use(cap);
 
-describe('Acution : Database Class', () => {
+describe('Auction : Database Class', () => {
 
     beforeEach(async () => {
-        await migrate();
+        await rollback().then(migrate)
     })
 
     afterEach(async () => {
@@ -20,60 +20,59 @@ describe('Acution : Database Class', () => {
     describe('Static Methods', () => {
         it('Should be able to create an Auction', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user,  "default-auction", false);
             expect(auction.id).to.not.be.undefined;
         });
 
         it('Should be able to find an Action by ID', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user,  "default-auction",false);
             const lookup = await Auction.fromDataBaseID(auction.id);
             expect(auction).to.deep.equal(lookup);
         });
 
         it('Should be able to find an Auction from name', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
-            const lookup = await Auction.fromDataBaseName('DefaultAction');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
+            const lookup = await Auction.fromDataBaseName('DefaultAuction');
             expect(auction).to.deep.equal(lookup);
         });
 
         it('Should be able to find an Auction from Code', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const code = auction.pin;
             const lookup = await Auction.fromDataBaseInviteCode(code);
             expect(auction).to.deep.equal(lookup);
         });
 
+        it('Should be able to find an Auction from URL', async () => {
+            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user,  "default-auction", false);
+            const url = auction.url;
+            const lookup = await Auction.fromDataBaseURL(url);
+            expect(auction).to.deep.equal(lookup);
+        });
+
         it('Should not be able to find an Auction from an invalid ID', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
-            const lookup = await Auction.fromDataBaseID(3423);
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user,  "default-auction", false);
+            const lookup = Auction.fromDataBaseID(3423);
             expect(lookup).to.eventually.be.rejected;
         });
 
         it('Should not be able to find a User from an invalid Name', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
-            const lookup = await Auction.fromDataBaseName('StupidName');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user,  "defaul-auction", false);
+            const lookup = Auction.fromDataBaseName('StupidName');
             expect(lookup).to.eventually.be.rejected;
         });
 
         it('Should not be able to find a User from an invalid Code', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
-            const lookup = await Auction.fromDataBaseInviteCode("000000");
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user,  "default-auction", false);
+            const lookup = Auction.fromDataBaseInviteCode("000000");
             expect(lookup).to.eventually.be.rejected;
-        });
-
-        it('Should not be able to find the same auction after a regen pin', async () =>{
-            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, false);
-            const lookup = auction.pin;
-            auction.resetPin();
-            const newAuction = await Auction.fromDataBaseInviteCode(lookup);
-            expect(newAuction).to.eventually.be.rejected;
         });
     });
 
@@ -86,7 +85,7 @@ describe('Acution : Database Class', () => {
 
         beforeEach(async () => {
             state.user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
-            state.auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', state.user, false);
+            state.auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', state.user, "default-auction", false);
         });
 
         it('Should be able to save changes', async () => {
@@ -104,6 +103,14 @@ describe('Acution : Database Class', () => {
             await auction.save();
             await oldRef.load();
             expect(oldRef).to.deep.equal(auction);
-        })
+        });
+
+        it('Should not be able to find the same auction after a regen pin', async () =>{
+            const lookup = state.auction.pin;
+            await state.auction.resetPin();
+            await state.auction.save();
+            const newAuction = Auction.fromDataBaseInviteCode(lookup);
+            expect(newAuction).to.eventually.be.rejected;
+        });
     })
 })

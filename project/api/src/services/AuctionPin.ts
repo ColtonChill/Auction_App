@@ -29,7 +29,6 @@ export function genPin() : String {
         if (checkExistingPins(pin)){
             unique = true
         }
-        console.log("Generated pin: "+pin);
     }
     return pin;
 }
@@ -38,8 +37,8 @@ export function genPin() : String {
  * @TODO Figure out how to parse of the pins of the db array
  */
 async function checkExistingPins(testPin: String) : Promise<boolean>{
-    const dbAuction = await connection("auctions").select('invitecode').where({"invitecode": testPin}).count("invitecode");
-    if (dbAuction['invitecode'] === 0) {
+    const dbAuction = await connection("auctions").select("invite_code").where({"invite_code": testPin});
+    if (dbAuction.length == 0) {
         return true;
     }else{ 
         return false;
