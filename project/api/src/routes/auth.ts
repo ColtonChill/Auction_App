@@ -1,11 +1,9 @@
 //Author: Jace Longhurst 
 const Router =  require('koa-router');
-//import passport from '../services/LocalAuthentication';
 const passport = require('koa-passport');
 import User from '../db/User';
-//const bodyParser = require('koa-bodyparser');
 const router = new Router();
-//router.use(bodyParser());
+
 
 //api/v1/auth
 
@@ -19,6 +17,7 @@ router.get('/', async ctx =>{
 /*
 testing screens for the api until I know what to do with them. 
 */
+//These are useless will delete. 
 router.get('/login/success', async ctx =>{
     ctx.response.body = "Yay!!!";
 });
@@ -31,28 +30,31 @@ router.post('/login/failure', async ctx =>{
 //This checks whether you are authorized. 
 router.get('/login', async ctx =>{
     if(ctx.isAuthenticated()){
-        //redirect to Sally's home page 
-        ctx.redirect('/login/success')
+        //redirect to Sally's home page
+        ctx.body = "YUP!" 
+        ctx.status = 200;
+        //ctx.redirect('/login/success')
     }
     else{
         //ctx.status = 401 
-        ctx.redirect('/login/failure')
+        //ctx.redirect('/login/failure')
+        ctx.body = "NOPE! "
+        ctx.status = 401 
     }
 });
 
 //takes username and password through post and logs you in 
+//make sure it is username and password and not email and password
 router.post('/login', async ctx =>{
-    //await ctx.login()
-    //ctx.authenticate()
+    
 
     //This is where the actual authentication happens 
     return passport.authenticate('local', (err,user)=>{
         if(user){
-            console.log('User ' + user.firstname + user.lastname +  ", has logged in successfully.")
-            ctx.login(user)
-            //This is where you probably redirect, 
-            ctx.redirect('/login/success')
-
+            ctx.login(user);
+            console.log('User ' + user.firstName +" " + user.lastName +  ", has logged in successfully.")
+            ctx.body = 'User ' + user.firstName + " " + user.lastName +  ", has logged in successfully."
+            ctx.status = 200; 
         }
         else{
             ctx.status = 401
@@ -61,28 +63,36 @@ router.post('/login', async ctx =>{
            // ctx.redirect(`/login/failure?Error=${err}`)  
         }
     })(ctx);
-    /*
-    ctx.request.body.username;
-    ctx.request.body.password;
-    */
+  
 });
 
-//do i need this?
-router.get('/register', async ctx =>{
-    ctx.body = "hello";
+//This will log you out, duh, nothing to pass here. 
+router.get('/logout', async ctx =>{
+    if(ctx.isauthenticated){
+        ctx.logout();
+        ctx.body = "User has logged out successfully."
+    }
+    else{
+        ctx.status = 401
+        ctx.body = "Error: You aren't logged in"
+    }
 });
+
 
 router.post('/register', async ctx =>{
 //requires fname, lname, email, password
 
-    //inside this make sure the name is nothing but letters and is only a certain length
+    var lenName = 30; 
+
+    //optional make it so that this is only letters
+    //inside this makes sure the name is under a certain length
     if(ctx.request.body.fname === null|| ctx.request.body.fname === undefined){
         ctx.status = 400;
         ctx.message = "Nothing was inputed in the 'First Name' line" + ctx.request.body;
         //ctx.redirect('/login/failure');
         return; 
     }
-    else if (!(ctx.request.body.fname.length > 30)){
+    else if (!(ctx.request.body.fname.length > lenName)){
         var fname = ctx.request.body.fname;
     }
     else{
@@ -100,7 +110,7 @@ router.post('/register', async ctx =>{
         return; 
     }
 
-    else if(!(ctx.request.body.lname.length > 30)){
+    else if(!(ctx.request.body.lname.length > lenName)){
         var lname = ctx.request.body.lname;
     }
     else{
@@ -136,7 +146,7 @@ router.post('/register', async ctx =>{
        // ctx.redirect('/login/failure');
         return; 
     }
-    if(!(ctx.request.body.password > 30)){
+    if(!(ctx.request.body.password > lenName)){
         var password = ctx.request.body.password;
     }
     else{
@@ -154,18 +164,17 @@ router.post('/register', async ctx =>{
         ctx.status = 400;
 
     })
-    
+   
+    ctx.body = "Success!"; 
+
     //I want to redirect to the login page here if possible
-    ctx.redirect('/login/success');
+    //ctx.redirect('/login/success');
 
 
 });
 
-//needs to be done, link to authorization, 
-//Fix the error that is not letting body parser do its thing, also passport
-//add a logout, 
-//make a test
-//check the other functionality that we need 
+//needs to be done, as soon as everything is working, this should be ready to go.  
+
 
 
 export default router;
