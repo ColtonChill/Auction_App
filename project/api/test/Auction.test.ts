@@ -53,6 +53,17 @@ describe('Auction : Database Class', () => {
             const lookup = await Auction.fromDataBaseURL(url);
             expect(auction).to.deep.equal(lookup);
         });
+        it('Should be able to list public Auctions', async () => {
+            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+            const auction = await Auction.createAuction('DefaultAuction', 'hi mom', 'Merica', user, "default-auction", true );
+            const auction2 = await Auction.createAuction('DefaultAuction2', 'hi dad', 'Merica', user, "default-auction2", false );
+            const auction3 = await Auction.createAuction('DefaultAuction3', 'hi son', 'Merica', user, "default-auction3", false );
+            const auction4 = await Auction.createAuction('DefaultAuction4', 'hi daughter', 'Merica', user, "default-auction4", false );
+            const auction5 = await Auction.createAuction('DefaultAuction5', 'hi grandma', 'Merica', user, "default-auction5", true );
+            const lookup = await Auction.fromDatabasePublicAuctions();
+            const expectedAuctions = [auction2, auction3, auction4]
+            expect(lookup).to.deep.equal(expectedAuctions)
+        })
 
         it('Should not be able to find an Auction from an invalid ID', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
