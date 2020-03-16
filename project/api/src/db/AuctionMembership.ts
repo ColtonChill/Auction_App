@@ -8,7 +8,8 @@ export default class AuctionMembership {
     private _auction: Auction;
     private _banned: boolean;
 
-    private constructor(user: User, auction: Auction, banned: boolean) {
+    private constructor(id: Number, user: User, auction: Auction, banned: boolean) {
+        this._id = id;
         this._user = user;
         this._auction = auction;
         this._banned = banned;
@@ -25,7 +26,7 @@ export default class AuctionMembership {
             'user': user.id,
             'auction': auction.id
         }).returning('*');
-        return AuctionMembership.fromObject(dbObject);
+        return AuctionMembership.fromObject(dbObject[0]);
     }
 
     /**
@@ -35,7 +36,7 @@ export default class AuctionMembership {
      * @returns A membership between the two if it exists.
      */
     public static async getMembership(user: User, auction: Auction) : Promise<AuctionMembership> {
-        const dbObject = await connection('auction_members').where({'user': user.id, 'auction': auction.id});
+        const dbObject = await connection('auction_members').where({'user': user.id, 'auction': auction.id}).first();
         return dbObject ? this.fromObject(dbObject) : null;
     }
 
@@ -62,7 +63,7 @@ export default class AuctionMembership {
     private static async fromObject(object: Object) : Promise<AuctionMembership> {
         const user = await User.fromDatabaseId(object['user']);
         const auction = await Auction.fromDatabaseID(object['auction']);
-        return new AuctionMembership(user, auction, object['banned']);
+        return new AuctionMembership(object['id'], user, auction, object['banned']);
     }
 
     /**
