@@ -85,7 +85,17 @@ import User from './User';
         const auctions = dbObject.map(it => Auction.fromObject(it));
         return Promise.all(auctions);
     }
+    
+    public static async fromDatabasePublicAuctions() : Promise<Auction[]> {
+        const dbObject = await connection("auctions").where({'hidden': false});
+        if (dbObject === undefined){
+            return Promise.reject(new InvalidKeyError(`Hon...? You be trippin? Ain't no Auctions.`))
+        }
+        const auctions = dbObject.map(it => Auction.fromObject(it));
+        return Promise.all(auctions);
 
+    }
+    
     private static async fromObject(object: Object) : Promise<Auction> {
         const user = await User.fromDatabaseId(object["owner"]);
         const auction = new Auction(object["id"],object["name"],object["description"],object["location"],
@@ -133,6 +143,21 @@ import User from './User';
             }
         }
         
+    }
+
+    public async kick(Admin: User, Target: User){
+        if(Admin.id == this.owner.id){
+
+
+        }
+
+    }
+
+    public async ban(Admin: User, Target: User){
+        if(Admin.id == this.owner.id){
+
+        }
+
     }
 
     public async load() : Promise<void>{
