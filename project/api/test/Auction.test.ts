@@ -78,8 +78,13 @@ describe('Auction : Database Class', () => {
 
     describe('Instance Methods', () => {
 
-        let state = {
-            user: undefined,
+        interface state {
+            user: User;
+            auction: Auction;
+        }
+
+        let state : state = {
+            user : undefined,
             auction: undefined,
         };
 
@@ -112,5 +117,11 @@ describe('Auction : Database Class', () => {
             const newAuction = Auction.fromDataBaseInviteCode(lookup);
             expect(newAuction).to.eventually.be.rejected;
         });
+        it('Should be able to toggle privacy', async () => {
+            const lookup = state.auction.hidden
+            await state.auction.togglePrivacy(state.user);
+            await state.auction.save();
+            expect(state.auction.hidden).to.not.equal(lookup);
+        })
     })
 })

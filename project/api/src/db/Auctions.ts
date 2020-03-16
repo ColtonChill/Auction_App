@@ -122,7 +122,7 @@ import User from './User';
     }
 
     //Method toggles the privacy of the auction.
-    public async togglePrivacy(object: Auction, user: User){
+    public async togglePrivacy(user: User){
         if(user.id == this.owner.id){
 
             if(this._hidden == true){
