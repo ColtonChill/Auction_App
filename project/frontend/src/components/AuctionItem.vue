@@ -30,7 +30,7 @@
 export default {
   props: {
     id: {
-      type: String,
+      // type: String,
       required: true,
     },
     auction: {
