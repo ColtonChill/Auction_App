@@ -107,7 +107,7 @@ describe('Auction : Database Class', () => {
 
         it('Should not be able to find the same auction after a regen pin', async () =>{
             const lookup = state.auction.pin;
-            await state.auction.resetPin();
+            await state.auction.resetPin(state.user);
             await state.auction.save();
             const newAuction = Auction.fromDataBaseInviteCode(lookup);
             expect(newAuction).to.eventually.be.rejected;

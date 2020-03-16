@@ -172,10 +172,10 @@ import User from './User';
     }
     public async resetPin(user: User) : Promise<String>{
         if(user.id == this.owner.id){
-        const pin = await genPin();
-        this._inviteCode = pin;
-        this._dirty = true;
-        return pin;
+            const pin = await genPin();
+            this._inviteCode = pin;
+            this._dirty = true;
+            return pin;
         }
     }
     public get pin(){
