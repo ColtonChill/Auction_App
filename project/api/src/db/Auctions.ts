@@ -121,6 +121,20 @@ import User from './User';
         }
     }
 
+    //Method toggles the privacy of the auction.
+    public async togglePrivacy(user: User){
+        if(user.id == this.owner.id){
+
+            if(this._hidden == true){
+            this._hidden = false;
+            }
+            else{
+            this._hidden = true;
+            }
+        }
+        
+    }
+
     public async load() : Promise<void>{
         const dbObject = await connection("auctions").where({"id": this._id}).first();
         this._name = dbObject["name"];
@@ -150,14 +164,19 @@ import User from './User';
         this._dirty = true;
     }
     public set hidden(value: boolean) {
+        if(!this._hidden && value){
+            this.resetPin;
+        }
         this._hidden = value;
         this._dirty = true;
     }
-    public async resetPin() : Promise<String>{
-        const pin = await genPin();
-        this._inviteCode = pin;
-        this._dirty = true;
-        return pin;
+    public async resetPin(user: User) : Promise<String>{
+        if(user.id == this.owner.id){
+            const pin = await genPin();
+            this._inviteCode = pin;
+            this._dirty = true;
+            return pin;
+        }
     }
     public get pin(){
         return this._inviteCode;
