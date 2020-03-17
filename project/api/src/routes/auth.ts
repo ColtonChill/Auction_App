@@ -71,6 +71,7 @@ router.get('/logout', async ctx =>{
     if(ctx.isauthenticated){
         ctx.logout();
         ctx.body = "User has logged out successfully."
+        ctx.status = 200; 
     }
     else{
         ctx.status = 401
