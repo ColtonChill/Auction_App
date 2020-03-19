@@ -1,14 +1,15 @@
 import { connection } from '../services/Database';
-import {genPin, evalPin} from '../services/AuctionPin';
+import { genPin, evalPin } from '../services/AuctionPin';
 import InvalidKeyError from './InvalidKeyError';
 import User from './User';
+import AuctionMembership from './AuctionMembership';
 
 /**
  * This thingy is more or less (no... take that back, definitly less) of a
  * representation of the Auction instances and all their data
  */
 
- export default class Auction {
+export default class Auction {
     private _id: Number;
     private _name: String;
     private _description: String;
@@ -19,7 +20,7 @@ import User from './User';
     private _inviteCode: String;
     private _dirty: boolean;
 
-    private constructor(id: Number, name: String, description: String, location: String, owner: User, url: String, hidden: boolean, inviteCode: String){
+    private constructor(id: Number, name: String, description: String, location: String, owner: User, url: String, hidden: boolean, inviteCode: String) {
         this._id = id;
         this._name = name;
         this._description = description;
@@ -31,7 +32,7 @@ import User from './User';
         this._dirty = false;
     }
 
-    static async createAuction(name: String, description: String, location: String, owner: User, url: String, hidden: boolean) : Promise<Auction> {
+    static async createAuction(name: String, description: String, location: String, owner: User, url: String, hidden: boolean): Promise<Auction> {
         const pin = await genPin();
         const dbObject = await connection("auctions").insert({
             "name": name,
@@ -42,68 +43,70 @@ import User from './User';
             "description": description,
             "location": location
         }).returning("*");
-        return this.fromObject(dbObject[0]);
+        const auction = await this.fromObject(dbObject[0]);
+        await AuctionMembership.createMembership(owner, auction);
+        return auction;
     }
 
-    static async fromDataBaseID(id: Number) : Promise<Auction> {
-        const dbObject = await connection("auctions").where({id}).first();
-        if (dbObject === undefined){
+    static async fromDatabaseID(id: Number): Promise<Auction> {
+        const dbObject = await connection("auctions").where({ id }).first();
+        if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction with ID ${id}.`))
         }
         return Auction.fromObject(dbObject);
     }
 
-    static async fromDataBaseName(name: String) : Promise<Auction> {
-        const dbObject = await connection("auctions").where({name}).first();
-        if (dbObject === undefined){
+    static async fromDatabaseName(name: String): Promise<Auction> {
+        const dbObject = await connection("auctions").where({ name }).first();
+        if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction wtih da name ${name}.`))
         }
         return Auction.fromObject(dbObject);
     }
 
-    static async fromDataBaseInviteCode(pin: String) : Promise<Auction> {
-        const dbObject = await connection("auctions").where({"invite_code": pin}).first();
-        if (dbObject === undefined){
+    static async fromDatabaseInviteCode(pin: String): Promise<Auction> {
+        const dbObject = await connection("auctions").where({ "invite_code": pin }).first();
+        if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction with da code ${pin}.`))
         }
         return Auction.fromObject(dbObject);
     }
 
-    static async fromDataBaseURL(url: String) : Promise<Auction> {
-        const dbObject = await connection("auctions").where({"url": url}).first();
-        if (dbObject === undefined){
+    static async fromDatabaseURL(url: String): Promise<Auction> {
+        const dbObject = await connection("auctions").where({ "url": url }).first();
+        if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction with da url: ${url}.`))
         }
         return Auction.fromObject(dbObject);
     }
 
-    static async fromDataBaseAllAuctions() : Promise<Auction[]> {
+    static async fromDatabaseAllAuctions(): Promise<Auction[]> {
         const dbObject = await connection("auctions");
-        if (dbObject === undefined){
+        if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`Hon...? You be trippin? Ain't no Auctions.`))
         }
         const auctions = dbObject.map(it => Auction.fromObject(it));
         return Promise.all(auctions);
     }
-    
-    public static async fromDatabasePublicAuctions() : Promise<Auction[]> {
-        const dbObject = await connection("auctions").where({'hidden': false});
-        if (dbObject === undefined){
+
+    public static async fromDatabasePublicAuctions(): Promise<Auction[]> {
+        const dbObject = await connection("auctions").where({ 'hidden': false });
+        if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`Hon...? You be trippin? Ain't no Auctions.`))
         }
         const auctions = dbObject.map(it => Auction.fromObject(it));
         return Promise.all(auctions);
 
     }
-    
-    private static async fromObject(object: Object) : Promise<Auction> {
+
+    private static async fromObject(object: Object): Promise<Auction> {
         const user = await User.fromDatabaseId(object["owner"]);
-        const auction = new Auction(object["id"],object["name"],object["description"],object["location"],
-        user,object["url"],object["hidden"],object["invite_code"])
+        const auction = new Auction(object["id"], object["name"], object["description"], object["location"],
+            user, object["url"], object["hidden"], object["invite_code"])
         return auction;
     }
 
-    public toJson() : Object {
+    public toJson(): Object {
         return {
             "name": this._name,
             "invite_code": this._inviteCode,
@@ -115,53 +118,66 @@ import User from './User';
         }
     }
 
-    public async save() : Promise<void>{
-        if (this._dirty){
-            await connection('auctions').where({"id": this._id}).update({
+    public async save(): Promise<void> {
+        if (this._dirty) {
+            await connection('auctions').where({ "id": this._id }).update({
                 "name": this._name,
                 "invite_code": this._inviteCode,
                 "owner": this._owner.id,
-                "url":this._url,
+                "url": this._url,
                 "hidden": this._hidden,
                 "description": this._description,
                 "location": this._location
             }).then(_ => this._dirty = false);
-        }else{
+        } else {
             return Promise.resolve();
         }
     }
 
     //Method toggles the privacy of the auction.
-    public async togglePrivacy(user: User){
-        if(user.id == this.owner.id){
+    public async togglePrivacy(user: User): Promise<void> {
+        if (user.id == this.owner.id) {
 
-            if(this._hidden == true){
-            this._hidden = false;
+            if (this._hidden == true) {
+                this._hidden = false;
             }
-            else{
-            this._hidden = true;
+            else {
+                this._hidden = true;
             }
         }
-        
     }
 
-    public async kick(Admin: User, Target: User){
-        if(Admin.id == this.owner.id){
-
-
+    //Method where an "Admin" can kick a user from an auction
+    public async kick(admin: User, target: User): Promise<void> {
+        if (target.id == this.owner.id) {
+            return Promise.resolve();
         }
+        if (admin.id == this.owner.id) {
+            const membership = await AuctionMembership.getMembership(target, this)
+            if (membership === null) {
+                return Promise.resolve();
 
-    }
-
-    public async ban(Admin: User, Target: User){
-        if(Admin.id == this.owner.id){
-
+            }
+            return membership.delete();
         }
-
     }
 
-    public async load() : Promise<void>{
-        const dbObject = await connection("auctions").where({"id": this._id}).first();
+    //Method where an "Admin" can ban a user from all auctions
+    public async ban(admin: User, target: User): Promise<void> {
+        if (target.id == this.owner.id) {
+            return Promise.resolve();
+        }
+        if (admin.id == this.owner.id) {
+            let membership = await AuctionMembership.getMembership(target, this)
+            if (membership === null) {
+                membership = await AuctionMembership.createMembership(target, this);
+            }
+            return membership.setBanned(true);
+        }
+    }
+
+    public async load(): Promise<void> {
+        const dbObject = await connection("auctions").where({ "id": this._id }).first();
         this._name = dbObject["name"];
         this._inviteCode = dbObject["invite_code"];
         this._owner = await User.fromDatabaseId(dbObject["owner"]);
@@ -170,6 +186,20 @@ import User from './User';
         this._description = dbObject["description"];
         this._location = dbObject["location"];
         this._dirty = false;
+    }
+
+    public async resetPin(user: User): Promise<String> {
+        if (user.id == this.owner.id) {
+            const pin = await genPin();
+            this._inviteCode = pin;
+            this._dirty = true;
+            return pin;
+        }
+    }
+
+    public async addMember(user: User): Promise<void> {
+        await AuctionMembership.createMembership(user, this);
+        return Promise.resolve();
     }
 
     public set name(value: String) {
@@ -189,33 +219,29 @@ import User from './User';
         this._dirty = true;
     }
     public set hidden(value: boolean) {
-        if(!this._hidden && value){
+        if (!this._hidden && value) {
             this.resetPin;
         }
         this._hidden = value;
         this._dirty = true;
     }
-    public async resetPin(user: User) : Promise<String>{
-        if(user.id == this.owner.id){
-            const pin = await genPin();
-            this._inviteCode = pin;
-            this._dirty = true;
-            return pin;
-        }
-    }
-    public get pin(){
+
+    public get pin() {
         return this._inviteCode;
     }
-    public get id(){
+    public get id() {
         return this._id;
     }
     public get name() {
         return this._name;
     }
+    public get members() {
+        return AuctionMembership.getAuctionMembers(this);
+    }
     public get description() {
         return this._description;
     }
-    public get url(){
+    public get url() {
         return this._url;
     }
     public get location() {
@@ -227,4 +253,4 @@ import User from './User';
     public get hidden() {
         return this._hidden;
     }
- }
+}
