@@ -45,27 +45,20 @@ router.get('/login', async ctx =>{
 //make sure it is username and password and not email and password
 router.post('/login', async ctx =>{
     
-
+    ctx.request.body.username = ctx.request.body.email.toLowerCase();
     //This is where the actual authentication happens 
     return passport.authenticate('local', (err,user)=>{
         if(user){
             ctx.login(user);
             //ctx = 'You made it here!'
-            if(ctx.isAuthenticated()){
-                console.log('User ' + user.firstName +" " + user.lastName +  ", has logged in successfully.")
-                ctx.body = 'User ' + user.firstName + " " + user.lastName +  ", has logged in successfully."
-                ctx.status = 200;
-            } 
-            else{
-                ctx.body = 'The authentication is still not working, but you made it here! '
-                ctx.status = 400;
-            }
+            ctx.status = 200;
+            ctx.body = {'status': 'OK'};
+            return;
         }
         else{
             ctx.status = 401
-            ctx.message = err
-            //you probably redirect here as well
-           // ctx.redirect(`/login/failure?Error=${err}`)  
+            ctx.body = {'error': 'Failed to login with that username/password combination.'};
+            return;
         }
     })(ctx);
   
@@ -88,7 +81,7 @@ router.get('/logout', async ctx =>{
 router.post('/register', async ctx =>{
 //requires fname, lname, email, password
 
-    var lenName = 30; 
+    var lenName = 255; 
 
     //optional make it so that this is only letters
     //inside this makes sure the name is under a certain length
@@ -103,7 +96,7 @@ router.post('/register', async ctx =>{
     }
     else{
         ctx.status = 400;
-        ctx.message = "No special symbols and must be under 30 characters";
+        ctx.message = `No special symbols and must be under ${lenName} characters`;
         //ctx.redirect('/login/failure');
         return;             
     }
@@ -121,7 +114,7 @@ router.post('/register', async ctx =>{
     }
     else{
         ctx.status = 400;
-        ctx.message = "error : Last name should have no special symbols and be under 30 characters";
+        ctx.message = `error : Last name should have no special symbols and be under ${lenName} characters`;
         //ctx.redirect('/login/failure');
         return;
     }
@@ -162,14 +155,15 @@ router.post('/register', async ctx =>{
         return;
     }
     
-    User.createUser(email, fname, lname, password).then(()=>{
+    await User.createUser(email.toLowerCase(), fname, lname, password).then(()=>{
         ctx.status = 200;
-        ctx.body = 'Success!'
+        ctx.body = 'Success!';
+        return;
         //ctx.redirect('/login/success')
     }).catch(err =>{
         ctx.message = JSON.stringify(err);
         ctx.status = 400;
-
+        return;
     })
    
     //ctx.body = "Success!"; 

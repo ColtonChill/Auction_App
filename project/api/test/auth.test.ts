@@ -1,11 +1,10 @@
 
 //Jace's code
 import 'mocha';
-import chai, {expect} from "chai";
+import chai, {expect} from 'chai';
 import cap from 'chai-as-promised';
 import chttp from 'chai-http';
 import { server } from '../src/Index';
-import User from "../src/db/User";
 import {migrate, rollback} from "../src/services/Database";
 //var chaid = require('chai');
 //var chaiHttp = require('chai-http');
@@ -27,12 +26,15 @@ var loginp = 'iambatman';
 
 
 describe("API : Authorization", function(){
-    beforeEach(async () =>{
-        await migrate();
+    this.timeout(10000);
+
+    before(async () => {
+        rollback().then(migrate);
     })
 
-    afterEach(async () =>{
-        await rollback();
+    after(async () => {
+        server.close();
+        rollback();
     });
 
     //At the moment these tests test only the api not necessarily the database in conjunction with the 
@@ -67,9 +69,8 @@ describe("API : Authorization", function(){
             expect(res).to.have.status(200);
             done();
         })
-
-
     });
+
     it("Should be able to logout a user",  function(done){
         chai.request(server)
         .post('/auth/login')
