@@ -1,7 +1,7 @@
 import 'mocha';
 import chai, { expect } from 'chai';
 import cap from 'chai-as-promised';
-import Auction from '../src/db/Auctions';
+import Auction from '../src/db/Auction';
 import { migrate, rollback } from '../src/services/Database';
 import User from '../src/db/User';
 import AuctionMembership from '../src/db/AuctionMembership';

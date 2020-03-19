@@ -2,7 +2,7 @@ import { connection } from '../services/Database';
 import { comparePassword, encryptPassword } from '../services/Encryption'
 import InvalidKeyError from './InvalidKeyError';
 import Bid from "./Bid";
-import Auction from "./Auctions";
+import Auction from "./Auction";
 import Item from "./Item";
 
 /**

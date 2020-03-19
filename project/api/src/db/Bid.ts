@@ -1,4 +1,4 @@
-import Auction from "./Auctions";
+import Auction from "./Auction";
 import User from "./User";
 import Item from "./Item";
 import { connection } from "../services/Database";

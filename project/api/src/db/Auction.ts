@@ -53,7 +53,7 @@ export default class Auction {
     static async fromDatabaseID(id: Number): Promise<Auction> {
         const dbObject = await connection("auctions").where({ id }).first();
         if (dbObject === undefined) {
-            return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction with ID ${id}.`))
+            return Promise.reject(new InvalidKeyError(`No auction exists with this id: ${id}.`))
         }
         return Auction.fromObject(dbObject);
     }
@@ -61,7 +61,7 @@ export default class Auction {
     static async fromDatabaseName(name: String): Promise<Auction> {
         const dbObject = await connection("auctions").where({ name }).first();
         if (dbObject === undefined) {
-            return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction wtih da name ${name}.`))
+            return Promise.reject(new InvalidKeyError(`No auction exists with this name: ${name}.`))
         }
         return Auction.fromObject(dbObject);
     }
@@ -69,7 +69,7 @@ export default class Auction {
     static async fromDatabaseInviteCode(pin: String): Promise<Auction> {
         const dbObject = await connection("auctions").where({ "invite_code": pin }).first();
         if (dbObject === undefined) {
-            return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction with da code ${pin}.`))
+            return Promise.reject(new InvalidKeyError(`No auction exists with this code: ${pin}.`))
         }
         return Auction.fromObject(dbObject);
     }
@@ -77,7 +77,7 @@ export default class Auction {
     static async fromDatabaseURL(url: String): Promise<Auction> {
         const dbObject = await connection("auctions").where({ "url": url }).first();
         if (dbObject === undefined) {
-            return Promise.reject(new InvalidKeyError(`Hon...? Ain't no Auction with da url: ${url}.`))
+            return Promise.reject(new InvalidKeyError(`No auction exists with this url: ${url}.`))
         }
         return Auction.fromObject(dbObject);
     }
@@ -85,7 +85,7 @@ export default class Auction {
     static async fromDatabaseAllAuctions(): Promise<Auction[]> {
         const dbObject = await connection("auctions");
         if (dbObject === undefined) {
-            return Promise.reject(new InvalidKeyError(`Hon...? You be trippin? Ain't no Auctions.`))
+            return Promise.reject(new InvalidKeyError(`No auction exists`))
         }
         const auctions = dbObject.map(it => Auction.fromObject(it));
         return Promise.all(auctions);
@@ -94,7 +94,7 @@ export default class Auction {
     public static async fromDatabasePublicAuctions(): Promise<Auction[]> {
         const dbObject = await connection("auctions").where({ 'hidden': false });
         if (dbObject === undefined) {
-            return Promise.reject(new InvalidKeyError(`Hon...? You be trippin? Ain't no Auctions.`))
+            return Promise.reject(new InvalidKeyError(`No auction exists`))
         }
         const auctions = dbObject.map(it => Auction.fromObject(it));
         return Promise.all(auctions);

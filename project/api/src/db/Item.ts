@@ -1,4 +1,4 @@
-import Auction from "./Auctions";
+import Auction from "./Auction";
 import { connection } from "../services/Database";
 import InvalidKeyError from "./InvalidKeyError";
 import User from "./User";
