@@ -3,6 +3,7 @@ import { genPin, evalPin } from '../services/AuctionPin';
 import InvalidKeyError from './InvalidKeyError';
 import User from './User';
 import AuctionMembership from './AuctionMembership';
+import Item from './Item';
 
 /**
  * This thingy is more or less (no... take that back, definitly less) of a
@@ -200,6 +201,17 @@ export default class Auction {
     public async addMember(user: User): Promise<void> {
         await AuctionMembership.createMembership(user, this);
         return Promise.resolve();
+    }
+
+    /**
+     * Adds an item to this auction.
+     * 
+     * @param name The name of the item.
+     * @param description The description of the item.
+     * @param imagePath The path to the image of this item.
+     */
+    public async addItem(name: string, description: string, imagePath: string) : Promise<Item> {
+        return Item.createItem(this, name, description, imagePath)
     }
 
     public set name(value: String) {
