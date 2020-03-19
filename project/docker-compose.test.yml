@@ -1,0 +1,38 @@
+version: "3"
+services:
+  api: # API.
+    container_name: auction_test_api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile.test
+    depends_on: 
+      - postgres
+      - redis
+    volumes:
+      - ./static:/static
+      - ./user:/user
+    ports:
+      - "3000:3000"
+    networks:
+      - auction_net
+    env_file:
+      - local.env
+    
+  postgres: # Database.
+    image: postgres:11.2-alpine
+    container_name: auction_db
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auction
+      POSTGRES_USER: postgres
+    restart: unless-stopped
+    networks:
+      - auction_net
+
+  redis: # Caching
+    image: redis:latest
+    container_name: auction_cache
+
+networks:
+  auction_net:
+    driver: bridge
