@@ -4,6 +4,7 @@ import InvalidKeyError from './InvalidKeyError';
 import User from './User';
 import AuctionMembership from './AuctionMembership';
 import Item from './Item';
+import Bid from "./Bid";
 
 /**
  * This thingy is more or less (no... take that back, definitly less) of a
@@ -213,6 +214,16 @@ export default class Auction {
     public async addItem(name: string, description: string, imagePath: string) : Promise<Item> {
         return Item.createItem(this, name, description, imagePath)
     }
+    /**
+    * Adds an Bid to this auction.
+    * 
+    * @param User The user making the bid.
+    * @param Item The item.
+    * @param money The amount of the bid.
+    */
+   public async addBid(user: User, item: Item, money: number) : Promise<Bid> {
+       return Bid.createBid(this, user, item, money);
+   }
 
     public set name(value: String) {
         this._name = value;
