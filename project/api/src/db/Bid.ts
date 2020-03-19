@@ -128,7 +128,7 @@ export default class Bid {
     /**@DOTO Ask Hunter if this is even necessary for the admin page, and if so, do we need an auction wide search as well?
      */ 
     /**
-     * Looks up a list of 'size' items from the given auction, with a page * number. 
+     * Looks up a list of 'size' bid from the given auction, with a page * number. 
      * 
      * @param auction The auction to look items up on.
      * @param page The page number. Defaults to 1.

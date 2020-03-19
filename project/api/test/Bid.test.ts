@@ -73,52 +73,98 @@ describe('Bid : Database Class', () => {
             expect(lookup).to.eventually.be.rejected;
         });
 
-        it('Should be able to find an Item from an Auction', async () => {
+        it('Should be able to find an Bid from an Auction', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
             const bid = await Bid.createBid(auction,user,item,100);
             const lookup = await Bid.fromDatabaseAuction(auction);
-            expect(lookup).to.deep.include(item);
+            expect(lookup).to.deep.include(bid);
         });
 
-        it('Should be able to find an Item from an Auction (paginated, default parameters)', async () => {
+        it('Should be able to find an Bid from a User', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const nonItem = await Item.createItem(auction, 'A new book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuctionPaginated(auction);
-            expect(lookup).to.deep.include(item);
+            const bid = await Bid.createBid(auction,user,item,100);
+            const lookup = await Bid.fromDatabaseUser(user);
+            expect(lookup).to.deep.include(bid);
+        });
+
+        it('Should be able to find an Bid from an Item', async () => {
+            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
+            const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            const bid = await Bid.createBid(auction,user,item,100);
+            const lookup = await Bid.fromDatabaseItem(item);
+            expect(lookup).to.deep.include(bid);
+        });
+
+        it('Should be able to find an Bid from an Auction & User', async () => {
+            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
+            const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            const bid = await Bid.createBid(auction,user,item,100);
+            const lookup = await Bid.getDatabaseAuctionUser(auction,user);
+            expect(lookup).to.deep.include(bid);
+        });
+
+        it('Should be able to find an Bid from an Item & User', async () => {
+            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
+            const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            const bid = await Bid.createBid(auction,user,item,100);
+            const lookup = await Bid.getDatabaseItemUser(item, user);
+            expect(lookup).to.deep.include(bid);
+        });
+
+        it('Should be able to find a bid from an Auction (paginated, default parameters)', async () => {
+            const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+            const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
+            const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            const bid = await Bid.createBid(auction, user, item, 100);
+            await Bid.createBid(auction, user, item, 105);
+            await Bid.createBid(auction, user, item, 110);
+            await Bid.createBid(auction, user, item, 120);
+            await Bid.createBid(auction, user, item, 130);
+            await Bid.createBid(auction, user, item, 140);
+            await Bid.createBid(auction, user, item, 150);
+            await Bid.createBid(auction, user, item, 160);
+            await Bid.createBid(auction, user, item, 170);
+            await Bid.createBid(auction, user, item, 185);
+            await Bid.createBid(auction, user, item, 1000000);
+            const nonUser = await User.createUser('no-one@somewhere.com', 'No', 'One', 'hunter/2');
+            const nonAuction = await Auction.createAuction("Uncle_Jim's_yard", 'jus dont tell yer mom', '2 lefts north of the junk yard, past the dog tied to that there tree over there', user, "aJbQ$wKiz%Ve4", false);
+            const nonItem = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            const nonBid = Bid.createBid(nonAuction,nonUser,nonItem,20);
+            const lookup = await Bid.fromDatabaseUserPaginated(user);
+            expect(lookup).to.deep.include(bid);
             expect(lookup).to.not.deep.include(nonItem);
         });
 
-        it('Should be able to find an Item from an Auction (paginated, custom parameters)', async () => {
+        it('Should be able to find an bid from an Auction (paginated, custom parameters)', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const nonItem = await Item.createItem(auction, 'A new book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuctionPaginated(auction, 1, 2);
-            expect(lookup).to.deep.include(item);
-            expect(lookup).to.not.deep.include(nonItem);
+            const bid = await Bid.createBid(auction,user,item,100);
+            await Bid.createBid(auction, user,item,100);
+            const nonUser = await User.createUser('no-one@somewhere.com', 'No', 'One', 'hunter/2');
+            const nonAuction = await Auction.createAuction("Uncle_Jim's_yard", 'jus dont tell yer mom', '2 lefts north of the junk yard, past the dog tied to that there tree over there', user, "aJbQ$wKiz%Ve4", false);
+            const nonItem = await Item.createItem(auction, 'A old book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            const nonBid = Bid.createBid(nonAuction,nonUser,nonItem,20);
+            const lookup = await Bid.fromDatabaseUserPaginated(user,1,2);
+            expect(lookup).to.deep.include(bid);
+            expect(lookup).to.not.deep.include(nonBid);
         });
 
-        it('Should be able to find an Item from an Auction (paginated, invalid parameters)', async () => {
+        it('Should be able to find an bid from an Auction (paginated, invalid parameters)', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuctionPaginated(auction, 0, 10);
+            const bid = await Bid.createBid(auction,user,item,100);
+            const lookup = await Bid.fromDatabaseUserPaginated(user, 0, 10);
             expect(lookup).to.deep.equal([]);
-            const otherLookup = await Item.fromDatabaseAuctionPaginated(auction, 10, 0);
+            const otherLookup = await Bid.fromDatabaseUserPaginated(user, 10, 0);
             expect(otherLookup).to.deep.equal([]);
         });
     });
@@ -129,42 +175,45 @@ describe('Bid : Database Class', () => {
             user: User;
             auction: Auction;
             item: Item;
+            bid: Bid;
         }
 
         let state : state = {
             user : undefined,
             auction: undefined,
             item: undefined,
+            bid: undefined
         };
 
         beforeEach(async () => {
             state.user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             state.auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', state.user, "default-auction", false);
             state.item = await state.auction.addItem('A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+            state.bid = await state.item.addBid(state.auction,state.user,100);
         });
 
         it('Should be able to load changes', async () => {
-            const { item } = state;
-            const lookup = await Item.fromDatabaseId(item.id);
-            item.name = 'A Useless Book';
-            await item.save();
+            const { bid } = state;
+            const lookup = await Bid.fromDatabaseId(bid.id);
+            bid.money = bid.money+17;
+            await bid.save();
             await lookup.load();
-            expect(lookup).to.deep.equal(item);
+            expect(lookup).to.deep.equal(bid);
         });
 
         it('Should be able to save changes', async () => {
-            const { item } = state;
-            item.name = 'A Useless Book';
-            await item.save();
-            const lookup = await Item.fromDatabaseId(item.id);
-            expect(lookup).to.deep.equal(item);
+            const { bid } = state;
+            bid.money +=13;
+            await bid.save();
+            const lookup = await Bid.fromDatabaseId(bid.id);
+            expect(lookup).to.deep.equal(bid);
         });
 
         it('Should be able to delete items.', async () => {
-            const { item } = state;
-            const id = item.id;
-            await item.delete();
-            const lookup = Item.fromDatabaseId(id);
+            const { bid } = state;
+            const id = bid.id;
+            await bid.delete();
+            const lookup = Bid.fromDatabaseId(id);
             expect(lookup).to.eventually.be.rejected;
         })
     })
