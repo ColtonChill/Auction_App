@@ -20,7 +20,7 @@ app.use(session({
     store: new RedisStore()
 }, app));
 
-app.use(bodyParser);
+app.use(bodyParser());
 
 app.use(passport.initialize());
 app.use(passport.session());
