@@ -30,10 +30,8 @@ router.post('/login/failure', async ctx =>{
 //This checks whether you are authorized. 
 router.get('/login', async ctx =>{
     if(ctx.isAuthenticated()){
-        //redirect to Sally's home page
         ctx.body = "YUP!" 
         ctx.status = 200;
-        //ctx.redirect('/login/success')
     }
     else{
         //ctx.status = 401 
@@ -52,9 +50,16 @@ router.post('/login', async ctx =>{
     return passport.authenticate('local', (err,user)=>{
         if(user){
             ctx.login(user);
-            console.log('User ' + user.firstName +" " + user.lastName +  ", has logged in successfully.")
-            ctx.body = 'User ' + user.firstName + " " + user.lastName +  ", has logged in successfully."
-            ctx.status = 200; 
+            //ctx = 'You made it here!'
+            if(ctx.isAuthenticated()){
+                console.log('User ' + user.firstName +" " + user.lastName +  ", has logged in successfully.")
+                ctx.body = 'User ' + user.firstName + " " + user.lastName +  ", has logged in successfully."
+                ctx.status = 200;
+            } 
+            else{
+                ctx.body = 'The authentication is still not working, but you made it here! '
+                ctx.status = 400;
+            }
         }
         else{
             ctx.status = 401
@@ -68,7 +73,7 @@ router.post('/login', async ctx =>{
 
 //This will log you out, duh, nothing to pass here. 
 router.get('/logout', async ctx =>{
-    if(ctx.isauthenticated){
+    if(ctx.isAuthenticated()){
         ctx.logout();
         ctx.body = "User has logged out successfully."
         ctx.status = 200; 
@@ -159,6 +164,7 @@ router.post('/register', async ctx =>{
     
     User.createUser(email, fname, lname, password).then(()=>{
         ctx.status = 200;
+        ctx.body = 'Success!'
         //ctx.redirect('/login/success')
     }).catch(err =>{
         ctx.message = JSON.stringify(err);
@@ -166,7 +172,7 @@ router.post('/register', async ctx =>{
 
     })
    
-    ctx.body = "Success!"; 
+    //ctx.body = "Success!"; 
 
     //I want to redirect to the login page here if possible
     //ctx.redirect('/login/success');
