@@ -64,40 +64,40 @@ router.get('/@me', async ctx => {
 
 
 router.post('/register', async ctx =>{
-//requires fname, lname, email, password
+//requires firstName, lastName, email, password
 
-    var lenName = 255; 
+    var lenName = 255;
 
     //optional make it so that this is only letters
     //inside this makes sure the name is under a certain length
-    if(ctx.request.body.fname === null|| ctx.request.body.fname === undefined){
+    if(ctx.request.body.firstName === null|| ctx.request.body.firstName === undefined){
         ctx.status = 400;
         ctx.body = {'error' : 'First name is required.'};
         //ctx.redirect('/login/failure');
         return; 
     }
-    if (ctx.request.body.fname.length > lenName) {
+    if (ctx.request.body.firstName.length > lenName) {
         ctx.status = 400;
         ctx.body = `First name must be less than ${lenName} characters`;
         //ctx.redirect('/login/failure');
         return;             
     }
-    let fname = ctx.request.body.fname;
+    let firstName = ctx.request.body.firstName;
 
     //same as first name
-    if(ctx.request.body.lname === null ||ctx.request.body.lname === undefined){
+    if(ctx.request.body.lastName === null ||ctx.request.body.lastName === undefined){
         ctx.status = 400;
         ctx.body = {'error': "Last name is required."};
         //ctx.redirect('/login/failure');
         return; 
     }
-    if(ctx.request.body.lname.length > lenName){
+    if(ctx.request.body.lastName.length > lenName){
         ctx.status = 400;
         ctx.body = {'error' : `Last name be less than ${lenName} characters`};
         //ctx.redirect('/login/failure');
         return;
     }
-    let lname = ctx.request.body.lname;
+    let lastName = ctx.request.body.lastName;
 
 
     //make sure it has an @ sign and possibly ends with a website.
@@ -131,7 +131,7 @@ router.post('/register', async ctx =>{
     }
     let password = ctx.request.body.password;
     
-    return User.createUser(email.toLowerCase(), fname, lname, password).then((user)=>{
+    return User.createUser(email.toLowerCase(), firstName, lastName, password).then((user)=>{
         ctx.status = 200;
         ctx.body = {...user.toJson()};
         return;
