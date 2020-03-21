@@ -2,5 +2,4 @@ project/**/node_modules/**/*
 project/**/build/**/*
 project/**/dist/**/*
 project/.env
-npm-debug.log
 *.DS_Store
