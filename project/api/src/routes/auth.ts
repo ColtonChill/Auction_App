@@ -19,6 +19,17 @@ router.get('/', async ctx =>{
 router.post('/login', async ctx =>{
     
     ctx.request.body.username = ctx.request.body.email.toLowerCase();
+    if(ctx.request.body.username === undefined || ctx.request.body.username === '' || ctx.request.body.username === null) {
+        ctx.body = {'error': 'Email is required.'};
+        ctx.status = 400;
+        return Promise.resolve();
+    }
+
+    if(ctx.request.body.password === undefined || ctx.request.body.username === '' || ctx.request.body.username === null) {
+        ctx.body = {'error': 'Password is required.'};
+        ctx.status = 400;
+        return Promise.resolve();
+    }
     //This is where the actual authentication happens 
     return passport.authenticate('local', (err,user)=>{
         if(user){
