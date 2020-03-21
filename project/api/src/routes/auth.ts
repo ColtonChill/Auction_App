@@ -10,35 +10,8 @@ const router = new Router();
 //Proof that you made it
 //Not really nessecary  
 router.get('/', async ctx =>{
-    ctx.response.body = "Welcome to the authorization api!";
+    ctx.response.body = {'message': "Welcome to the authorization api!"};
     ctx.status = 200; 
-});
-
-/*
-testing screens for the api until I know what to do with them. 
-*/
-//These are useless will delete. 
-router.get('/login/success', async ctx =>{
-    ctx.response.body = "Yay!!!";
-});
-
-router.post('/login/failure', async ctx =>{
-    ctx.response.body = `sorry unauthorized: ${ctx.request.body.Error}`;
-});
-
-
-//This checks whether you are authorized. 
-router.get('/login', async ctx =>{
-    if(ctx.isAuthenticated()){
-        ctx.body = "YUP!" 
-        ctx.status = 200;
-    }
-    else{
-        //ctx.status = 401 
-        //ctx.redirect('/login/failure')
-        ctx.body = "NOPE! "
-        ctx.status = 401 
-    }
 });
 
 //takes username and password through post and logs you in 
@@ -68,14 +41,26 @@ router.post('/login', async ctx =>{
 router.get('/logout', async ctx =>{
     if(ctx.isAuthenticated()){
         ctx.logout();
-        ctx.body = "User has logged out successfully."
         ctx.status = 200; 
     }
     else{
-        ctx.status = 401
-        ctx.body = "Error: You aren't logged in"
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
     }
 });
+
+
+router.get('/@me', async ctx => {
+    if(ctx.isAuthenticated()) {
+        ctx.body = ctx.req.user.toJson();
+        ctx.status = 200;
+        return Promise.resolve();
+    }
+    else {
+        ctx.status = 401;
+        return Promise.resolve();
+    }
+})
 
 
 router.post('/register', async ctx =>{
@@ -87,55 +72,48 @@ router.post('/register', async ctx =>{
     //inside this makes sure the name is under a certain length
     if(ctx.request.body.fname === null|| ctx.request.body.fname === undefined){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'First Name' line" + ctx.request.body;
+        ctx.body = {'error' : 'First name is required.'};
         //ctx.redirect('/login/failure');
         return; 
     }
-    else if (!(ctx.request.body.fname.length > lenName)){
-        var fname = ctx.request.body.fname;
-    }
-    else{
+    if (ctx.request.body.fname.length > lenName) {
         ctx.status = 400;
-        ctx.message = `No special symbols and must be under ${lenName} characters`;
+        ctx.body = `First name must be less than ${lenName} characters`;
         //ctx.redirect('/login/failure');
         return;             
     }
+    let fname = ctx.request.body.fname;
 
     //same as first name
     if(ctx.request.body.lname === null ||ctx.request.body.lname === undefined){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'Last Name' line";
+        ctx.body = {'error': "Last name is required."};
         //ctx.redirect('/login/failure');
         return; 
     }
-
-    else if(!(ctx.request.body.lname.length > lenName)){
-        var lname = ctx.request.body.lname;
-    }
-    else{
+    if(ctx.request.body.lname.length > lenName){
         ctx.status = 400;
-        ctx.message = `error : Last name should have no special symbols and be under ${lenName} characters`;
+        ctx.body = {'error' : `Last name be less than ${lenName} characters`};
         //ctx.redirect('/login/failure');
         return;
     }
+    let lname = ctx.request.body.lname;
 
 
     //make sure it has an @ sign and possibly ends with a website.
     if(ctx.request.body.email === null||ctx.request.body.email === undefined){
         ctx.status = 400;
-        ctx.message = "Nothing was inputed in the 'Email' line";
+        ctx.body = {'error': "Email is required."};
         //ctx.redirect('/login/failure');
         return;
     } 
-    else if(ctx.request.body.email.includes('@')){
-        var email = ctx.request.body.email;
-    }
-    else{
+    if(!ctx.request.body.email.includes('@')){
         ctx.status = 400; 
-        ctx.message = "email needs to have an @";
+        ctx.body = {'error': 'Invalid email format.'};
         //ctx.redirect('/login/failure');
         return;
     }
+    var email = ctx.request.body.email;
 
 
     //make sure certain symbols aren't in here and above a certain amount of characters 
@@ -145,25 +123,30 @@ router.post('/register', async ctx =>{
        // ctx.redirect('/login/failure');
         return; 
     }
-    if(!(ctx.request.body.password > lenName)){
-        var password = ctx.request.body.password;
-    }
-    else{
+    if(ctx.request.body.password > lenName){
         ctx.status = 400;
-        ctx.message = " Must not include (forbidden symbols)";  
+        ctx.message = `Password must be less than ${lenName} characters.`;  
        // ctx.redirect('/login/failure');
         return;
     }
+    let password = ctx.request.body.password;
     
-    await User.createUser(email.toLowerCase(), fname, lname, password).then(()=>{
+    return User.createUser(email.toLowerCase(), fname, lname, password).then((user)=>{
         ctx.status = 200;
-        ctx.body = 'Success!';
+        ctx.body = {...user.toJson()};
         return;
         //ctx.redirect('/login/success')
     }).catch(err =>{
-        ctx.message = JSON.stringify(err);
-        ctx.status = 400;
-        return;
+        if(process.env.NODE_ENV === "production") {
+            ctx.status = 500;
+            ctx.body = {'error' : 'A user with that email already exists.'}
+            return;
+        } 
+        else {
+            ctx.body = JSON.stringify(err);
+            ctx.status = 500;
+            return;
+        }
     })
    
     //ctx.body = "Success!"; 
