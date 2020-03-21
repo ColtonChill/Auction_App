@@ -34,7 +34,6 @@ router.post('/login', async ctx =>{
     return passport.authenticate('local', (err,user)=>{
         if(user){
             ctx.login(user);
-            //ctx = 'You made it here!'
             ctx.status = 200;
             ctx.body = {'status': 'OK'};
             return;
