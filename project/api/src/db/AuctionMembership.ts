@@ -1,5 +1,5 @@
 import User from './User';
-import Auction from './Auctions';
+import Auction from './Auction';
 import { connection } from '../services/Database';
 
 export default class AuctionMembership {

@@ -1,6 +1,6 @@
 import {compareSync, hash, hashSync } from 'bcryptjs'
 import { connection } from './Database'
-import Auction from '../db/Auctions';
+import Auction from '../db/Auction';
 
 /** 
   * This is hopfully the first and second pins
