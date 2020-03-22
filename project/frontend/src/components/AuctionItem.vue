@@ -3,7 +3,7 @@
   <div class="border border-gray-500
    lg:border-t lg:border-gray-400 bg-white
    rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
-   justify-between leading-normal">
+   justify-between leading-normal" v-on:click="consoleLog">
    <div class="flex-shrink-0 flex-grow-1 h-12 ">
       <img class="w-12 h-12 rounded-full mr-4" src="/img/school.jpg">
       </div>
@@ -36,6 +36,11 @@ export default {
     auction: {
       type: Object,
       required: false,
+    },
+  },
+  methods: {
+    consoleLog() {
+      console.log('you clicked an auction');
     },
   },
 };
