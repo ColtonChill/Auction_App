@@ -36,12 +36,11 @@
   <div class="md:flex md:items-center">
     <div class="md:w-1/3"></div>
     <div class="md:w-2/3">
-      <button class="center shadow bg-blue-400 hover:bg-blue-600
+      <router-link to="/">
+      <button id="myButton" type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-4 rounded mb-4" type="button"
-      v-on:click="postLogin('/api/v1/auth/login',{ email: 'user@user.com', password: 'password' })">
-        Log in
-      </button>
+      py-2 px-4 rounded mb-4" v-on:click="handleLogin('api/v1/auth/login')">Log in!</button>
+      </router-link>
     </div>
   </div>
     <div class="mx-auto pb-8 text-center">
@@ -76,6 +75,11 @@ export default {
         body: JSON.stringify(data),
       });
       return response.json();
+    },
+    handleLogin(url = '') {
+      const eml = document.getElementById('email');
+      const pass = document.getElementById('password');
+      this.postLogin(url, { email: eml, password: pass });
     },
   },
 };

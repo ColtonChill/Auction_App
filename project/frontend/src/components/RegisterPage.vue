@@ -66,11 +66,11 @@
   <div class="md:flex md:items-center">
     <div class="md:w-1/3"></div>
     <div class="md:w-2/3">
-      <button class="center shadow bg-blue-400 hover:bg-blue-600
+      <router-link to="/">
+      <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-4 rounded mb-4" type="button">
-        Sign Up
-      </button>
+      py-2 px-4 rounded mb-4" v-on:click="handleRegister('api/v1/auth/register')">Sign Up</button>
+      </router-link>
     </div>
   </div>
 </form>
@@ -83,5 +83,31 @@
 
 export default {
   name: 'RegisterPage',
+  methods: {
+    handleRegister(url = '') {
+      const first = document.getElementById('first-name');
+      const last = document.getElementById('last-name');
+      const eml = document.getElementById('email');
+      const pass = document.getElementById('password');
+      this.postReg(url, {
+        firstName: first, lastName: last, email: eml, password: pass,
+      });
+    },
+    async postReg(url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+  },
 };
 </script>
