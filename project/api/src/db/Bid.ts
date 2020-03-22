@@ -15,7 +15,7 @@ export default class Bid {
     private _user: User;
     private _item: Item;
     private _money: number;
-    private _time: string;
+    private _time: number;
     private _dirty: boolean;
 
     /**
@@ -27,7 +27,7 @@ export default class Bid {
      * @param money The amount the bid was place at.
      * @param time The time the bid was placed.
      */
-    private constructor(id: number, auction: Auction, user: User, item: Item, money: number, time: string) {
+    private constructor(id: number, auction: Auction, user: User, item: Item, money: number, time: number) {
         this._id = id;
         this._auction = auction;
         this._user = user;
@@ -38,17 +38,32 @@ export default class Bid {
     }
 
     public static async createBid(auction: Auction, user: User, item: Item, money: number) : Promise<Bid> {
-        let d = new Date();
-        const dbObject = await connection('bids').insert({
-            'auction': auction.id,
-            'user' : user.id,
-            'item' : item.id,
-            'money' : money,
-            'time' : d.toLocaleTimeString()
-        }).returning('*');
-        return this.fromObject(dbObject[0]);
+        const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time").first();
+        //const dbReturn = await connection('bids').where({'item': item.id}).select('item','money').orderBy("time").first();
+        if(dbReturn === undefined){
+            let d = new Date();
+            const dbObject = await connection('bids').insert({
+                'auction': auction.id,
+                'user' : user.id,
+                'item' : item.id,
+                'money' : money,
+                'time' : d.valueOf()
+            }).returning('*');
+            return this.fromObject(dbObject[0]);
+        }else if(dbReturn['money']<money){
+            let d = new Date();
+            const dbObject = await connection('bids').insert({
+                'auction': auction.id,
+                'user' : user.id,
+                'item' : item.id,
+                'money' : money,
+                'time' : d.valueOf()
+            }).returning('*');
+            return this.fromObject(dbObject[0]);
+        }
+        console.log("well, that failed...")
+        return Promise.reject(new InvalidKeyError(`Invalid bid, please increase the amount`))
     }
-
 
 
     //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -207,7 +222,7 @@ export default class Bid {
         return this._money;
     }
     
-    public get time() : string {
+    public get time() : number {
         return this._time;
     }
 
@@ -219,7 +234,7 @@ export default class Bid {
         this._dirty = true;
     }
 
-    public set time(time: string) {
+    public set time(time: number) {
         if(time === this._time) {
             return;
         }
