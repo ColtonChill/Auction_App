@@ -1,6 +1,8 @@
-import Auction from "./Auctions";
+import Auction from "./Auction";
 import { connection } from "../services/Database";
 import InvalidKeyError from "./InvalidKeyError";
+import User from "./User";
+import Bid from "./Bid";
 
 /**
  * A class that represents Items in our database.
@@ -83,6 +85,16 @@ export default class Item {
         const objects = await connection('items').orderBy('id').limit(size).offset((page - 1) * size).where({'id': auction.id});
         return Promise.all(objects.map(this.fromObject));
     }
+    /**
+    * Adds an Bid to this auction.
+    * 
+    * @param Auction The perticular auction.
+    * @param user The user making the bid.
+    * @param money The amount of the bid.
+    */
+   public async addBid(auction: Auction, user: User, money: number) : Promise<Bid> {
+       return Bid.createBid(auction, user, this, money);
+   }
     
     /**
      * Internal method to generate an Item object from a database response.
