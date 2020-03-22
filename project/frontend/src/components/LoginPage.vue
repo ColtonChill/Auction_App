@@ -75,15 +75,8 @@ export default {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
       });
-      console.log(response.json());
       return response.json();
     },
   },
 };
-
-// postLogin('https://example.com/answer', { answer: 2 })
-//   .then((data) => {
-//     console.log(data);
-//   });
-
 </script>

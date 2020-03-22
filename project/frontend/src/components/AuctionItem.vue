@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     consoleLog() {
-      console.log('you clicked an auction');
+      // console.log('you clicked an auction');
     },
   },
 };
