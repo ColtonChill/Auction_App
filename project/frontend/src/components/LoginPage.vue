@@ -38,7 +38,7 @@
     <div class="md:w-2/3">
       <button class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-4 rounded mb-4" type="button">
+      py-2 px-4 rounded mb-4" type="button" onclick= "postLogin('https://example.com/answer', { username: 'user', password: 'password'})" >
         Log in
       </button>
     </div>
@@ -57,7 +57,30 @@
 
 
 <script lang="ts">
+
+async function postLogin(url = '', data = {}) {
+  const response = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
 export default {
   name: 'LoginPage',
 };
+
+postLogin('https://example.com/answer', { answer: 2 })
+  .then((data) => {
+    console.log(data);
+  });
+
 </script>
