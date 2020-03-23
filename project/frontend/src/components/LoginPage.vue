@@ -13,7 +13,7 @@
       </label>
     </div>
     <div class="">
-      <input class="bg-gray-200 appearance-none border-2
+      <input v-model="eml" class="bg-gray-200 appearance-none border-2
       border-gray-200 rounded w-full py-2 px-4 text-gray-700
       leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
       id="email" type="text">
@@ -27,7 +27,7 @@
       </label>
     </div>
     <div class="md:w-2/3">
-      <input class="bg-gray-200 appearance-none border-2 border-gray-200
+      <input v-model="pass" class="bg-gray-200 appearance-none border-2 border-gray-200
       rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none
       focus:bg-white focus:border-blue-500" id="password"
       type="password" placeholder="************">
@@ -39,7 +39,8 @@
       <router-link to="/">
       <button id="myButton" type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-4 rounded mb-4" v-on:click="handleLogin('api/v1/auth/login')">Log in!</button>
+      py-2 px-4 rounded mb-4" v-on:click="handleLogin('api/v1/auth/login', eml, pass)"
+      >Log in!</button>
       </router-link>
     </div>
   </div>
@@ -61,7 +62,13 @@
 export default {
   name: 'LoginPage',
   methods: {
-    async postLogin(url = '', data = {}) {
+    async handleLogin(url = 'coo', eml = '', pass = '') {
+      /* eslint-disable */
+      console.log(eml, pass);
+      const data = {
+        email: eml,
+        password: pass,
+      };
       const response = await fetch(url, {
         method: 'POST',
         mode: 'cors',
@@ -75,19 +82,6 @@ export default {
         body: JSON.stringify(data),
       });
       return response.json();
-    },
-    handleLogin(url = '') {
-      // if (document == null) {
-      //   throw new Error('document is null');
-      // } else if (document.getElementById('email').nodeValue == null ||
-      // document.getElementById('password').nodeValue == null) {
-      //   throw new Error('document is not null but email or pass is');
-      // } else {
-
-      /* eslint-disable */
-      const eml = document.getElementById('email')!.nodeValue;
-      const pass = document.getElementById('password')!.nodeValue;
-      this.postLogin(url, { email: eml, password: pass });
     },
   },
 };
