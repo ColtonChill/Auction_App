@@ -85,10 +85,12 @@ export default {
   name: 'RegisterPage',
   methods: {
     handleRegister(url = '') {
-      const first = document.getElementById('first-name');
-      const last = document.getElementById('last-name');
-      const eml = document.getElementById('email');
-      const pass = document.getElementById('password');
+      const first = document.getElementById('first-name')!.nodeValue;
+      const last = document.getElementById('last-name')!.nodeValue;
+      const eml = document.getElementById('email')!.nodeValue;
+      const pass = document.getElementById('password')!.nodeValue;
+      /* eslint-disable */
+      console.log('first: ' + first + ' last: ' + last + ' eml: ' + eml + ' pass: ' + pass)
       this.postReg(url, {
         firstName: first, lastName: last, email: eml, password: pass,
       });

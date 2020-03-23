@@ -16,13 +16,13 @@
       <input class="bg-gray-200 appearance-none border-2
       border-gray-200 rounded w-full py-2 px-4 text-gray-700
       leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-      id="email" type="text" value="">
+      id="email" type="text">
     </div>
   </div>
   <div class="md:flex md:items-center mb-6">
     <div class="">
       <label class="block text-gray-500 font-bold md:text-right
-      mb-1 md:mb-0 pr-4 mr-2" for="password">
+      mb-1 md:mb-0 pr-4 mr-2">
         Password
       </label>
     </div>
@@ -77,8 +77,16 @@ export default {
       return response.json();
     },
     handleLogin(url = '') {
-      const eml = document.getElementById('email');
-      const pass = document.getElementById('password');
+      // if (document == null) {
+      //   throw new Error('document is null');
+      // } else if (document.getElementById('email').nodeValue == null ||
+      // document.getElementById('password').nodeValue == null) {
+      //   throw new Error('document is not null but email or pass is');
+      // } else {
+
+      /* eslint-disable */
+      const eml = document.getElementById('email')!.nodeValue;
+      const pass = document.getElementById('password')!.nodeValue;
       this.postLogin(url, { email: eml, password: pass });
     },
   },
