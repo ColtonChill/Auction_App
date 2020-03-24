@@ -1,6 +1,9 @@
 import { connection } from '../services/Database';
 import { comparePassword, encryptPassword } from '../services/Encryption'
 import InvalidKeyError from './InvalidKeyError';
+import Bid from "./Bid";
+import Auction from "./Auction";
+import Item from "./Item";
 
 /**
  * A class that represents a User in the database. Provides static methods to 
@@ -85,6 +88,9 @@ export default class User {
      * @param id The user's numeric ID.
      */
     static async fromDatabaseId(id: Number) : Promise<User> {
+        if(id === undefined || id === null) {
+            return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));
+        }
         const dbObject = await connection('users').where({id}).first();
         if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));
@@ -152,6 +158,17 @@ export default class User {
             this._email = dbObject['email'];
             this._id = dbObject['id']; // If this changes something has gone horribly wrong.
         });
+    }
+
+        /**
+     * Adds an Bid to this auction.
+     * 
+     * @param Auction The perticular auction.
+     * @param Item The item.
+     * @param money The amount of the bid.
+     */
+    public async addBid(auction: Auction, item: Item, money: number) : Promise<Bid> {
+        return Bid.createBid(auction, this, item, money);
     }
 
     /**
