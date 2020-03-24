@@ -88,6 +88,9 @@ export default class User {
      * @param id The user's numeric ID.
      */
     static async fromDatabaseId(id: Number) : Promise<User> {
+        if(id === undefined || id === null) {
+            return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));
+        }
         const dbObject = await connection('users').where({id}).first();
         if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));

@@ -3,7 +3,7 @@ import { genPin, evalPin } from '../services/AuctionPin';
 import InvalidKeyError from './InvalidKeyError';
 import User from './User';
 import AuctionMembership from './AuctionMembership';
-import Item from './Item';
+import Item, {LiveItem, SilentItem} from './Item';
 import Bid from "./Bid";
 
 /**
@@ -214,6 +214,15 @@ export default class Auction {
     public async addItem(name: string, description: string, imagePath: string) : Promise<Item> {
         return Item.createItem(this, name, description, imagePath)
     }
+
+    public async addLiveItem(name: string, description: string, imagePath: string, winningPrice: number, winner?: User) {
+        return LiveItem.createLiveItem(this, name, description, imagePath, winningPrice, winner);
+    }
+
+    public async addSilentItem(name: string, description: string, imagePath: string, startingPrice: number, bidIncrement: number) {
+        return SilentItem.createSilentItem(this, name, description, imagePath, startingPrice, bidIncrement);
+    }
+
     /**
     * Adds an Bid to this auction.
     * 
