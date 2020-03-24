@@ -17,7 +17,10 @@ const key = process.env.SECRET || "729GkzSAuu0mhJ7RrTfP6WucgEwBM2NV" // Default 
 
 app.keys = [key];
 app.use(session({
-    store: new RedisStore()
+    store: RedisStore({
+        host: 'auction_cache',
+        port: 6379,
+    })
 }, app));
 
 app.use(bodyParser());
@@ -32,8 +35,6 @@ export const server : Server = app.listen(port, async () => {
     await testConnection(); 
     await doMigrations();
 });
-
-
 
 async function doMigrations() {
     const startVersion = await getMigrationVersion()

@@ -6,9 +6,9 @@ const options = {};
 
 passport.serializeUser((user, done) => { done(null, user.id); })
 
-passport.deserializeUser((id, done) => {
+passport.deserializeUser(async (id, done) => {
     try {
-        const user = User.fromDatabaseId(id);
+        const user = await User.fromDatabaseId(id);
         return done(null, user); // The user exists and was deserialized properly.
     } catch (err) {
         if (err.name === "InvalidKeyError") {
@@ -18,9 +18,9 @@ passport.deserializeUser((id, done) => {
     }
 })
 
-passport.use(new LocalStrategy(options, (username, password, done) => {
+passport.use(new LocalStrategy(options, async (username, password, done) => {
     try {
-        const user = User.fromDatabaseEmailPassword(username, password);
+        const user = await User.fromDatabaseEmailPassword(username, password);
         return done(null, user); // The user is in the database and authenticated properly.
     } catch (err) {
         if (err.name === "InvalidKeyError") {
