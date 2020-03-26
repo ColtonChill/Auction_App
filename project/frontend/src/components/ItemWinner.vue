@@ -30,6 +30,20 @@ export default {
           name: 'Book of Uselessness',
           description: 'A completely useless book.',
         },
+        {
+          id: 62,
+          price: 503,
+          winningBid: { amount: 8, user: { firstName: 'Hunr', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' } },
+          name: ' Uselessness',
+          description: 'A coseless book.',
+        },
+        {
+          id: 43,
+          price: 551,
+          winningBid: { amount: 7, user: { firstName: 'Hunt', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' } },
+          name: ' of Uselessness',
+          description: 'A c useless book.',
+        },
 
       ],
     };
