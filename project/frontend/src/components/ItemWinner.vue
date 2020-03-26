@@ -23,9 +23,9 @@ export default {
   data() {
     return {
       items: [
-        { id: 40, winningBid: { money: 6, user: { firstName: 'Hunter1', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' }}, name: 'Book of Uselessness', description: 'A completely useless book.' }
-        { id: 41, winningBid: { money: 7, user: { firstName: 'Hunter2', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' }}, name: 'hat of Uselessness', description: 'A completely useless book.' }
-        { id: 42, winningBid: { money: 8, user: { firstName: 'Hunter3', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' }}, name: 'robe of Uselessness', description: 'A completely useless book.' }
+        { id: 40, winningBid: { money: 6, user: { firstName: 'Hunter1', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' }}, name: 'Book of Uselessness', description: 'A completely useless book.' },
+        { id: 41, winningBid: { money: 7, user: { firstName: 'Hunter2', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' }}, name: 'hat of Uselessness', description: 'A completely useless book.' },
+        { id: 42, winningBid: { money: 8, user: { firstName: 'Hunter3', lastName: 'Henrichsen', email: 'hunter.henrichsen@gmail.com' }}, name: 'robe of Uselessness', description: 'A completely useless book.' },
 
       ],
     };
