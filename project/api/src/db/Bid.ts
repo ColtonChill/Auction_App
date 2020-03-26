@@ -37,7 +37,10 @@ export default class Bid {
         this._dirty = false;
     }
 
-    public static async createBid(auction: Auction, user: User, item: Item, money: number) : Promise<Bid> {
+    public static async createBid(id_auction: Number, id_user: Number, id_item: number, money: number) : Promise<Bid> {
+        const auction = await Auction.fromDatabaseID(id_auction);
+        const user = await User.fromDatabaseId(id_user);
+        const item = await Item.fromDatabaseId(id_item); 
         const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time").first();
         //const dbReturn = await connection('bids').where({'item': item.id}).select('item','money').orderBy("time").first();
         if(dbReturn === undefined){
@@ -88,7 +91,8 @@ export default class Bid {
      *  
      * @param auction The auction to look bids up on.
      */
-    public static async fromDatabaseAuction(auction: Auction) : Promise<Bid[]> {
+    public static async fromDatabaseAuction(id: Number) : Promise<Bid[]> {
+        const auction = await Auction.fromDatabaseID(id); 
         return connection('bids')
             .where({'auction': auction.id})
             .then(objects => Promise.all(objects.map(this.fromObject)));
@@ -99,7 +103,8 @@ export default class Bid {
      *  
      * @param user The user to look bids up on.
      */
-    public static async fromDatabaseUser(user: User) : Promise<Bid[]> {
+    public static async fromDatabaseUser(id: Number) : Promise<Bid[]> {
+        const user = await User.fromDatabaseId(id);
         return connection('bids')
             .where({'user': user.id})
             .then(objects => Promise.all(objects.map(this.fromObject)));
@@ -110,7 +115,8 @@ export default class Bid {
      *  
      * @param item The item to look bids up on.
      */
-    public static async fromDatabaseItem(item: Item) : Promise<Bid[]> {
+    public static async fromDatabaseItem(id: number) : Promise<Bid[]> {
+        const item = await Item.fromDatabaseId(id);
         return connection('bids')
             .where({'item': item.id})
             .then(objects => Promise.all(objects.map(this.fromObject)));
@@ -122,7 +128,9 @@ export default class Bid {
      * @param auction The auction to lookup.
      * @returns A bid between the two if it exists.
      */
-    public static async getDatabaseAuctionUser(auction: Auction, user: User) : Promise<Bid[]> {
+    public static async getDatabaseAuctionUser(id_auction: Number, id_user: Number) : Promise<Bid[]> {
+        const auction = await Auction.fromDatabaseID(id_auction);
+        const user = await User.fromDatabaseId(id_user);
         return await connection('bids')
             .where({'user': user.id, 'auction': auction.id})
             .then(objects => Promise.all(objects.map(this.fromObject)))
@@ -134,7 +142,9 @@ export default class Bid {
      * @param item The auction to lookup.
      * @returns A bid between the two if it exists.
      */
-    public static async getDatabaseItemUser(item: Item, user: User) : Promise<Bid[]> {
+    public static async getDatabaseItemUser(id_item: number, id_user: Number) : Promise<Bid[]> {
+        const item = await Item.fromDatabaseId(id_item);
+        const user = await User.fromDatabaseId(id_user);
         return await connection('bids')
             .where({'user': user.id, 'item': item.id})
             .then(objects => Promise.all(objects.map(this.fromObject)))
@@ -149,7 +159,8 @@ export default class Bid {
      * @param page The page number. Defaults to 1.
      * @param size The size of each page. Defaults to 10.
      */
-    public static async fromDatabaseUserPaginated(user: User, page: number = 1, size: number = 10) : Promise<Bid[]> {
+    public static async fromDatabaseUserPaginated(id_user: Number, page: number = 1, size: number = 10) : Promise<Bid[]> {
+        const user = await User.fromDatabaseId(id_user);
         if(page < 1) {
             return Promise.resolve([]);
         }
@@ -197,6 +208,18 @@ export default class Bid {
             this._time = dbObject['time'];
             this._dirty = false;
         });
+    }
+    
+    public toJson() : Object {
+        return {
+            'id': this._id,
+            'auction': this._auction,
+            'user': this._user,
+            'item': this._item,
+            'money': this._money,
+            'time': this._time,
+            'dirty': this._dirty
+        }
     }
 
     /**

@@ -93,7 +93,7 @@ export default class Item {
     * @param money The amount of the bid.
     */
    public async addBid(auction: Auction, user: User, money: number) : Promise<Bid> {
-       return Bid.createBid(auction, user, this, money);
+       return Bid.createBid(auction.id, user.id, this.id, money);
    }
     
     /**
