@@ -1,24 +1,46 @@
 <template>
-    <div>
+    <div class="flex col">
         <!-- Page to add an item on if you are an admin-->
-        <div class = "shadowlg rounded object-center">
-            <h1 class = "max-w-mdfont-bold text-center text-gray-500
+        <div class = "max-w-md shadowlg rounded object-center my-2 mx-auto md:items-center">
+            <h1 class = "font-bold text-center text-gray-500
              underline text-3xl">
              Add an Item</h1>
+            <!-- The addition of the items api is needed here -->
             <form action = '/api/v1/item/'>
-                <label for = "name">Item Name: </label>
-                <input id = "name">
+                <div class = "md:items-center">
+                    <label for = "name" class="text-gray-500 font-bold">Item Name: </label>
+                    <input id = "name" class="border-2 bg-gray-200"
+                    size="30">
+                </div>
                 <br>
-                <label for = "description">Description: </label>
-                <input id = "description">
+                <div class="object-center center">
+                    <label for = "description"
+                    class="block text-gray-500 font-bold"
+                    >Description: </label>
+                    <textarea rows='5' cols="40" id = "description"
+                    class="border-2 bg-gray-200" size ="50"
+                    >Enter your description Here!</textarea>
+                </div>
                 <br>
-                <label for = "picture">Picture: </label>
-                <input type = 'file' accept = "image/*" id="picture">
+                <div class="object-center">
+                    <label for = "picture" class="text-gray-500 font-bold">Picture: </label>
+                    <input type = 'file' accept = "image/*" id="picture"
+                    class="bg-green-400">
+                </div>
                 <br>
-                <label for = "sBid">Starting Bid</label>
-                <input id = "sBid">
+                <div class="object-center">
+                    <label for = "sBid" class="text-gray-500 font-bold"
+                    >Starting Bid: </label>
+                    <input id = "sBid"
+                    class="border-2 bg-gray-200 font-bold">
+                </div>
+                <br>
+                <div class="object-center md:items-center">
+                    <button class ="center
+                    bg-blue-400 text-white font-bold rounded px-4 py-2 mb-4"
+                    type="submit" formmethod ="POST">Add Item </button>
+                </div>
             </form>
-            <button type="submit" action = "POST">Add Item </button>
         </div>
     </div>
 </template>
