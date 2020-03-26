@@ -1,6 +1,12 @@
 <template>
   <div style="width: 600px">
-    <table hover :items="items"><table>
+    <table>
+  <tr v-for"item in items" :key="item.id">
+    <td>{{ item.name }}</td>
+    <td>{{ item.winningBid.amount }}</td>
+    <td>{{ item.winningBid.user.firstName }} {{ item.winningBid.user.lastName }}</td>
+  </tr>
+<table>
   </div>
 </template>
 
