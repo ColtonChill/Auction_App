@@ -48,7 +48,7 @@ describe('SilentItem : Database Class', () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await SilentItem.createSilentItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg', 1, 1);
-            const lookup = await Item.fromDatabaseAuction(auction);
+            const lookup = await Item.fromDatabaseAuction(auction.id);
             expect(lookup[0] instanceof SilentItem).to.be.true;
         });
     });
