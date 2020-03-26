@@ -2,7 +2,9 @@ version: "3"
 services:
   api: # API.
     container_name: auction_api
-    build: ./api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
     depends_on: 
       - postgres
     volumes:

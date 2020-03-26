@@ -53,7 +53,7 @@ describe('Item : Database Class', () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuction(auction);
+            const lookup = await Item.fromDatabaseAuction(auction.id);
             expect(lookup).to.deep.include(item);
         });
 
@@ -71,7 +71,7 @@ describe('Item : Database Class', () => {
             await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
             await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
             const nonItem = await Item.createItem(auction, 'A new book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuctionPaginated(auction);
+            const lookup = await Item.fromDatabaseAuctionPaginated(auction.id);
             expect(lookup).to.deep.include(item);
             expect(lookup).to.not.deep.include(nonItem);
         });
@@ -82,7 +82,7 @@ describe('Item : Database Class', () => {
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
             await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
             const nonItem = await Item.createItem(auction, 'A new book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuctionPaginated(auction, 1, 2);
+            const lookup = await Item.fromDatabaseAuctionPaginated(auction.id, 1, 2);
             expect(lookup).to.deep.include(item);
             expect(lookup).to.not.deep.include(nonItem);
         });
@@ -91,9 +91,9 @@ describe('Item : Database Class', () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const lookup = await Item.fromDatabaseAuctionPaginated(auction, 0, 10);
+            const lookup = await Item.fromDatabaseAuctionPaginated(auction.id, 0, 10);
             expect(lookup).to.deep.equal([]);
-            const otherLookup = await Item.fromDatabaseAuctionPaginated(auction, 10, 0);
+            const otherLookup = await Item.fromDatabaseAuctionPaginated(auction.id, 10, 0);
             expect(otherLookup).to.deep.equal([]);
         });
     });

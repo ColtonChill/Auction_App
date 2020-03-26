@@ -19,7 +19,7 @@ export const logger = winston.createLogger({
     transports: [
         new winston.transports.Console({
             format: winston.format.combine(winston.format.colorize(), alignColorsAndTime),
-            level: 'silly',
+            level: process.env.NODE_ENV !== 'test' ? 'silly' : 'error',
         })
     ]
 })

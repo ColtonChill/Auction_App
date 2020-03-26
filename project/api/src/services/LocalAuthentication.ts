@@ -4,9 +4,9 @@ import User from '../db/User';
 
 const options = {};
 
-passport.serializeUser((user, done) => { done(null, user.id); })
+passport.serializeUser((user : User, done) => { done(null, user.id); })
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id : number, done) => {
     try {
         const user = await User.fromDatabaseId(id);
         return done(null, user); // The user exists and was deserialized properly.
