@@ -23,32 +23,7 @@ export default {
   data() {
     return {
       isLoading: false,
-      auctions: [
-        {
-          name: 'auction1',
-          description: 'cool',
-          id: 1,
-          location: 'Logan',
-        },
-        {
-          name: 'auction2',
-          description: 'cooler',
-          id: 2,
-          location: 'Florida',
-        },
-        {
-          name: 'auction3',
-          description: 'coolest',
-          id: 3,
-          location: 'New York',
-        },
-        {
-          name: 'auction4',
-          description: 'lame',
-          id: 4,
-          location: 'Hawaii',
-        },
-      ],
+      auctions: [],
       more: true,
       page: 1,
     };
@@ -68,7 +43,10 @@ export default {
         return;
       }
       this.isLoading = true;
-      // return this.auctions;
+      fetch('/api/v1/auctions').then((data) => data.json()).then((json) => {
+        console.table(json);
+        this.auctions = this.auctions.concat(json);
+      });
     },
   },
 };
