@@ -27,7 +27,7 @@ export default new Router({
       component: LoginPage,
     },
     {
-      path: '/ItemWinner',
+      path: '/results',
       name: 'ItemWinner',
       component: ItemWinner,
     },
