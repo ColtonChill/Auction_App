@@ -1,11 +1,16 @@
 <template>
   <div style="width: 600px">
     <table class="table-auto">
-      <tr v-for="item in items" :key="item.id">
-        <td class="border px-4 py-2">{{ item.name }}</td>
-        <td class="border px-4 py-2">{{ item.winningBid.amount }}</td>
-        <td class="border px-4 py-2">
-        {{ item.winningBid.user.firstName }} {{ item.winningBid.user.lastName }}
+  <tr>
+    <th class="px-4 py-2">Item Name</th>
+    <th class="px-4 py-2">Amount</th>
+    <th class="px-4 py-2">Name</th>
+  </tr>
+  <tr v-for="item in items" :key="item.id">
+    <td class="border px-4 py-2">{{ item.name }}</td>
+    <td class="border px-4 py-2">{{ item.winningBid.amount }}</td>
+    <td class="border px-4 py-2">
+      {{ item.winningBid.user.firstName }} {{ item.winningBid.user.lastName }}
     </td>
   </tr>
 <table>
