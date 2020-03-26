@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 600px">
+  <div>
     <table class="table-auto">
   <tr>
     <th class="px-4 py-2">Item Name</th>
