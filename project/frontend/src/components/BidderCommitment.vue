@@ -1,6 +1,6 @@
 <template>
     <div style="width: 600px">
-        <table hover :items="items"></b-table>
+        <table items="items"></table>
     </div>
 </template>
 
