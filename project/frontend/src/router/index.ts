@@ -3,7 +3,7 @@ import Router from 'vue-router';
 import LandingPage from '@/components/LandingPage.vue';
 import RegisterPage from '@/components/RegisterPage.vue';
 import LoginPage from '@/components/LoginPage.vue';
-import ItemWinner from '@/components/ItemWinner.vue'
+import ItemWinner from '@/components/ItemWinner.vue';
 
 
 Vue.use(Router);

@@ -1,7 +1,7 @@
 <template>
   <div style="width: 600px">
-  <b-table hover :items="items"></b-table>
-   </div>
+   <b-table hover :items="items"></b-table>
+  </div>
 </template>
 
 <script>
