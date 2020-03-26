@@ -1,6 +1,6 @@
 <template>
   <div style="width: 600px">
-   
+   <b-table hover :items="items"></b-table>
   </div>
 </template>
 
@@ -10,9 +10,9 @@
     data() {
       return {
         items: [
-          { item: 40, price: '$501', winner: 'thedude' },
-          { item: 21, price: '$23', winner: 'me' },
-          { item: 89, price: '$24', winner: 'you' },
+          { item: 40, price: '501', winner: 'thedude' },
+          { item: 21, price: '23', winner: 'me' },
+          { item: 89, price: '24', winner: 'you' },
           { item: 38, price: '454', winner: 'her' }
         ]
       }
