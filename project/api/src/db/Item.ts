@@ -53,9 +53,9 @@ export default class Item {
      *  
      * @param auction The auction to look items up on.
      */
-    public static async fromDatabaseAuction(auction: Auction) : Promise<Item[]> {
+    public static async fromDatabaseAuction(auction: number) : Promise<Item[]> {
         return connection('items')
-            .where({'id': auction.id})
+            .where({'id': auction})
             .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
@@ -66,14 +66,14 @@ export default class Item {
      * @param page The page number. Defaults to 1.
      * @param size The size of each page. Defaults to 10.
      */
-    public static async fromDatabaseAuctionPaginated(auction: Auction, page: number = 1, size: number = 10) : Promise<Item[]> {
+    public static async fromDatabaseAuctionPaginated(auction: number, page: number = 1, size: number = 10) : Promise<Item[]> {
         if(page < 1) {
             return Promise.resolve([]);
         }
         if(size < 1) {
             return Promise.resolve([])
         }
-        const objects = await connection('items').orderBy('id').limit(size).offset((page - 1) * size).where({'id': auction.id});
+        const objects = await connection('items').orderBy('id').limit(size).offset((page - 1) * size).where({'id': auction});
         return Promise.all(objects.map(this.fromObject));
     }
     /**
@@ -104,6 +104,27 @@ export default class Item {
             return silentItem;
         }
         return item;
+    }
+
+    public toJson() {
+        return {
+            'id': this._id,
+            'auction': this._auction.id,
+            'name': this._name,
+            'description': this._description,
+            'imageName': this._imageName,
+        }
+    }
+
+    public async toJsonDetailed() {
+        return {
+            'id': this._id,
+            'auction': this._auction.toJson(),
+            'name': this._name,
+            'description': this._description,
+            'imageName': this._imageName,
+            'winningBid': (await Bid.getWinningBid(this._id)).toJson()
+        }
     }
 
     /**
@@ -246,6 +267,24 @@ export class LiveItem extends Item {
         return Promise.resolve(new LiveItem(item, dbObject['id'], dbObject['winner'] !== null ? await User.fromDatabaseId(dbObject['winner']) : null, dbObject['winning_price']));
     }
 
+    public toJson() {
+        const parent = super.toJson();
+        return {
+            ...parent,
+            'winner': this._winner?.id,
+            'winningPrice': this._winningPrice
+        }
+    }
+
+    public toJsonDetailed() {
+        const parent = super.toJsonDetailed();
+        return {
+            ...parent,
+            'winner': this._winner?.toJson(),
+            'winningPrice': this._winningPrice
+        }
+    }
+
     public async save() : Promise<void> {
         await super.save();
         if(!this._extDirty) {
@@ -359,6 +398,24 @@ export class SilentItem extends Item {
             return Promise.resolve(null);
         }
         return Promise.resolve(new SilentItem(item, dbObject['id'], dbObject['starting_price'], dbObject['bid_increment']))
+    }
+
+    public toJson() {
+        const parent = super.toJson();
+        return {
+            ...parent,
+            'starting_price': this._startingPrice,
+            'bid_increment': this._bidIncrement,
+        }
+    }
+
+    public toJsonDetailed() {
+        const parent = super.toJsonDetailed();
+        return {
+            ...parent,
+            'starting_price': this._startingPrice,
+            'bid_increment': this._bidIncrement
+        }
     }
 
     public async save() : Promise<void> {

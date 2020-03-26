@@ -5,6 +5,7 @@ import User from './User';
 import AuctionMembership from './AuctionMembership';
 import Item, {LiveItem, SilentItem} from './Item';
 import Bid from "./Bid";
+import logger from '../services/Logger';
 
 /**
  * This thingy is more or less (no... take that back, definitly less) of a
@@ -12,7 +13,7 @@ import Bid from "./Bid";
  */
 
 export default class Auction {
-    private _id: Number;
+    private _id: number;
     private _name: String;
     private _description: String;
     private _location: String;
@@ -22,7 +23,7 @@ export default class Auction {
     private _inviteCode: String;
     private _dirty: boolean;
 
-    private constructor(id: Number, name: String, description: String, location: String, owner: User, url: String, hidden: boolean, inviteCode: String) {
+    private constructor(id: number, name: String, description: String, location: String, owner: User, url: String, hidden: boolean, inviteCode: String) {
         this._id = id;
         this._name = name;
         this._description = description;
@@ -47,6 +48,7 @@ export default class Auction {
         }).returning("*");
         const auction = await this.fromObject(dbObject[0]);
         await AuctionMembership.createMembership(owner, auction);
+        logger.info(`Creating auction ${auction}.`)
         return auction;
     }
 
@@ -82,6 +84,14 @@ export default class Auction {
         return Auction.fromObject(dbObject);
     }
 
+    static async urlExists(url: String) : Promise<boolean> {
+        const dbObject = await connection("auctions").where({ "url": url });
+        if(dbObject.length !== 1) {
+            return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+    }
+
     static async fromDatabaseAllAuctions(): Promise<Auction[]> {
         const dbObject = await connection("auctions");
         if (dbObject === undefined) {
@@ -112,7 +122,7 @@ export default class Auction {
         return {
             "name": this._name,
             "invite_code": this._inviteCode,
-            "owner": this._owner,
+            "owner": this._owner.toJsonPublic(),
             "url": this._url,
             "hidden": this._hidden,
             "description": this._description,

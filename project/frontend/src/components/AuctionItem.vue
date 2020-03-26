@@ -18,9 +18,7 @@
         </svg>
       </div>
       <p class="text-gray-900 leading-none text-xs">{{ auction.location }}</p>
-      <p class="text-gray-700 text-xs"> {{ auction.description }} !!
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla!
-        Maiores et perferendis eaque, exercitationem praesentium nihil.</p>
+      <p class="text-gray-700 text-xs"> {{ auction.description }} </p>
     </div>
   </div>
 </div>
