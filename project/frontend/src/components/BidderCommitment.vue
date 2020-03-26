@@ -4,7 +4,7 @@
   <tr>
     <th class="px-4 py-2">Name</th>
     <th class="px-4 py-2">Email</th>
-    <th class="px-4 py-2">TotalCommitment</th>
+    <th class="px-4 py-2">Total Commitment</th>
   </tr>
   <tr v-for="user in users" :key="user.id">
     <td class="border px-4 py-2">
@@ -23,7 +23,7 @@ export default {
   name: 'BidderCommitment',
   data() {
     return {
-      items: [
+      users: [
         {
           firstName: 'Hunter1', lastName: 'Henrichsen', email: 'hunter1.henrichsen@gmail.com', commitment: 4202134,
         },
