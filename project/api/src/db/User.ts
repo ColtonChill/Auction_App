@@ -39,7 +39,7 @@ export default class User {
     /**
      * Keeps track of the database ID for this user.
      */
-    private _id: Number;
+    private _id: number;
 
     /**
      * Keeps track of whether this has been changed so that it needs updated in the database.
@@ -57,7 +57,7 @@ export default class User {
      * @param firstName The user's first name.
      * @param lastName The user's last name.
      */
-    private constructor(id: Number, email: String, firstName: String, lastName: String) {
+    private constructor(id: number, email: String, firstName: String, lastName: String) {
         this._email = email;
         this._firstName = firstName;
         this._lastName = lastName;
@@ -88,6 +88,9 @@ export default class User {
      * @param id The user's numeric ID.
      */
     static async fromDatabaseId(id: Number) : Promise<User> {
+        if(id === undefined || id === null) {
+            return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));
+        }
         const dbObject = await connection('users').where({id}).first();
         if (dbObject === undefined) {
             return Promise.reject(new InvalidKeyError(`No user exists with the id ${id}.`));
@@ -128,9 +131,15 @@ export default class User {
         }
     }
 
+    public toJsonPublic() : Object {
+        return {
+            'firstName': this._firstName,
+            'lastName': this._lastName,
+        }
+    }
 
     /**
-     * Updates the database with any changed information on the user.
+     * Updates the database with any changed information on the user
      */
     public async save() {
         if (this._dirty) {

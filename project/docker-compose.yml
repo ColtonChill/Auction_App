@@ -2,13 +2,17 @@ version: "3"
 services:
   api: # API.
     container_name: auction_api
-    build: ./api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
     depends_on: 
       - postgres
     volumes:
       - ./static:/static
       - ./user:/user
     restart: unless-stopped
+    environment:
+      - NODE_ENV=production
     ports:
       - "3000:3000"
     networks:
@@ -45,6 +49,8 @@ services:
   redis: # Caching
     image: redis:latest
     container_name: auction_cache
+    networks:
+      - auction_net
 
 networks:
   auction_net:

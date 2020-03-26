@@ -60,6 +60,17 @@ export default class AuctionMembership {
         return Promise.all(dbObjects.map(it => (this.fromObject(it))));
     }
 
+    public static async isMember(user: number, auction: number) : Promise<boolean> {
+        const dbObject = await connection('auction_members').where({'auction': auction, 'user': user});
+        if(dbObject[0] === undefined) {
+            return Promise.resolve(false);
+        }
+        else if(dbObject[0]['banned'] === true) {
+            return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+    }
+
     private static async fromObject(object: Object) : Promise<AuctionMembership> {
         const user = await User.fromDatabaseId(object['user']);
         const auction = await Auction.fromDatabaseID(object['auction']);

@@ -122,6 +122,14 @@ export default class Bid {
             .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
+    public static async getWinningBid(itemId: number) : Promise<Bid> {
+        const dbObject = await connection('bids')
+            .where({'item': itemId})
+            .orderBy('money', 'desc')
+            .first();
+        return this.fromObject(dbObject);
+    }
+
      /**
      * Get the bids of a user on an auction
      * @param user The user to lookup.
@@ -193,6 +201,14 @@ export default class Bid {
         const user = await User.fromDatabaseId(object['user']);
         const item = await Item.fromDatabaseId(object['item']);
         return Promise.resolve(new Bid(object['id'], auction, user, item, object['money'], object['time']));
+    }
+
+    public toJson() : Object {
+        return {
+            'money': this._money,
+            'user': this._user.toJson(),
+            'item': this._item.toJson(),
+        }
     }
 
     /**
