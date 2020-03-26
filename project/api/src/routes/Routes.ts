@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import auth from './auth';
+import auth from './Auth';
 const router : Router = new Router();
 
 router.get('/', async ctx => {
