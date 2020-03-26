@@ -2,7 +2,7 @@
       <div id="landing">
     <p>
       <!-- <router-link to="/register">Go to RegisterPage</router-link>
-      <!-- <router-link to="/ItemWinner">Go to ItemWinner</router-link>
+      <router-link to="/ItemWinner">Go to ItemWinner</router-link>
       <router-link to="/login">Go to Login!</router-link> -->
     </p>
     <h1 class="font-title text-4xl text-semibold text-center pt-4 text-darkBlue">
