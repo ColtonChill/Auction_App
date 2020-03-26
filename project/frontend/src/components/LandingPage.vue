@@ -10,7 +10,7 @@
       Select an auction from below:</h2>
     <p> 
       <!-- <router-link to="/ItemWinner"> Go to ItemWinner</router-link>
-    <p>
+    </p>
 
     <AuctionList/>
   </div>
