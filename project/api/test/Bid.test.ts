@@ -151,6 +151,23 @@ describe('Bid : Database Class', () => {
             expect(lookup).to.deep.include(bid);
         });
 
+        // it('Should be able to find all winning bids', async () => {
+        //     const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
+        //     const user2 = await User.createUser('sometwo@nowhere.com', 'Some', 'Two', 'hunter2');
+        //     const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
+        //     const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+        //     const item2 = await Item.createItem(auction, 'Another book', 'A completely empty book of uselessness.', 'useless_book.jpg');
+        //     const bid = await Bid.createBid(auction, user, item, 100);
+        //     await Bid.createBid(auction, user, item2, 100);
+        //     await Bid.createBid(auction, user2, item, 105);
+        //     const expectedBid = await Bid.createBid(auction, user, item, 110);
+        //     const expectedBid2 = await Bid.createBid(auction, user2, item2, 105);
+        //     const lookup = await Bid.fromDatabaseAuctionWinningBids(auction.id);
+        //     expect(lookup).to.deep.include(expectedBid);
+        //     expect(lookup).to.deep.include(expectedBid2);
+        //     expect(lookup).to.not.deep.include(bid);
+        // });
+
         it('Should be able to find a bid from an Auction (paginated, default parameters)', async () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
