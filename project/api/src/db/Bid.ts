@@ -1,6 +1,7 @@
 import Auction from "./Auction";
 import User from "./User";
 import Item from "./Item";
+import AuctionMembership from "./AuctionMembership";
 import { connection } from "../services/Database";
 import InvalidKeyError from "./InvalidKeyError";
 
@@ -41,19 +42,13 @@ export default class Bid {
         const auction = await Auction.fromDatabaseID(id_auction);
         const user = await User.fromDatabaseId(id_user);
         const item = await Item.fromDatabaseId(id_item); 
+        const isMember = await AuctionMembership.isMember(user.id,auction.id);
         const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time").first();
         //const dbReturn = await connection('bids').where({'item': item.id}).select('item','money').orderBy("time").first();
-        if(dbReturn === undefined){
-            let d = new Date();
-            const dbObject = await connection('bids').insert({
-                'auction': auction.id,
-                'user' : user.id,
-                'item' : item.id,
-                'money' : money,
-                'time' : d.valueOf()
-            }).returning('*');
-            return this.fromObject(dbObject[0]);
-        }else if(dbReturn['money']<money){
+        if(!isMember){
+            return Promise.reject(new InvalidKeyError(`Invalid membership, user ${user.id} is not a member of ${auction.id} auction.`))
+        }
+        if(dbReturn === undefined||dbReturn['money']<money){
             let d = new Date();
             const dbObject = await connection('bids').insert({
                 'auction': auction.id,
@@ -64,7 +59,7 @@ export default class Bid {
             }).returning('*');
             return this.fromObject(dbObject[0]);
         }
-        console.log("well, that failed...")
+        console.log("well, that bid failed...")
         return Promise.reject(new InvalidKeyError(`Invalid bid, please increase the amount`))
     }
 
@@ -155,7 +150,7 @@ export default class Bid {
         const user = await User.fromDatabaseId(id_user);
         return await connection('bids')
             .where({'user': user.id, 'item': item.id})
-            .then(objects => Promise.all(objects.map(this.fromObject)))
+            .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
      /**
@@ -201,14 +196,6 @@ export default class Bid {
         const user = await User.fromDatabaseId(object['user']);
         const item = await Item.fromDatabaseId(object['item']);
         return Promise.resolve(new Bid(object['id'], auction, user, item, object['money'], object['time']));
-    }
-
-    public toJson() : Object {
-        return {
-            'money': this._money,
-            'user': this._user.toJson(),
-            'item': this._item.toJson(),
-        }
     }
 
     /**

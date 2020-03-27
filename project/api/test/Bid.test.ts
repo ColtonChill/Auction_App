@@ -2,6 +2,7 @@ import 'mocha';
 import chai, { expect } from 'chai';
 import cap from 'chai-as-promised';
 import Auction from '../src/db/Auction';
+import AuctionMembership from "../src/db/AuctionMembership";
 import { migrate, rollback } from '../src/services/Database';
 import InvalidKeyError from "../src/db/InvalidKeyError";
 
@@ -42,8 +43,9 @@ describe('Bid : Database Class', () => {
             const user = await User.createUser('someone@nowhere.com', 'Some', 'One', 'hunter2');
             const auction = await Auction.createAuction('DefaultAuction', 'Hi mom', 'Merica', user, "default-auction", false);
             const item = await Item.createItem(auction, 'A book', 'A completely empty book of uselessness.', 'useless_book.jpg');
-            const bid = await Bid.createBid(auction.id,user.id,item.id, 100);
+            await Bid.createBid(auction.id,user.id,item.id, 100);
             const user2 = await User.createUser('no-one@nowhere.com', 'Some', 'One', 'hunter/2');
+            await AuctionMembership.createMembership(user2, auction);
             const bid2 = await auction.addBid(user2,item,101);
             expect(bid2.id).to.not.be.undefined;
         });

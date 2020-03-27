@@ -6,82 +6,232 @@ import InvalidKeyError from "../db/InvalidKeyError";
 
 
 /**
- * @TODO Ask Hunter how front end can spesify a get
+ * @TODO Ask Hunter what the heck @me/bid is supost to mean?
  */
-router.get('Get a Bid by ID', '/bids/:id', async ctx => {
-    const res = await Bid.fromDatabaseId(ctx.params.id);
-    if(res !== undefined) {
-        ctx.body = res.toJson();
-        ctx.status = 200;
+router.get('Get a Bid by ID', '/bids/:id', async (ctx:any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.id === undefined||ctx.params.id == ""){
+        ctx.status=400;
+        ctx.body={'error':`'id' is required, Got ${ctx.params.id} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.fromDatabaseId(ctx.params.id);
+        if(res !== undefined) {
+            ctx.body = res.toJson();
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
+    
 });
 
-router.get('Get Bids by Auction', '/auctions/:auctionID/bids', async ctx => {
-    const res = await Bid.fromDatabaseAuction(ctx.params.auctionID);
-    if(res !== undefined) {
-        ctx.body = res.map(it => it.toJson());
-        ctx.status = 200;
+router.get('Get Bids by Auction', '/bids/:auctionID', async (ctx:any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.auctionID === undefined||ctx.params.auctionID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'auctionID' is required, Got ${ctx.params.auctionID} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.fromDatabaseAuction(ctx.params.auctionID);
+        if(res !== undefined) {
+            ctx.body = res.map(it => it.toJson());
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
 });
 
-router.get('Get Bids by User', '/users/:userID/bids/', async ctx => {
-    const res = await Bid.fromDatabaseUser(ctx.params.userID);
-    if(res !== undefined) {
-        ctx.body = res.map(it => it.toJson());
-        ctx.status = 200;
+router.get('Get Bids by User', '/bids/users/:userID/', async (ctx:any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.userID === undefined||ctx.params.userID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'userID' is required, Got ${ctx.params.userID} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.fromDatabaseUser(ctx.params.userID);
+        if(res !== undefined) {
+            ctx.body = res.map(it => it.toJson());
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
 });
 
-router.get('Get Bids by Item', 'auctions/:auctionID/items/:itemID', async ctx => {
-    const res = await Bid.fromDatabaseItem(ctx.params.itemID);
-    if(res !== undefined) {
-        ctx.body = res.map(it => it.toJson());
-        ctx.status = 200;
+router.get('Get Bids by Item', '/bids/auctions/:auctionID/items/:itemID', async (ctx:any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.itemID === undefined||ctx.params.itemID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'item.id' is required, Got ${ctx.param.itemID} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.fromDatabaseItem(ctx.params.itemID);
+        if(res !== undefined) {
+            ctx.body = res.map(it => it.toJson());
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
 });
 
-router.get('Get Bids by User for an Auction', 'auctions/:auctionID/users/:userID', async ctx =>{
-    const res = await Bid.getDatabaseAuctionUser(ctx.params.auctionID,ctx.params.idUser);
-    if(res !== undefined) {
-        ctx.body = res.map(it => it.toJson());
-        ctx.status = 200;
+router.get('Get Bids by User for an Auction', '/bids/auctions/:auctionID/users/:userID', async (ctx:any) =>{
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.auctionID === undefined||ctx.params.auctionID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'auctionID' is required, Got ${ctx.params.auctionID} instead.`}
+        return Promise.resolve();
+    }
+    if(ctx.params.userID === undefined||ctx.params.userID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'User' is required, Got ${ctx.params.userID} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.getDatabaseAuctionUser(ctx.params.auctionID,ctx.params.idUser);
+        if(res !== undefined) {
+            ctx.body = res.map(it => it.toJson());
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
+    
 });
 
-router.get('Get Bids by User for an Item', 'auctions/:auctionID/users/:userID/items/itemID/highest', async ctx =>{
-    const res = await Bid.DatabaseItemUserFirst(ctx.params.auctionID,ctx.params.itemID);
-    if(res !== undefined) {
-        ctx.body = res.toJson();
-        ctx.status = 200;
+router.get('Get Bids by User for an Item', '/bids/auctions/:auctionID/users/:userID/items/itemID/highest', async (ctx:any) =>{
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.itemID === undefined||ctx.params.itemID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'itemID' is required, Got ${ctx.params.itemID} instead.`}
+        return Promise.resolve();
+    }
+    if(ctx.params.userID === undefined||ctx.params.userID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'User' is required, Got ${ctx.params.userID} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.DatabaseItemUserFirst(ctx.params.auctionID,ctx.params.itemID);
+        if(res !== undefined) {
+            ctx.body = res.toJson();
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
 });
 
-router.get('Get paged Bids for a User', 'auctions/:auctionID/users/:userID', async ctx =>{
-    const res = await Bid.fromDatabaseUserPaginated(ctx.params.userID);
-    if(res !== undefined) {
-        ctx.body = res.map(it => it.toJson());
-        ctx.status = 200;
+router.get('Get paged Bids for a User', '/bids/users/:userID', async (ctx:any) =>{
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    ctx.status = 404;
+    if(ctx.params.userID === undefined||ctx.params.userID == ""){
+        ctx.status=400;
+        ctx.body={'error':`'userID' is required, Got ${ctx.params.userID} instead.`}
+        return Promise.resolve();
+    }
+    try {
+        const res = await Bid.fromDatabaseUserPaginated(ctx.params.userID);
+        if(res !== undefined) {
+            ctx.body = res.map(it => it.toJson());
+            ctx.status = 200;
+            return Promise.resolve();
+        }else{
+            ctx.status = 404;
+            ctx.body = {'error': 'Quiry returned undefined.'}
+            return Promise.resolve();
+        }
+    } catch (error) {
+        ctx.status = 404;
+        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        return Promise.resolve();
+    }
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 //Ask If the data needs to be in the parameters, or if they are in the ctx object
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
-router.post('Place bid', 'bid/', async ctx => {
+router.post('Place bid', '/bid/', async (ctx:any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve();
+    }
     const data = ctx.request.body;
     console.log(ctx.request);
     console.log(ctx.request.body);
