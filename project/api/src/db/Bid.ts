@@ -38,12 +38,12 @@ export default class Bid {
         this._dirty = false;
     }
 
-    public static async createBid(id_auction: Number, id_user: Number, id_item: number, money: number) : Promise<Bid> {
+    public static async createBid(id_auction: number, id_user: number, id_item: number, money: number) : Promise<Bid> {
         const auction = await Auction.fromDatabaseID(id_auction);
         const user = await User.fromDatabaseId(id_user);
         const item = await Item.fromDatabaseId(id_item); 
         const isMember = await AuctionMembership.isMember(user.id,auction.id);
-        const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time").first();
+        const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time","desc").first();
         //const dbReturn = await connection('bids').where({'item': item.id}).select('item','money').orderBy("time").first();
         if(!isMember){
             return Promise.reject(new InvalidKeyError(`Invalid membership, user ${user.id} is not a member of ${auction.id} auction.`))
@@ -107,7 +107,6 @@ export default class Bid {
 
     /**
      * Get the bid of an items.
-     *  
      * @param item The item to look bids up on.
      */
     public static async fromDatabaseItem(id: number) : Promise<Bid[]> {
@@ -162,7 +161,9 @@ export default class Bid {
     public static async DatabaseItemUserFirst(id_item: number, id_user: Number) : Promise<Bid> {
         const item = await Item.fromDatabaseId(id_item);
         const user = await User.fromDatabaseId(id_user);
-        return await connection('bids').where({'user': user.id, 'item': item.id}).orderBy("money",'desc').first();
+        return await connection('bids')
+            .where({'user': user.id, 'item': item.id})
+            .orderBy("money",'desc').first();
     }
 
     /**@DOTO Ask Hunter if this is even necessary for the admin page, and if so, do we need an auction wide search as well?

@@ -11,6 +11,6 @@ router.get('/', async ctx => {
 
 router.use('/auth', auth.routes(), auth.allowedMethods());
 router.use('/auctions', auctions.routes(), auctions.allowedMethods());
-router.use('/bids', bids.routes(), bids.allowedMethods()); //
+router.use('/bids', bids.routes(), bids.allowedMethods());
 
 export default router;

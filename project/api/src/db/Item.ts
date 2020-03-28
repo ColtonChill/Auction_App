@@ -54,9 +54,8 @@ export default class Item {
      * @param auction The auction to look items up on.
      */
     public static async fromDatabaseAuction(auction: number) : Promise<Item[]> {
-        return connection('items')
-            .where({'id': auction})
-            .then(objects => Promise.all(objects.map(this.fromObject)));
+        return connection('items').where({'id': auction})
+        .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
     /**
