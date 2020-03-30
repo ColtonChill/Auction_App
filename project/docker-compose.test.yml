@@ -17,6 +17,8 @@ services:
       - auction_net
     env_file:
       - local.env
+    environment: 
+      NODE_ENV: test
     
   postgres: # Database.
     image: postgres:11.2-alpine
