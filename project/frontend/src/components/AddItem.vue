@@ -9,7 +9,8 @@
             <form class="mx-12" action = '/api/v1/item/'>
                 <div class = "md:items-center">
                     <label for = "name" class="text-gray-500 font-bold">Item Name: </label>
-                    <input id = "name" class="border-2 bg-gray-200"
+                    <input id = "name" name="name" class="border-2 bg-gray-200"
+                    maxlength="70"
                     size="30">
                 </div>
                 <br>
@@ -19,24 +20,25 @@
                     >Description: </label>
                     <textarea rows='5' cols="45" id = "description"
                     class="border-2 bg-gray-200" size ="50"
+                    name="description"
                     >Enter your description Here!</textarea>
                 </div>
                 <br>
                 <div class="object-center">
                     <label for = "picture" class="text-gray-500 font-bold">Picture: </label>
-                    <input type = 'file' accept = "image/*" id="picture"
+                    <input type = 'file' accept = "image/*" id="picture" name="picture"
                     class="bg-green-400">
                 </div>
                 <br>
                 <div class="object-center">
                     <label for = "sBid" class="text-gray-500 font-bold"
                     >Starting Bid: </label>
-                    <input id = "sBid"
+                    <input id = "sBid" type="number" name="sbid"
                     class="border-2 bg-gray-200 font-bold" size = 35>
                 </div>
                 <br>
                 <div class="object-center md:items-center">
-                    <button class ="center
+                    <button class ="md:items-center center
                     bg-blue-400 text-white font-bold rounded px-4 py-2 mb-4"
                     type="submit" formmethod ="POST">Add Item </button>
                 </div>
@@ -45,6 +47,7 @@
     </div>
 </template>
 
+<!--How do I add code that checks itself? -->
 <script lang="ts">
 export default {
   name: 'AddItem',
