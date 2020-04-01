@@ -4,6 +4,7 @@ import LandingPage from '@/components/LandingPage.vue';
 import RegisterPage from '@/components/RegisterPage.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
+import ItemPage from '@/components/ItemPage.vue';
 
 
 Vue.use(Router);
@@ -30,6 +31,11 @@ export default new Router({
       path: '/auction',
       name: 'AuctionPage',
       component: AuctionPage,
+    },
+    {
+      path: '/auction/item',
+      name: 'ItemPage',
+      component: ItemPage,
     },
   ],
 });

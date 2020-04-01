@@ -8,6 +8,7 @@
       Specific auction page!</h1>
     <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
       Select items from below to see details:</h2>
+    <router-link to="/auction/item">I am an item for now.. </router-link>
   </div>
 </template>
 
