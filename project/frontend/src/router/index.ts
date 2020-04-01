@@ -31,7 +31,7 @@ export default new Router({
       path: '/addItem',
       name: 'AddItem',
       component: AddItem,
-    }, 
+    },
     {
       path: '/auction',
       name: 'AuctionPage',
