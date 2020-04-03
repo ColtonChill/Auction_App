@@ -121,7 +121,10 @@ export default class Bid {
             .where({'item': itemId})
             .orderBy('money', 'desc')
             .first();
-        return this.fromObject(dbObject);
+        if(dbObject !== undefined) {
+            return this.fromObject(dbObject);
+        }
+        throw new InvalidKeyError(`No bids exist on this object.`);
     }
 
      /**
