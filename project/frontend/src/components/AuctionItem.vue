@@ -1,6 +1,6 @@
 <template>
   <div class="lg:flex px-6 pb-2" >
-  <router-link to="/auction">
+  <router-link :to="'/auction/' + auction.id">
     <div class="border border-gray-500
     lg:border-t lg:border-gray-400 bg-white
     rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row

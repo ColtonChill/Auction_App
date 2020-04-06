@@ -1,6 +1,6 @@
 <template>
   <div class="lg:flex px-6 pb-2" >
-  <router-link to="/auction/item" }>
+  <router-link :to="'/auction/' + auctionIBelongTo + '/items/' + item.id">
     <div class="border border-gray-500
     lg:border-t lg:border-gray-400 bg-white
     rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
@@ -36,6 +36,9 @@ export default {
     item: {
       type: Object,
       required: false,
+    },
+    auctionIBelongTo: {
+      required: true,
     },
   },
   methods: {

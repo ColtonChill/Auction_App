@@ -1,13 +1,9 @@
 <template>
     <div>
-    <p>
-      <!-- <router-link to="/register">Go to RegisterPage</router-link>
-      <router-link to="/login">Go to Login!</router-link> -->
-    </p>
     <h2 class="text-4xl text-semibold text-center pt-4 text-darkBlue">
-      {{this.itemTitle}}</h2>
+      {{itemTitle}}</h2>
     <h3 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
-      {{this.props.itemDescription}}</h3>
+      {{itemDescription}}</h3>
     <h2 class="text-center"> </h2>
     <div class="row">
         <div class="column p-4 ">
@@ -24,6 +20,7 @@
     </div>
 
     <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
+    v-bind:currentBid=currentBid v-bind:bidIncrement=bidIncrement
     />
 
   </div>
@@ -42,18 +39,34 @@ export default {
       bidIncrement: 5,
       itemTitle: 'Used Road Bicycle',
       itemDescription: 'A lightly used blue bicycle',
+      itemDetails: {},
+      itemId: this.$route.params.itemId,
+      auctionId: this.$route.params.auctionId,
     };
   },
   components: {
     ConfirmationModal,
   },
-
+  mounted() {
+    this.getItemDetails();
+  },
   methods: {
     showModal() {
       this.isModalVisible = true;
     },
     closeModal() {
       this.isModalVisible = false;
+    },
+    getItemDetails() {
+      //this.didn't work getting them to strings...
+      const auctionString = this.auctionId.toString();
+      const itemString = this.itemId.toString();
+      /* eslint-disable */
+      console.log(this.itemId)
+      fetch(`/api/v1/auctions/${{auctionString}}/items/${{itemString}}`).then((data) => data.json()).then((json) => {
+        console.table(json);
+        // this.itemDetails = this.itemDetails.concat(json);
+      });
     },
   },
 };
