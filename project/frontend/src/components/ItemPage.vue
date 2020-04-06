@@ -1,5 +1,5 @@
 <template>
-    <div id="auction">
+    <div>
     <p>
       <!-- <router-link to="/register">Go to RegisterPage</router-link>
       <router-link to="/login">Go to Login!</router-link> -->
@@ -7,7 +7,7 @@
     <h2 class="text-4xl text-semibold text-center pt-4 text-darkBlue">
       {{this.itemTitle}}</h2>
     <h3 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
-      {{this.itemDescription}}</h3>
+      {{this.props.itemDescription}}</h3>
     <h2 class="text-center"> </h2>
     <div class="row">
         <div class="column p-4 ">
@@ -17,43 +17,27 @@
             <div class="pt-8">
             <button id="myButton" type="button" class="center shadow bg-darkBlue hover:bg-blue-300
                 focus:shadow-outline focus:outline-none text-white font-bold
-                py-2 px-4 rounded mb-4" v-on:click="openConfirmationModal()"
+                py-2 px-4 rounded mb-4" @click="showModal"
                 >Bid ${{this.currentBid + this.bidIncrement}} </button>
             </div>
         </div>
     </div>
-    <div id="myModal" class="modal">
 
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close" v-on:click="closeModal()">&times;</span>
-    <div class="items-center">
-    <p class="text-center pb-4">Are you sure you want to bid
-        ${{this.currentBid + this.bidIncrement}}??</p>
-            <button id="imSure" type="button" class="
-            center shadow bg-darkBlue hover:bg-blue-300 focus:shadow-outline
-            focus:outline-none text-white font-bold
-            py-2 px-4 rounded mb-4" v-on:click="handleBidIncrement()"
-            >I'm sure!</button>
-            <button id="cancel" type="button" class="center
-            shadow bg-darkBlue hover:bg-blue-300 focus:shadow-outline focus:outline-none
-            text-white font-bold
-            py-2 px-4 rounded mb-4" v-on:click="closeModal()"
-            >Cancel</button>
-    </div>
-  </div>
+    <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
+    />
 
-</div>
   </div>
 </template>
 
 
-<script lang="ts">
+<script>
+import ConfirmationModal from './ConfirmationModal.vue';
 
 export default {
   name: 'ItemPage',
   data() {
     return {
+      isModalVisible: false,
       currentBid: 15,
       bidIncrement: 5,
       itemTitle: 'Used Road Bicycle',
@@ -61,21 +45,15 @@ export default {
     };
   },
   components: {
+    ConfirmationModal,
   },
+
   methods: {
-    openConfirmationModal() {
-      const modal = document.getElementById('myModal');
-      modal.style.display = 'block';
-    },
-    handleBidIncrement() {
-      /* eslint-disable */
-      console.log("you confirmed your bid")
-      this.currentBid = this.currentBid+this.bidIncrement;
-      this.closeModal();
+    showModal() {
+      this.isModalVisible = true;
     },
     closeModal() {
-      const modal = document.getElementById('myModal');
-      modal.style.display = 'none';
+      this.isModalVisible = false;
     },
   },
 };
