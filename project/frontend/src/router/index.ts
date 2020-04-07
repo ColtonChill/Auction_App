@@ -6,6 +6,7 @@ import LoginPage from '@/components/LoginPage.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
 import ItemWinner from '@/components/ItemWinner.vue';
 import BidderCommitment from '@/components/BidderCommitment.vue';
+import AdminPage from '@/components/AdminPage.vue'
 
 
 Vue.use(Router);
@@ -42,6 +43,11 @@ export default new Router({
       path: '/commitment',
       name: 'BidderCommitment',
       component: BidderCommitment,
+    },
+    {
+      path: '/admin',
+      name: 'AdminPage',
+      component: AdminPage,
     },
   ],
 });
