@@ -54,9 +54,10 @@ export default class Item {
      * @param auction The auction to look items up on.
      */
     public static async fromDatabaseAuction(auction: number) : Promise<Item[]> {
-        return connection('items')
-            .where({'id': auction})
-            .then(objects => Promise.all(objects.map(this.fromObject)));
+        const dbObject = await connection("items").where({"auction" : auction})
+        console.log("DB: "+ dbObject);
+        return connection('items').where({'auction': auction})
+        .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
     /**
@@ -84,7 +85,7 @@ export default class Item {
     * @param money The amount of the bid.
     */
    public async addBid(auction: Auction, user: User, money: number) : Promise<Bid> {
-       return Bid.createBid(auction, user, this, money);
+       return Bid.createBid(auction.id, user.id, this.id, money);
    }
     
     /**
