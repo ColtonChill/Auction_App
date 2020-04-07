@@ -497,6 +497,12 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.body = {'error': 'Invalid number format for money.'};
         return Promise.resolve();
     }
+    const membership = await AuctionMembership.isMember(user,auction);
+    if(!membership){
+        ctx.status = 400;
+        ctx.body = {'error': "Not a member of this auction"};
+        return Promise.resolve();   
+    }
     try {
         console.log("bid auction: "+typeof(auction)+auction)
         console.log("bid user: "+typeof(user)+user)
