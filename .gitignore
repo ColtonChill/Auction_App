@@ -4,3 +4,4 @@ project/**/dist/**/*
 project/.env
 npm-debug.log
 *.DS_Store
+project/user
