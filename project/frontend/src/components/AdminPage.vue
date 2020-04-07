@@ -2,7 +2,8 @@
 
 <!-- Admin form...  -->
 <div class="flex col">
-<div class="max-w-lg rounded overflow-hidden shadow-lg my-2 object-center mx-auto">
+<div class="max-w-lg w-300 rounded overflow-hidden shadow-lg my-2 object-center mx-auto">
+
 <form class="mx-12">
 
 <div class="md:flex md:items-center mb-6 mt-4">
