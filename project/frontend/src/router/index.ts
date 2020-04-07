@@ -4,6 +4,8 @@ import LandingPage from '@/components/LandingPage.vue';
 import RegisterPage from '@/components/RegisterPage.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
+import ItemWinner from '@/components/ItemWinner.vue';
+import BidderCommitment from '@/components/BidderCommitment.vue';
 
 
 Vue.use(Router);
@@ -30,6 +32,16 @@ export default new Router({
       path: '/auction',
       name: 'AuctionPage',
       component: AuctionPage,
+    },
+    {
+      path: '/results',
+      name: 'ItemWinner',
+      component: ItemWinner,
+    },
+    {
+      path: '/commitment',
+      name: 'BidderCommitment',
+      component: BidderCommitment,
     },
   ],
 });
