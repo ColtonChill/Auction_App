@@ -94,7 +94,14 @@ export default class AuctionMembership {
         }
         return Promise.resolve()
     }
-
+    public toJson(): Object {
+        return {
+            "ID": this._id,
+            "auction": this._auction,
+            "user": this._user,
+            "banned": this._banned,
+        }
+    }
     public get banned() : boolean {
         return this._banned;
     }

@@ -46,6 +46,7 @@ export default class Bid {
         const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time","desc").first();
         //const dbReturn = await connection('bids').where({'item': item.id}).select('item','money').orderBy("time").first();
         if(!isMember){
+            console.log("No Member");
             return Promise.reject(new InvalidKeyError(`Invalid membership, user ${user.id} is not a member of ${auction.id} auction.`))
         }
         if(dbReturn === undefined||dbReturn['money']<money){
