@@ -1,9 +1,10 @@
 <template>
   <div class="lg:flex px-6 pb-2" >
-  <div class="border border-gray-500
-   lg:border-t lg:border-gray-400 bg-white
-   rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
-   justify-between leading-normal">
+  <router-link to="/auction">
+    <div class="border border-gray-500
+    lg:border-t lg:border-gray-400 bg-white
+    rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
+    justify-between leading-normal">
    <div class="flex-shrink-0 flex-grow-1 h-12 ">
       <img class="w-12 h-12 rounded-full mr-4" src="/img/school.jpg">
       </div>
@@ -21,6 +22,7 @@
       <p class="text-gray-700 text-xs"> {{ auction.description }} </p>
     </div>
   </div>
+  </router-link>
 </div>
 </template>
 
@@ -35,6 +37,8 @@ export default {
       type: Object,
       required: false,
     },
+  },
+  methods: {
   },
 };
 </script>
