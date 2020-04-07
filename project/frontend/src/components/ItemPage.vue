@@ -40,8 +40,6 @@ export default {
       itemTitle: 'Used Road Bicycle',
       itemDescription: 'A lightly used blue bicycle',
       itemDetails: {},
-      itemId: this.$route.params.itemId,
-      auctionId: this.$route.params.auctionId,
     };
   },
   components: {
@@ -58,12 +56,13 @@ export default {
       this.isModalVisible = false;
     },
     getItemDetails() {
-      //this.didn't work getting them to strings...
-      const auctionString = this.auctionId.toString();
-      const itemString = this.itemId.toString();
+      const auctionString = this.$route.params.auctionName;
+      const itemString = this.$route.params.itemId;
       /* eslint-disable */
-      console.log(this.itemId)
-      fetch(`/api/v1/auctions/${{auctionString}}/items/${{itemString}}`).then((data) => data.json()).then((json) => {
+      console.log("the auction before stringify: " + this.$route.params.auctionName);
+      console.log("the auction after: " + auctionString);
+      console.log("but in the url fetch it appears as an object... ")
+      fetch(`/api/v1/auctions/${auctionString}/items/${itemString}`).then((data) => data.json()).then((json) => {
         console.table(json);
         // this.itemDetails = this.itemDetails.concat(json);
       });

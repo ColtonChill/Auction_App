@@ -1,10 +1,10 @@
 <template>
       <div id="auction">
     <h1 class="font-title text-4xl text-semibold text-center pt-4 text-darkBlue">
-      Auction with id {{ $route.params.auctionId }}</h1>
+      Auction with id {{ $route.params.auctionName }}</h1>
     <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
       Select items from below to see details:</h2>
-    <ItemList v-bind:auctionIBelongTo=$route.params.auctionId />
+    <ItemList v-bind:auctionIBelongTo=$route.params.auctionName />
   </div>
 </template>
 

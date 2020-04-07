@@ -28,13 +28,13 @@ export default new Router({
       component: LoginPage,
     },
     {
-      path: '/auction/:auctionId',
+      path: '/auction/:auctionName',
       name: 'AuctionPage',
       component: AuctionPage,
     },
 
     {
-      path: '/auction/:auctionId/items/:itemId',
+      path: '/auction/:auctionName/items/:itemId',
       name: 'ItemPage',
       component: ItemPage,
     },
