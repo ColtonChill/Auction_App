@@ -56,7 +56,7 @@
       md:text-right mb-1 md:mb-0 pr-4" for="public">
         Public
       </label>
-      <input v-model="checkbox" id="checkbox" type="checkbox">
+      <input v-model="checkbox" id="public" type="checkbox">
     </div>
   </div>
 
