@@ -54,10 +54,9 @@ export default class Item {
      * @param auction The auction to look items up on.
      */
     public static async fromDatabaseAuction(auction: number) : Promise<Item[]> {
-        const dbObject = await connection("items").where({"auction" : auction})
-        console.log("DB: "+ dbObject);
-        return connection('items').where({'auction': auction})
-        .then(objects => Promise.all(objects.map(this.fromObject)));
+        return connection('items')
+            .where({'auction': auction})
+            .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
     /**
@@ -118,13 +117,23 @@ export default class Item {
     }
 
     public async toJsonDetailed() {
+        let winningBid;
+        try {
+            winningBid = (await Bid.getWinningBid(this._id)).toJson()
+        }
+        catch (ex) {
+            if (ex.name === "InvalidKeyError") {
+                winningBid = null;
+            }
+        }
+
         return {
             'id': this._id,
             'auction': this._auction.toJson(),
             'name': this._name,
             'description': this._description,
             'imageName': this._imageName,
-            'winningBid': (await Bid.getWinningBid(this._id)).toJson()
+            'winningBid': winningBid
         }
     }
 
@@ -277,8 +286,8 @@ export class LiveItem extends Item {
         }
     }
 
-    public toJsonDetailed() {
-        const parent = super.toJsonDetailed();
+    public async toJsonDetailed() {
+        const parent = await super.toJsonDetailed();
         return {
             ...parent,
             'winner': this._winner?.toJson(),
@@ -410,8 +419,8 @@ export class SilentItem extends Item {
         }
     }
 
-    public toJsonDetailed() {
-        const parent = super.toJsonDetailed();
+    public async toJsonDetailed() {
+        const parent = await super.toJsonDetailed();
         return {
             ...parent,
             'starting_price': this._startingPrice,
