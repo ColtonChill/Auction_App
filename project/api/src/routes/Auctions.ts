@@ -332,6 +332,7 @@ router.post('Create Item', '/:auction/items', async (ctx: any) => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\//\\//\\//\//\\//\\//\\//
 router.get('Get Bids by Auction', '/:auctionURL/bids', async (ctx:any) => {
+    console.log("FIRST option");
     if(!ctx.isAuthenticated()) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
@@ -389,41 +390,6 @@ router.get('Get Bids by Item', '/:auctionID/items/:itemID/bids', async (ctx:any)
         return Promise.resolve();
     }
 });
-
-// router.get('Get Bids by User for an Auction', '/:auctionID/users/:userID/bids', async (ctx:any) =>{
-//     if(!ctx.isAuthenticated()) {
-//         ctx.status = 401;
-//         ctx.body = {'error': 'You are not logged in.'}
-//         return Promise.resolve();
-//     }
-//     if(ctx.params.auctionID === undefined||ctx.params.auctionID == ""){
-//         ctx.status=400;
-//         ctx.body={'error':`'auctionID' is required, Got ${ctx.params.auctionID} instead.`}
-//         return Promise.resolve();
-//     }
-//     if(ctx.params.userID === undefined||ctx.params.userID == ""){
-//         ctx.status=400;
-//         ctx.body={'error':`'User' is required, Got ${ctx.params.userID} instead.`}
-//         return Promise.resolve();
-//     }
-//     try {
-//         const res = await Bid.getDatabaseAuctionUser(ctx.params.auctionID,ctx.params.idUser);
-//         if(res !== undefined) {
-//             ctx.body = res.map(it => it.toJson());
-//             ctx.status = 200;
-//             return Promise.resolve();
-//         }else{
-//             ctx.status = 404;
-//             ctx.body = {'error': 'Quiry returned undefined.'}
-//             return Promise.resolve();
-//         }
-//     } catch (error) {
-//         ctx.status = 404;
-//         ctx.body = {'error': `Quiry failed with error: ${error}`}
-//         return Promise.resolve();
-//     }
-    
-// });
 
 router.get('Get Bids by User for an Item', '/:auctionURL/items/:itemID/bids/highest', async (ctx:any) =>{
     if(!ctx.isAuthenticated()) {

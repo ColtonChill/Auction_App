@@ -40,19 +40,26 @@ router.get('Get a Bid by ID', '/ID/', async (ctx:any) => {
 });
 
 router.get('Get Bids by User', '/@me', async (ctx:any) => {
+    console.log("Test log")
     if(!ctx.isAuthenticated()) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    const user = ctx.params.me.catch(error=>{
-        ctx.status = 400;
-        ctx.message = `@me must be defined as a user, not: ${error}`;  
-       // ctx.redirect('/login/failure');
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
-    })
+    }
+    const user = ctx.req.user;
+    // catch(error=>{
+    //     ctx.status = 400;
+    //     ctx.message = `@me must be defined as a user, not: ${error}`;  
+    //    // ctx.redirect('/login/failure');
+    //     return Promise.resolve();
+    // })
     try {
-        const res = await Bid.fromDatabaseUser(ctx.params.userID);
+        const res = await Bid.fromDatabaseUser(ctx.req.user.id);
         if(res !== undefined) {
             ctx.body = res.map(it => it.toJson());
             ctx.status = 200;
