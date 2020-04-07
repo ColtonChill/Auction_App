@@ -55,7 +55,7 @@ export default class Item {
      */
     public static async fromDatabaseAuction(auction: number) : Promise<Item[]> {
         return connection('items')
-            .where({'id': auction})
+            .where({'auction': auction})
             .then(objects => Promise.all(objects.map(this.fromObject)));
     }
 
