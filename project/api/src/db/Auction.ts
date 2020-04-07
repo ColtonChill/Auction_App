@@ -18,12 +18,12 @@ export default class Auction {
     private _description: String;
     private _location: String;
     private _owner: User;
-    private _url: String;
+    private _url: string;
     private _hidden: boolean;
     private _inviteCode: String;
     private _dirty: boolean;
 
-    private constructor(id: number, name: String, description: String, location: String, owner: User, url: String, hidden: boolean, inviteCode: String) {
+    private constructor(id: number, name: String, description: String, location: String, owner: User, url: string, hidden: boolean, inviteCode: String) {
         this._id = id;
         this._name = name;
         this._description = description;
