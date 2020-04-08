@@ -9,19 +9,31 @@
         <div class="column p-4 ">
             <img class="w-28 h-28" src="/img/bike.jpg">
         </div>
-        <div class="column p-10 "> Current bid: ${{this.current_bid.money}} <br>
+        <div class="column p-10 "> Current bid: $
+          {{ this.current_bid.money === undefined ? this.starting_price
+          : this.current_bid.money }}<br>
             <div class="pt-8">
             <button id="myButton" type="button" class="center shadow bg-darkBlue hover:bg-blue-300
                 focus:shadow-outline focus:outline-none text-white font-bold
                 py-2 px-4 rounded mb-4" @click="showModal"
-                >Bid ${{this.current_bid.money + this.bid_increment}} </button>
+                >Bid ${{this.current_bid.money === undefined ? this.starting_price +
+                this.bid_increment : this.current_bid.money + this.bid_increment}}
+                </button>
             </div>
         </div>
     </div>
 
-    <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
-    v-bind:currentBid=currentBid v-bind:bidIncrement=bidIncrement
-    />
+    <div v-if="this.current_bid.money === undefined">
+      <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
+      v-bind:currentBid=starting_price v-bind:bidIncrement=bid_increment
+      />
+    </div>
+    <div v-else>
+      <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
+      v-bind:currentBid=current_bid.money v-bind:bidIncrement=bid_increment
+      />
+       </div>
+
 
   </div>
 </template>
@@ -44,7 +56,14 @@ export default {
       type: undefined,
       starting_price: undefined,
       bid_increment: undefined,
-      current_bid: undefined,
+      current_bid: {
+        id: undefined,
+        auction: undefined,
+        user: undefined,
+        item: undefined,
+        money: undefined,
+        time: undefined
+      },
     };
   },
   components: {
@@ -52,9 +71,6 @@ export default {
   },
   mounted() {
     this.getItemDetails();
-    if (this.current_bid === undefined) {
-      this.current_bid.money = this.starting_price;
-    }
   },
   methods: {
     showModal() {
@@ -73,12 +89,11 @@ export default {
       fetch(`/api/v1/auctions/${auctionString}/items/${itemString}`).then((data) => data.json()).then((json) => {
       console.table(json);
       Object.assign(this, json)
+      console.log(this);
       });
     },
   },
 };
-
-// export default class LandingPage extends Vue {}
 
 </script>
 

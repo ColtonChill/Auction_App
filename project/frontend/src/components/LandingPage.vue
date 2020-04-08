@@ -8,10 +8,6 @@
       Welcome to Awection!</h1>
     <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
       Select an auction from below:</h2>
-          <p>--------delete this stuff--------</p>
-            <router-link to="/auction/coolAuction" class="text-blue">
-            a makeshift link to auction coolAuction </router-link>
-          <p>----------------------------------</p>
     <AuctionList/>
   </div>
 </template>
@@ -26,8 +22,6 @@ export default {
     AuctionList,
   },
 };
-
-// export default class LandingPage extends Vue {}
 
 </script>
 

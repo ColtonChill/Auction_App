@@ -1,8 +1,12 @@
 <template>
   <div>
 
-  <h2 class="pl-8">All items</h2>
+  <div v-if="items.length === 0">
+  <h3>No items to view... </h3>
+  </div>
 
+  <div v-else>
+  <h2 class="pl-8">All items</h2>
     <ItemItem v-bind:auctionIBelongTo=auctionIBelongTo
         v-for="item in items"
         :key="item.id"
@@ -12,6 +16,7 @@
         <div class="flex col">
           <button class="mx-auto text-md object-center mb-6">Load More...</button>
         </div>
+  </div>
 </div>
 </template>
 
