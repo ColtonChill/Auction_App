@@ -8,7 +8,7 @@ import ItemPage from '@/components/ItemPage.vue';
 import ItemWinner from '@/components/ItemWinner.vue';
 import BidderCommitment from '@/components/BidderCommitment.vue';
 import AuctionContainer from '@/components/AuctionContainer.vue';
-import JoinPage from '@components/JoinPage.vue';
+import JoinPage from '@/components/JoinPage.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 // import AdminPage from '@components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
@@ -49,7 +49,7 @@ export default new Router({
           component: ItemPage,
         },
         {
-          path: '/join',
+          path: 'join',
           component: JoinPage,
         },
         // {
