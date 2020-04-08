@@ -117,23 +117,12 @@ export default class Item {
     }
 
     public async toJsonDetailed() {
-        let winningBid;
-        try {
-            winningBid = (await Bid.getWinningBid(this._id)).toJson()
-        }
-        catch (ex) {
-            if (ex.name === "InvalidKeyError") {
-                winningBid = null;
-            }
-        }
-
         return {
             'id': this._id,
             'auction': this._auction.toJson(),
             'name': this._name,
             'description': this._description,
             'imageName': this._imageName,
-            'winningBid': winningBid
         }
     }
 
@@ -281,6 +270,7 @@ export class LiveItem extends Item {
         const parent = super.toJson();
         return {
             ...parent,
+            'type': 'live',
             'winner': this._winner?.id,
             'winningPrice': this._winningPrice
         }
@@ -290,6 +280,7 @@ export class LiveItem extends Item {
         const parent = await super.toJsonDetailed();
         return {
             ...parent,
+            'type': 'live',
             'winner': this._winner?.toJson(),
             'winningPrice': this._winningPrice
         }
@@ -414,6 +405,7 @@ export class SilentItem extends Item {
         const parent = super.toJson();
         return {
             ...parent,
+            'type': 'silent',
             'starting_price': this._startingPrice,
             'bid_increment': this._bidIncrement,
         }
@@ -421,10 +413,20 @@ export class SilentItem extends Item {
 
     public async toJsonDetailed() {
         const parent = await super.toJsonDetailed();
+        let bid : Bid;
+        try {
+            bid = await Bid.getWinningBid(parent.id);
+        }
+        catch {
+            bid = null;
+        }
+
         return {
             ...parent,
+            'type': 'silent',
             'starting_price': this._startingPrice,
-            'bid_increment': this._bidIncrement
+            'bid_increment': this._bidIncrement,
+            'current_bid': bid?.toJson(),
         }
     }
 

@@ -138,27 +138,6 @@ router.get('Item List', '/:auction/items/all', async (ctx: any) => { //I have to
     return Promise.resolve()
 });
 
-//get items by id
-router.get('Item List', '/:auction/items/:item', async (ctx: any) => { //I have to declare this so ts is happy.
-    if(!ctx.isAuthenticated()) {
-        ctx.status = 401;
-        ctx.body = {'error': 'You are not logged in.'}
-        return Promise.resolve();
-    }
-    const user = ctx.state.user;
-    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
-    const members = await auction.members;
-    const member = members.some(it => it.user.id === user.id);
-    if(!member && auction.hidden) {
-        ctx.status = 403;
-        ctx.body = {'error': 'You do not have access to this auction.'}
-        return Promise.resolve();
-    }
-    ctx.body = await Item.fromDatabaseId(ctx.params.item);
-    ctx.status = 200;
-    return Promise.resolve()
-});
-
 //List the details of an auction
 router.get('Auction Detail', '/:auction', async (ctx: any) => {
     let auction : Auction;
