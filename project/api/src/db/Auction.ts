@@ -130,6 +130,16 @@ export default class Auction {
         }
     }
 
+    public toJsonPublic() : Object {
+        return {
+            "name": this._name,
+            "owner": this._owner.toJsonPublic(),
+            "url": this._url,
+            "description": this._description,
+            "location": this._location
+        }
+    }
+
     public async save(): Promise<void> {
         if (this._dirty) {
             await connection('auctions').where({ "id": this._id }).update({
