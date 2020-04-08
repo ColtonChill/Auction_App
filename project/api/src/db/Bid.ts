@@ -122,7 +122,10 @@ export default class Bid {
             .where({'item': itemId})
             .orderBy('money', 'desc')
             .first();
-        return this.fromObject(dbObject);
+        if(dbObject !== undefined) {
+            return this.fromObject(dbObject);
+        }
+        throw new InvalidKeyError(`No bids exist on this object.`);
     }
 
      /**
@@ -230,12 +233,11 @@ export default class Bid {
     public toJson() : Object {
         return {
             'id': this._id,
-            'auction': this._auction,
-            'user': this._user,
-            'item': this._item,
+            'auction': this._auction.id,
+            'user': this._user.id,
+            'item': this._item.id,
             'money': this._money,
             'time': this._time,
-            'dirty': this._dirty
         }
     }
 

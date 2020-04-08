@@ -5,9 +5,33 @@ import User from '../db/User';
 import Bid from '../db/Bid';
 import slugify from 'slugify';
 import logger from '../services/Logger';
+import multer from '@koa/multer';
 import AuctionMembership from '../db/AuctionMembership';
+import fs from 'fs';
+import path from 'path';
+import mt from 'mime-types';
 
 const router = new Router();
+const upload = multer();
+
+
+const auctionPermCheck = async function (ctx: any) : Promise<boolean> {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve(false);
+    }
+    const user = ctx.state.user;
+    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    // TODO: Perm Check.
+    if(auction.owner.id !== user.id) {
+        ctx.status = 403;
+        ctx.body = {'error': 'You are not allowed to modify this auction.'};
+        return Promise.resolve(false);
+    }
+    ctx.state.auction = auction;
+    return Promise.resolve(true);
+}
 
 //create auction
 //Params: name, description (optional), location, url (optional), hidden (optional)
@@ -133,27 +157,6 @@ router.get('Item List', '/:auction/items/all', async (ctx: any) => { //I have to
     return Promise.resolve()
 });
 
-//get items by id
-router.get('Item List', '/:auction/items/:item', async (ctx: any) => { //I have to declare this so ts is happy.
-    if(!ctx.isAuthenticated()) {
-        ctx.status = 401;
-        ctx.body = {'error': 'You are not logged in.'}
-        return Promise.resolve();
-    }
-    const user = ctx.state.user;
-    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
-    const members = await auction.members;
-    const member = members.some(it => it.user.id === user.id);
-    if(!member && auction.hidden) {
-        ctx.status = 403;
-        ctx.body = {'error': 'You do not have access to this auction.'}
-        return Promise.resolve();
-    }
-    ctx.body = await Item.fromDatabaseId(ctx.params.item);
-    ctx.status = 200;
-    return Promise.resolve()
-});
-
 //List the details of an auction
 router.get('Auction Detail', '/:auction', async (ctx: any) => {
     let auction : Auction;
@@ -183,6 +186,55 @@ router.get('Auction Detail', '/:auction', async (ctx: any) => {
         delete res['invite_code'];
     }
     ctx.body = res;
+    ctx.status = 200;
+    return Promise.resolve();
+});
+
+router.post('Auction Toggle Privacy', '/:auction/toggle-privacy', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction : Auction = ctx.state.auction;
+    console.log(auction);
+    await auction.togglePrivacy();
+    await auction.save();
+    ctx.body = auction.toJson();
+    ctx.status = 200;
+    return Promise.resolve();
+});
+
+router.post('Auction Regen Invite Code', '/:auction/regen-code', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction : Auction = ctx.state.auction;
+    await auction.resetPin();
+    await auction.save();
+    ctx.body = auction.toJson();
+    ctx.status = 200;
+    return Promise.resolve();
+})
+
+router.put('Auction Edit', '/:auction', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction: Auction = ctx.state.auction;
+    const data = ctx.request.body;
+    if(data.name !== undefined && data.name !== auction.name) {
+        auction.name = data.name;
+    }
+    if(data.description !== undefined && data.description !== auction.description) {
+        auction.description = data.description;
+    }
+    if(data.location !== undefined && data.location !== auction.location) {
+        auction.location = data.location;
+    }
+    if(data.url !== undefined && data.url !== auction.url) {
+        auction.url = data.url;
+    }
+    await auction.save();
+    ctx.body = auction.toJson();
     ctx.status = 200;
     return Promise.resolve();
 });
@@ -239,75 +291,76 @@ router.post('/:auction/member/@me/', async (ctx:any)=>{
         const exitsingMembership = await AuctionMembership.getMembership(ctx.req.user,auction);
         if(exitsingMembership == undefined){
             const membership = await AuctionMembership.createMembership(ctx.req.user,auction);
-            ctx.status = 400;
+            ctx.status = 201;
             ctx.body = membership.toJson();
             return Promise.resolve();
         }else{
-            ctx.status = 401;
+            ctx.status = 400;
             ctx.body = {'error': 'User already a member of auction'}
             return Promise.resolve();
         }
     }else{
-        ctx.status = 401;
+        ctx.status = 404;
         ctx.body = {'error': 'Auction is not found'}
         return Promise.resolve();
     }
     
 });
 
-//QR-code
-//localhost/api/v1/auctions/thomas-edison/join?code=abcdef
-//localhost/api/v1/auctions/thomas-edison/member/@me/code=/:pin/
-router.post('/:auction/member/@me/code=/:pin/', async (ctx:any)=>{
+router.post('Add Item Image', '/:auction/item-image', upload.single('image'), async (ctx: any) => {
+    const item = await Item.fromDatabaseId(ctx.request.body['itemId']);
+    if(item.auction.url !== (ctx.params.auction)) {
+        ctx.status = 404;
+        ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
+        return Promise.resolve();
+    }
+    fs.mkdirSync(path.join('/user', item.auction.url));
+    fs.writeFileSync(path.join('/user', item.auction.url, ctx.request.body['itemId'] + "." + mt.extension(ctx.request.file.mimetype)), ctx.file.buffer);
+    ctx.status = 200;
+});
+
+router.get('Item Detail', '/:auction/items/:item', async (ctx: any) => {
     if(!ctx.isAuthenticated()) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    if(Auction.urlExists(ctx.params.auction)){
-        const auction = await Auction.fromDatabaseURL(ctx.params.auction);
-        if(auction.hidden){
-            console.log("LOG_body: "+ctx.request.body.pin);
-            if(ctx.params.pin == undefined){
-                ctx.status = 401;
-                ctx.body = {'error': 'No password provided'}
-                return Promise.resolve();
-            }
-            console.log(auction.pin);
-            if(ctx.params.pin != auction.pin){
-                ctx.status = 401;
-                ctx.body = {'error': 'Invalid password'}
-                return Promise.resolve();
-            }
-        }
-        const exitsingMembership = await AuctionMembership.getMembership(ctx.req.user,auction);
-        if(exitsingMembership == undefined){
-            const membership = await AuctionMembership.createMembership(ctx.req.user,auction);
-            ctx.status = 400;
-            ctx.body = membership.toJson();
-            return Promise.resolve();
-        }else{
-            ctx.status = 401;
-            ctx.body = {'error': 'User already a member of auction'}
-            return Promise.resolve();
-        }
-    }else{
-        ctx.status = 401;
-        ctx.body = {'error': 'Auction is not found'}
+    const user : User = ctx.state.user;
+    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    const member = await AuctionMembership.isMember(user.id, auction.id);
+    if(!member) {
+        ctx.status = 403;
+        ctx.body = {'error': 'You do not have access to this auction.'}
         return Promise.resolve();
     }
-    
+    const item = await Item.fromDatabaseId(ctx.params.item);
+    if(item.auction.url !== (ctx.params.auction)) {
+        ctx.status = 404;
+        ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
+        return Promise.resolve();
+    }
+    ctx.body = await item.toJsonDetailed();
+    ctx.status = 200;
+    return Promise.resolve()
 });
 
-//params name, description, imagePath, startingPrice, bidIncrement, silent
 router.post('Create Item', '/:auction/items', async (ctx: any) => {
     if(!ctx.isAuthenticated()) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    const user = ctx.req.user;
-    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    const user = ctx.state.user;
+    let auction;
+    try {
+        auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    } catch (ex) {
+        if(ex.name === "InvalidKeyError") {
+            ctx.status = 404;
+            ctx.body = {'error': "No auction exists with that ID."};
+            return Promise.resolve();
+        }
+    }
     // TODO: Perm Check.
     if(ctx.req.user.id != auction.owner.id) {
         ctx.status = 403;
@@ -497,6 +550,12 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.body = {'error': 'Invalid number format for money.'};
         return Promise.resolve();
     }
+    const membership = await AuctionMembership.isMember(user,auction);
+    if(!membership){
+        ctx.status = 400;
+        ctx.body = {'error': "Not a member of this auction"};
+        return Promise.resolve();   
+    }
     try {
         console.log("bid auction: "+typeof(auction)+auction)
         console.log("bid user: "+typeof(user)+user)
@@ -513,5 +572,66 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
     }
 });
 
+
+router.delete('Delete Item', '/:auction/items/:item', async (ctx: any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve();
+    }
+    const user = ctx.state.user;
+    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    // TODO: Perm Check.
+    if(auction.owner.id !== user.id) {
+        ctx.status = 403;
+        ctx.body = {'error': 'You are not allowed to modify items on this auction.'};
+        return Promise.resolve();
+    }
+    const item = await Item.fromDatabaseId(ctx.params.item);
+    if(item.auction.id !== ctx.params.auction) {
+        ctx.status = 404;
+        ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
+        return Promise.resolve();
+    }
+    await item.delete()
+    ctx.status = 200;
+    return Promise.resolve()
+});
+
+router.put('Modify Item', '/:auction/items/:item', async (ctx: any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve();
+    }
+    const user = ctx.state.user;
+    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    // TODO: Perm Check.
+    if(auction.owner.id !== user.id) {
+        ctx.status = 403;
+        ctx.body = {'error': 'You are not allowed to modify items on this auction.'};
+        return Promise.resolve();
+    }
+    const item = await Item.fromDatabaseId(ctx.params.item);
+    if(item.auction.id !== ctx.params.auction) {
+        ctx.status = 404;
+        ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
+        return Promise.resolve();
+    }
+    const data = ctx.request.body;
+    if(data['name'] !== undefined && data['name'] !== "") {
+        item.name = data.name;
+    } 
+    if(data.description !== undefined && data.description !== "") {
+        item.description = data.description;
+    }
+    if(data.imagePath !== undefined && data.imagePath !== "") {
+        item.imageName = data.imageName;
+    }
+    await item.save();
+    ctx.body = await item.toJsonDetailed();
+    ctx.status = 200;
+    return Promise.resolve()
+});
 
 export default router;
