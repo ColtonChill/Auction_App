@@ -119,7 +119,7 @@ export default class Item {
     public async toJsonDetailed() {
         return {
             'id': this._id,
-            'auction': this._auction.toJson(),
+            'auction': this._auction.toJsonPublic(),
             'name': this._name,
             'description': this._description,
             'imageName': this._imageName,
