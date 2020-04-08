@@ -14,6 +14,25 @@ import mt from 'mime-types';
 const router = new Router();
 const upload = multer();
 
+
+const auctionPermCheck = async function (ctx: any) : Promise<boolean> {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve(false);
+    }
+    const user = ctx.state.user;
+    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    // TODO: Perm Check.
+    if(auction.owner.id !== user.id) {
+        ctx.status = 403;
+        ctx.body = {'error': 'You are not allowed to modify this auction.'};
+        return Promise.resolve(false);
+    }
+    ctx.state.auction = auction;
+    return Promise.resolve(true);
+}
+
 //create auction
 //Params: name, description (optional), location, url (optional), hidden (optional)
 router.post('/', async (ctx: any) => {
@@ -167,6 +186,55 @@ router.get('Auction Detail', '/:auction', async (ctx: any) => {
         delete res['invite_code'];
     }
     ctx.body = res;
+    ctx.status = 200;
+    return Promise.resolve();
+});
+
+router.post('Auction Toggle Privacy', '/:auction/toggle-privacy', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction : Auction = ctx.state.auction;
+    console.log(auction);
+    await auction.togglePrivacy();
+    await auction.save();
+    ctx.body = auction.toJson();
+    ctx.status = 200;
+    return Promise.resolve();
+});
+
+router.post('Auction Regen Invite Code', '/:auction/regen-code', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction : Auction = ctx.state.auction;
+    await auction.resetPin();
+    await auction.save();
+    ctx.body = auction.toJson();
+    ctx.status = 200;
+    return Promise.resolve();
+})
+
+router.put('Auction Edit', '/:auction', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction: Auction = ctx.state.auction;
+    const data = ctx.request.body;
+    if(data.name !== undefined && data.name !== auction.name) {
+        auction.name = data.name;
+    }
+    if(data.description !== undefined && data.description !== auction.description) {
+        auction.description = data.description;
+    }
+    if(data.location !== undefined && data.location !== auction.location) {
+        auction.location = data.location;
+    }
+    if(data.url !== undefined && data.url !== auction.url) {
+        auction.url = data.url;
+    }
+    await auction.save();
+    ctx.body = auction.toJson();
     ctx.status = 200;
     return Promise.resolve();
 });
