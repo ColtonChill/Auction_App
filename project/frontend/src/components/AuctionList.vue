@@ -7,8 +7,8 @@
     <!-- the links below do not actually work yet! they are not in router yet -->
     <router-link to="/browsePublic"> <p class="hover:underline text-blue-600">
     Browse public auctions</p> </router-link>
-    <router-link to="/join"> <p class="hover:underline text-blue-600">
-    Join with a QR code</p> </router-link>
+    <!-- <router-link to="/join"> <p class="hover:underline text-blue-600">
+    Join with a QR code</p> </router-link> -->
   </div>
   <div v-else>
   <h2 class="pl-8">My Auctions</h2>
