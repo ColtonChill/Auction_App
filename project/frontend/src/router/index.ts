@@ -28,7 +28,7 @@ export default new Router({
       component: LoginPage,
     },
     {
-      path: '/addItem',
+      path: '/:auction/addItem',
       name: 'AddItem',
       component: AddItem,
     },
