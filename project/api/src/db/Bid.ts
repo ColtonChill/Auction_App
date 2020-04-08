@@ -1,6 +1,7 @@
 import Auction from "./Auction";
 import User from "./User";
 import Item from "./Item";
+import AuctionMembership from "./AuctionMembership";
 import { connection } from "../services/Database";
 import InvalidKeyError from "./InvalidKeyError";
 
@@ -37,20 +38,18 @@ export default class Bid {
         this._dirty = false;
     }
 
-    public static async createBid(auction: Auction, user: User, item: Item, money: number) : Promise<Bid> {
-        const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time").first();
+    public static async createBid(id_auction: number, id_user: number, id_item: number, money: number) : Promise<Bid> {
+        const auction = await Auction.fromDatabaseID(id_auction);
+        const user = await User.fromDatabaseId(id_user);
+        const item = await Item.fromDatabaseId(id_item); 
+        const isMember = await AuctionMembership.isMember(user.id,auction.id);
+        const dbReturn = await connection('bids').where({'item': item.id}).select('money').orderBy("time","desc").first();
         //const dbReturn = await connection('bids').where({'item': item.id}).select('item','money').orderBy("time").first();
-        if(dbReturn === undefined){
-            let d = new Date();
-            const dbObject = await connection('bids').insert({
-                'auction': auction.id,
-                'user' : user.id,
-                'item' : item.id,
-                'money' : money,
-                'time' : d.valueOf()
-            }).returning('*');
-            return this.fromObject(dbObject[0]);
-        }else if(dbReturn['money']<money){
+        if(!isMember){
+            console.log("No Member");
+            return Promise.reject(new InvalidKeyError(`Invalid membership, user ${user.id} is not a member of ${auction.id} auction.`))
+        }
+        if(dbReturn === undefined||dbReturn['money']<money){
             let d = new Date();
             const dbObject = await connection('bids').insert({
                 'auction': auction.id,
@@ -61,7 +60,7 @@ export default class Bid {
             }).returning('*');
             return this.fromObject(dbObject[0]);
         }
-        console.log("well, that failed...")
+        console.log("well, that bid failed...")
         return Promise.reject(new InvalidKeyError(`Invalid bid, please increase the amount`))
     }
 
@@ -88,7 +87,8 @@ export default class Bid {
      *  
      * @param auction The auction to look bids up on.
      */
-    public static async fromDatabaseAuction(auction: Auction) : Promise<Bid[]> {
+    public static async fromDatabaseAuction(id: Number) : Promise<Bid[]> {
+        const auction = await Auction.fromDatabaseID(id); 
         return connection('bids')
             .where({'auction': auction.id})
             .then(objects => Promise.all(objects.map(this.fromObject)));
@@ -99,7 +99,8 @@ export default class Bid {
      *  
      * @param user The user to look bids up on.
      */
-    public static async fromDatabaseUser(user: User) : Promise<Bid[]> {
+    public static async fromDatabaseUser(id: Number) : Promise<Bid[]> {
+        const user = await User.fromDatabaseId(id);
         return connection('bids')
             .where({'user': user.id})
             .then(objects => Promise.all(objects.map(this.fromObject)));
@@ -107,10 +108,10 @@ export default class Bid {
 
     /**
      * Get the bid of an items.
-     *  
      * @param item The item to look bids up on.
      */
-    public static async fromDatabaseItem(item: Item) : Promise<Bid[]> {
+    public static async fromDatabaseItem(id: number) : Promise<Bid[]> {
+        const item = await Item.fromDatabaseId(id);
         return connection('bids')
             .where({'item': item.id})
             .then(objects => Promise.all(objects.map(this.fromObject)));
@@ -130,7 +131,9 @@ export default class Bid {
      * @param auction The auction to lookup.
      * @returns A bid between the two if it exists.
      */
-    public static async getDatabaseAuctionUser(auction: Auction, user: User) : Promise<Bid[]> {
+    public static async getDatabaseAuctionUser(id_auction: Number, id_user: Number) : Promise<Bid[]> {
+        const auction = await Auction.fromDatabaseID(id_auction);
+        const user = await User.fromDatabaseId(id_user);
         return await connection('bids')
             .where({'user': user.id, 'auction': auction.id})
             .then(objects => Promise.all(objects.map(this.fromObject)))
@@ -142,10 +145,26 @@ export default class Bid {
      * @param item The auction to lookup.
      * @returns A bid between the two if it exists.
      */
-    public static async getDatabaseItemUser(item: Item, user: User) : Promise<Bid[]> {
+    public static async getDatabaseItemUser(id_item: number, id_user: Number) : Promise<Bid[]> {
+        const item = await Item.fromDatabaseId(id_item);
+        const user = await User.fromDatabaseId(id_user);
         return await connection('bids')
             .where({'user': user.id, 'item': item.id})
-            .then(objects => Promise.all(objects.map(this.fromObject)))
+            .then(objects => Promise.all(objects.map(this.fromObject)));
+    }
+
+     /**
+     * Get the bids of a user on an item
+     * @param user The user to lookup.
+     * @param item The auction to lookup.
+     * @returns A bid between the two if it exists.
+     */
+    public static async DatabaseItemUserFirst(id_item: number, id_user: Number) : Promise<Bid> {
+        const item = await Item.fromDatabaseId(id_item);
+        const user = await User.fromDatabaseId(id_user);
+        return await connection('bids')
+            .where({'user': user.id, 'item': item.id})
+            .orderBy("money",'desc').first();
     }
 
     /**@DOTO Ask Hunter if this is even necessary for the admin page, and if so, do we need an auction wide search as well?
@@ -157,7 +176,8 @@ export default class Bid {
      * @param page The page number. Defaults to 1.
      * @param size The size of each page. Defaults to 10.
      */
-    public static async fromDatabaseUserPaginated(user: User, page: number = 1, size: number = 10) : Promise<Bid[]> {
+    public static async fromDatabaseUserPaginated(id_user: Number, page: number = 1, size: number = 10) : Promise<Bid[]> {
+        const user = await User.fromDatabaseId(id_user);
         if(page < 1) {
             return Promise.resolve([]);
         }
@@ -178,14 +198,6 @@ export default class Bid {
         const user = await User.fromDatabaseId(object['user']);
         const item = await Item.fromDatabaseId(object['item']);
         return Promise.resolve(new Bid(object['id'], auction, user, item, object['money'], object['time']));
-    }
-
-    public toJson() : Object {
-        return {
-            'money': this._money,
-            'user': this._user.toJson(),
-            'item': this._item.toJson(),
-        }
     }
 
     /**
@@ -213,6 +225,18 @@ export default class Bid {
             this._time = dbObject['time'];
             this._dirty = false;
         });
+    }
+    
+    public toJson() : Object {
+        return {
+            'id': this._id,
+            'auction': this._auction,
+            'user': this._user,
+            'item': this._item,
+            'money': this._money,
+            'time': this._time,
+            'dirty': this._dirty
+        }
     }
 
     /**
