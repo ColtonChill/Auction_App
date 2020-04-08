@@ -7,12 +7,12 @@ import AuctionPage from '@/components/AuctionPage.vue';
 import ItemPage from '@/components/ItemPage.vue';
 import ItemWinner from '@/components/ItemWinner.vue';
 import BidderCommitment from '@/components/BidderCommitment.vue';
+import AuctionContainer from '@/components/AuctionContainer.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 // import AdminPage from '@components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
 // import AdminSettingsPage from '@components/AdminSettingsPage.vue';
 // import ResultsPage from '@components/ResultsPage.vue';
-
 
 Vue.use(Router);
 
@@ -35,18 +35,17 @@ export default new Router({
       component: LoginPage,
     },
     {
-      path: '/auction/:auctionName',
-      name: 'AuctionPage',
-      component: AuctionPage,
+      path: '/auctions/:auctionUrl',
+      name: 'AuctionContainer',
+      component: AuctionContainer,
       children: [
         {
-          path: 'items/',
-          children: [
-            {
-              path: ':itemId',
-              component: ItemPage,
-            },
-          ],
+          path: '',
+          component: AuctionPage,
+        },
+        {
+          path: 'items/:itemId',
+          component: ItemPage,
         },
         // {
         //   path: 'admin',

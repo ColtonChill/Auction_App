@@ -1,6 +1,6 @@
 <template>
   <div class="lg:flex px-6 pb-2" >
-  <router-link :to="'/auction/' + auctionIBelongTo + '/items/' + item.id">
+  <router-link :to="'/auctions/' + auctionIBelongTo + '/items/' + item.id">
     <div class="border border-gray-500
     lg:border-t lg:border-gray-400 bg-white
     rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
@@ -10,7 +10,8 @@
       </div>
     <div class="flex-shrink-1 flex-grow-4">
       <div class="text-gray-900 font-bold text-l mb-1">
-        {{ item.title }}
+        {{ item.name }}
+        {{ item.id }}
         <!-- <svg class=" svg text-gray-500 w-3 h-3 mr-2"
         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
           <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2

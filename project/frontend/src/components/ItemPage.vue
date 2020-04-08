@@ -1,9 +1,9 @@
 <template>
     <div>
     <h2 class="text-4xl text-semibold text-center pt-4 text-darkBlue">
-      {{itemTitle}}</h2>
+      {{itemDetails.name}}</h2>
     <h3 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
-      {{itemDescription}}</h3>
+      {{itemDetails.description}}</h3>
     <h2 class="text-center"> </h2>
     <div class="row">
         <div class="column p-4 ">
@@ -14,7 +14,7 @@
             <button id="myButton" type="button" class="center shadow bg-darkBlue hover:bg-blue-300
                 focus:shadow-outline focus:outline-none text-white font-bold
                 py-2 px-4 rounded mb-4" @click="showModal"
-                >Bid ${{this.currentBid + this.bidIncrement}} </button>
+                >Bid ${{this.currentBid + itemDetails.bid_increment}} </button>
             </div>
         </div>
     </div>
@@ -45,8 +45,15 @@ export default {
   components: {
     ConfirmationModal,
   },
-  mounted() {
+  created() {
     this.getItemDetails();
+  },
+  mounted() {
+    if (this.itemDetails.current_bid === undefined) {
+      this.currentBid = this.itemDetails.starting_price;
+    } else {
+      this.currentBid = this.itemDetails.current_bid.money;
+    }
   },
   methods: {
     showModal() {
@@ -56,15 +63,16 @@ export default {
       this.isModalVisible = false;
     },
     getItemDetails() {
-      const auctionString = this.$route.params.auctionName;
+      const auctionString = this.$route.params.auctionUrl;
       const itemString = this.$route.params.itemId;
       /* eslint-disable */
       console.log("the auction before stringify: " + this.$route.params.auctionName);
       console.log("the auction after: " + auctionString);
       console.log("but in the url fetch it appears as an object... ")
       fetch(`/api/v1/auctions/${auctionString}/items/${itemString}`).then((data) => data.json()).then((json) => {
-        console.table(json);
-        // this.itemDetails = this.itemDetails.concat(json);
+      console.table(json);
+      this.itemDetails = this.itemDetails.concat(json);
+      console.log(itemDetails);
       });
     },
   },
