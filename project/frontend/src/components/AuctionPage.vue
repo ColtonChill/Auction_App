@@ -1,26 +1,23 @@
 <template>
       <div id="auction">
-    <p>
-      <!-- <router-link to="/register">Go to RegisterPage</router-link>
-      <router-link to="/login">Go to Login!</router-link> -->
-    </p>
     <h1 class="font-title text-4xl text-semibold text-center pt-4 text-darkBlue">
-      Specific auction page!</h1>
+      {{ $route.params.auctionUrl }}</h1>
     <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
       Select items from below to see details:</h2>
+    <ItemList v-bind:auctionIBelongTo=$route.params.auctionUrl />
   </div>
 </template>
 
-
 <script lang="ts">
+
+import ItemList from './ItemList.vue';
 
 export default {
   name: 'AuctionPage',
   components: {
+    ItemList,
   },
 };
-
-// export default class LandingPage extends Vue {}
 
 </script>
 
