@@ -38,6 +38,7 @@
                 </div>
                 <br>
                 <div class="object-center md:items-center">
+                    <p name="buLabel" id="buLabel" class="text-red-500 font-bold">hello</p>
                     <button class ="md:items-center center
                     bg-blue-400 text-white font-bold rounded px-4 py-2 mb-4"
                     type="submit" formmethod ="POST">Add Item </button>
@@ -51,5 +52,10 @@
 <script lang="ts">
 export default {
   name: 'AddItem',
+  data() {
+    return {
+      admin: false,
+    };
+  },
 };
 </script>
