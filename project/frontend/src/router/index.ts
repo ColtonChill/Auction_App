@@ -8,6 +8,7 @@ import ItemPage from '@/components/ItemPage.vue';
 import ItemWinner from '@/components/ItemWinner.vue';
 import BidderCommitment from '@/components/BidderCommitment.vue';
 import AuctionContainer from '@/components/AuctionContainer.vue';
+import CreateAuctionPage from '@/components/CreateAuctionPage.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 import AdminPage from '@/components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
@@ -33,6 +34,11 @@ export default new Router({
       path: '/login',
       name: 'LoginPage',
       component: LoginPage,
+    },
+    {
+      path: 'create-auction',
+      name: 'CreateAuctionPage',
+      component: CreateAuctionPage,
     },
     {
       path: '/auctions/:auctionUrl',

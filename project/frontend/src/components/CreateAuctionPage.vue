@@ -1,6 +1,6 @@
 <template>
 
-<!-- Admin form...  -->
+<!-- Create Auction form...  -->
 <div class="flex col">
 <div class="md:w-3/4 sm:w-full rounded overflow-hidden shadow-lg my-2 object-center mx-auto mt-12">
 
@@ -81,7 +81,7 @@
         Join Code
       </label>
     </div>
-    
+
   <div class="md:flex md:items-center">
     <div class="md:w-1/2"></div>
     <div class="md:w-2/3">
@@ -113,7 +113,7 @@ export default {
       inviteCode: undefined,
     };
   },
-  
+
   methods: {
     async handleSave() {
       const response = await fetch(`/api/v1/auctions/${this.initUrl}`, {
@@ -136,12 +136,10 @@ export default {
       });
       if (this.url !== this.initUrl && response.status === 200) {
         this.$router.push(`/auctions/${this.url}`);
-        
       }
     },
-    
-    
-    
+
+
     updateURL() {
       this.url = slugify(this.name, {
         lower: true,
