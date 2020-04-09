@@ -14,6 +14,30 @@ import mt from 'mime-types';
 const router = new Router();
 const upload = multer();
 
+const auctionExists = async function(ctx: any) : Promise<boolean> {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve(false);
+    }
+    const user = ctx.state.user;
+    let auction;
+    try{
+        auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    }
+    catch(ex) {
+        ctx.status = 404;
+        ctx.body = {'error': 'An auction with that URL does not exist.'};
+        return Promise.resolve(false);
+    }
+    const membership = await AuctionMembership.getMembership(user, auction);
+    if(auction.hidden && (membership === undefined || membership.banned === true)) {
+        ctx.status = 403;
+        ctx.body = {'error': 'You do not have access to that auction.'};
+        return Promise.resolve(false);
+    }
+    return Promise.resolve(true);
+}
 
 const auctionPermCheck = async function (ctx: any) : Promise<boolean> {
     if(!ctx.isAuthenticated()) {
@@ -22,7 +46,15 @@ const auctionPermCheck = async function (ctx: any) : Promise<boolean> {
         return Promise.resolve(false);
     }
     const user = ctx.state.user;
-    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    let auction;
+    try{
+        auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    }
+    catch(ex) {
+        ctx.status = 404;
+        ctx.body = {'error': 'An auction with that URL does not exist.'};
+        return Promise.resolve(false);
+    }
     // TODO: Perm Check.
     if(auction.owner.id !== user.id) {
         ctx.status = 403;
@@ -80,8 +112,23 @@ router.post('/', async (ctx: any) => {
 //get list of public auctions
 router.get('Public Auctions', '/', async (ctx: any) => {
     const objects = await Auction.fromDatabasePublicAuctions();
-    const json = objects.map(it => it.toJson());
+    const json = objects.map(it => it.toJsonPublic());
     ctx.body = [...json];
+    ctx.status = 200;
+    return Promise.resolve();
+});
+
+router.get('My Auctions', '/@mine', async (ctx: any) => {
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve();
+    }
+    const user : User = ctx.state.user;
+    const memberships = await AuctionMembership.getUserMemberships(user);
+    logger.info(memberships);
+    const auctions = memberships.map(it => it.auction.toJsonPublic());
+    ctx.body = auctions;
     ctx.status = 200;
     return Promise.resolve();
 });
@@ -90,9 +137,10 @@ router.get('Public Auctions', '/', async (ctx: any) => {
 */
 //get auction info
 router.get('Get Auction', '/:auction', async (ctx: any) => {
-
-    const object = await Auction.fromDatabaseURL(ctx.params.auction);
-    ctx.body = object.toJson();
+    if(!auctionExists(ctx)) {
+        return Promise.resolve();
+    }
+    ctx.body = ctx.state.auction.toJson();
     ctx.status = 200;
     return Promise.resolve();
 });
