@@ -10,8 +10,9 @@ import BidderCommitment from '@/components/BidderCommitment.vue';
 import AuctionContainer from '@/components/AuctionContainer.vue';
 import JoinPage from '@/components/JoinPage.vue';
 import ProfilePage from '@/components/ProfilePage.vue';
+import CreateAuctionPage from '@/components/CreateAuctionPage.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
-// import AdminPage from '@components/AdminPage.vue';
+import AdminPage from '@/components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
 // import AdminSettingsPage from '@components/AdminSettingsPage.vue';
 // import ResultsPage from '@components/ResultsPage.vue';
@@ -40,6 +41,11 @@ export default new Router({
       path: '/profile',
       name: 'ProfilePage',
       component: ProfilePage,
+    },
+    {
+      path: '/create-auction',
+      name: 'CreateAuctionPage',
+      component: CreateAuctionPage,
     },
     {
       path: '/auctions/:auctionUrl',
@@ -80,6 +86,28 @@ export default new Router({
         //     }
         //   ]
         // }
+      {
+          path: 'admin',
+          component: AdminPage,
+          // children: [
+          //   {
+          //     path: 'items',
+          //     component: AdminItemsPage,
+          //   },
+          //   {
+          //     path: 'permissions',
+          //     component: AdminPermissionsPage,
+          //   },
+          //   {
+          //     path: 'settings',
+          //     component: AdminSettingsPage,
+          //   },
+          //   {
+          //     path: 'results',
+          //     component: ResultsPage,
+          //   }
+          // ]
+        },
       ],
     },
     // {

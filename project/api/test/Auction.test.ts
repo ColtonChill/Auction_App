@@ -124,14 +124,14 @@ describe('Auction : Database Class', () => {
 
         it('Should not be able to find the same auction after a regen pin', async () =>{
             const lookup = state.auction.pin;
-            await state.auction.resetPin(state.user);
+            await state.auction.resetPin();
             await state.auction.save();
             const newAuction = Auction.fromDatabaseInviteCode(lookup);
             expect(newAuction).to.eventually.be.rejected;
         });
         it('Should be able to toggle privacy', async () => {
             const lookup = state.auction.hidden;
-            await state.auction.togglePrivacy(state.user);
+            await state.auction.togglePrivacy();
             await state.auction.save();
             expect(state.auction.hidden).to.not.equal(lookup);
         })
@@ -141,7 +141,7 @@ describe('Auction : Database Class', () => {
             await auction.addMember(user2);
             const membership = await AuctionMembership.getMembership(user2, auction);
             expect(await auction.members).to.deep.include(membership)
-            await auction.kick(user, user2);
+            await auction.kick(user2);
             expect(await auction.members).to.not.deep.include(membership)
         } )
 
@@ -151,7 +151,7 @@ describe('Auction : Database Class', () => {
             await auction.addMember(user2);
             const membership = await AuctionMembership.getMembership(user2, auction);
             const lookup = membership.banned;
-            await auction.ban(user,user2);
+            await auction.ban(user2);
             const newMembership = await AuctionMembership.getMembership(user2, auction);
             expect(newMembership.banned).to.equal(true);
         })

@@ -13,7 +13,7 @@
       {{ item.winningBid.user.firstName }} {{ item.winningBid.user.lastName }}
     </td>
   </tr>
-<table>
+</table>
   </div>
 </template>
 
