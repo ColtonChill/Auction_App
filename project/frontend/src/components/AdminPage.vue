@@ -17,7 +17,19 @@
       <input v-model="name" class="bg-gray-200 appearance-none border-2
       border-gray-200 rounded w-full py-2 px-4 text-gray-700
       leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-      id="name" type="text">
+      id="name" type="text" @change="updateURL()">
+    </div>
+  </div>
+  <div class="md:flex md:items-center mb-6 mt-4">
+    <div class="w-32 flex-0">
+      <label class="block text-gray-600 font-thin pr-4" for="url">
+        URL
+      </label>
+    </div>
+    <div class="w-full flex-1">
+      <p class="block text-gray-600 font-thin">
+        {{ this.url }}
+      </p>
     </div>
   </div>
 
@@ -54,28 +66,14 @@
   <div class="md:flex md:items-center mb-6 mt-4">
     <div class="w-32 flex-0">
       <label class="block text-gray-600 font-bold mb-1 md:mb-0 pr-4" for="public">
-      Public
+      Private
       </label>
     </div>
     <div class="flex-1">
-      <input v-model="privacy" id="public" type="checkbox">
+      <input v-model="hidden" id="public" type="checkbox" @change="togglePrivacy()">
     </div>
   </div>
 
-  <div class="md:flex md:items-center mb-6 mt-4">
-    <div class="w-32 flex-0">
-      <label class="block text-gray-600 font-bold
-       mb-1 md:mb-0 pr-4" for="url">
-        URL
-      </label>
-    </div>
-    <div class="w-full flex-1">
-      <input v-model="url" class="bg-gray-200 appearance-none border-2
-      border-gray-200 rounded w-full py-2 px-4 text-gray-700
-      leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-      id="url" type="text" value="">
-    </div>
-  </div>
   <div class="md:flex md:items-center">
     <div class="w-32 flex-0">
       <label class="block text-gray-600 font-bold
@@ -83,24 +81,23 @@
         Join Code
       </label>
     </div>
-    <div class="w-full flex-1">
-      <router-link to="/">
+    <div class="w-full flex-1 flex items-center">
+      <div class="flex-1">{{ this.inviteCode }}</div>
+      <div class="flexGrow-2">
       <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-8 rounded mb-4" @click="changeCode()"
-      >Regen Code</button>
-      </router-link>
+      py-2 px-8 rounded mb-4" @click="regenCode()"
+      >Regenerate</button>
+      </div>
     </div>
   </div>
   <div class="md:flex md:items-center">
     <div class="md:w-1/2"></div>
     <div class="md:w-2/3">
-      <router-link to="/">
       <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
       py-2 px-4 rounded mb-4" @click="handleSave()"
       >Save</button>
-      </router-link>
     </div>
   </div>
   </form>
@@ -110,17 +107,19 @@
 </template>
 
 <script>
+import slugify from 'slugify';
 
 export default {
   name: 'AuctionSettings',
   data() {
     return {
+      initUrl: undefined,
       name: undefined,
       description: undefined,
       location: undefined,
       url: undefined,
-      privacy: undefined,
-
+      hidden: undefined,
+      inviteCode: undefined,
     };
   },
   mounted() {
@@ -128,7 +127,7 @@ export default {
   },
   methods: {
     async handleSave() {
-      const response = await fetch(`/api/v1/auctions/${this.url}`, {
+      const response = await fetch(`/api/v1/auctions/${this.initUrl}`, {
         method: 'PUT',
         mode: 'cors',
         cache: 'no-cache',
@@ -138,12 +137,39 @@ export default {
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
-        body: JSON.stringify(this),
+        body: JSON.stringify({
+          name: this.name,
+          description: this.description,
+          hidden: this.hidden,
+          url: this.url,
+          location: this.location,
+        }),
       });
-      return response.json();
+      if (this.url !== this.initUrl && response.status === 200) {
+        this.$router.push(`/auctions/${this.url}/admin`);
+        this.getAuctionData();
+      }
     },
-    async togglePrivacy() {
-      const response = await fetch(`/api/v1/auctions/${this.url}/toggle-privacy`, {
+    togglePrivacy() {
+      fetch(`/api/v1/auctions/${this.initUrl}/toggle-privacy`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+      }).then((response) => {
+        if (response.status === 200) {
+          fetch(`/api/v1/auctions/${this.initUrl}/`).then((it) => it.json()).then((newData) => {
+            this.inviteCode = newData.inviteCode;
+            this.hidden = newData.hidden;
+          });
+        }
+      });
+    },
+    regenCode() {
+      fetch(`/api/v1/auctions/${this.initUrl}/regen-code`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -152,30 +178,26 @@ export default {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
 
-
+      }).then((response) => {
+        if (response.status === 200) {
+          fetch(`/api/v1/auctions/${this.initUrl}/`).then((it) => it.json()).then((newData) => {
+            this.inviteCode = newData.inviteCode;
+          });
+        }
       });
-      return response.json();
     },
-    async regenCode() {
-      const response = await fetch(`/api/v1/auctions/${this.url}/regen-code`, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-
+    getAuctionData() {
+      /* eslint-disable-next-line */
+      fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}`).then(it => it.json()).then(json => {
+        Object.assign(this, json);
+        this.initUrl = json.url;
       });
-      return response.json();
     },
-    async getAuctionData() {
-      /*eslint-disable*/
-      const response = await fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}`, {
-
-
+    updateURL() {
+      this.url = slugify(this.name, {
+        lower: true,
+        remove: /[^\w ]/g,
       });
-      Object.assign(this, response.json());
     },
 
   },
