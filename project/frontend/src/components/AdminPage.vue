@@ -147,7 +147,7 @@ export default {
       });
       return response.json();
     },
-    async regenCode()
+    
   },
 };
 </script>
