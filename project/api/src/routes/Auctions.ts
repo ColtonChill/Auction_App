@@ -30,13 +30,14 @@ const auctionExists = async function(ctx: any) : Promise<boolean> {
         ctx.body = {'error': 'An auction with that URL does not exist.'};
         return Promise.resolve(false);
     }
+    ctx.state.auction = auction;
     const membership = await AuctionMembership.getMembership(user, auction);
+    ctx.state.membership = membership;
     if(auction.hidden && (membership === undefined || membership.banned === true)) {
         ctx.status = 403;
         ctx.body = {'error': 'You do not have access to that auction.'};
         return Promise.resolve(false);
     }
-    ctx.state.auction = auction;
     return Promise.resolve(true);
 }
 
@@ -120,7 +121,7 @@ router.get('Public Auctions', '/', async (ctx: any) => {
 });
 
 router.get('My Auctions', '/@mine', async (ctx: any) => {
-    if(!ctx.isAuthenticated()) {
+    if(!(ctx.isAuthenticated())) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
@@ -138,22 +139,21 @@ router.get('My Auctions', '/@mine', async (ctx: any) => {
 */
 //get auction info
 router.get('Get Auction', '/:auction', async (ctx: any) => {
-    if(!auctionExists(ctx)) {
+    if(!(await auctionExists(ctx))) {
         return Promise.resolve();
     }
-    ctx.body = ctx.state.auction.toJson();
+    const auction = ctx.state.auction;
+    ctx.body = auction.toJson();
     ctx.status = 200;
     return Promise.resolve();
 });
 
 //check if @me is administator of auction
 router.get('/:auction/@me', async (ctx: any) => {
-    if(!ctx.isAuthenticated()) {
-        ctx.status = 401;
-        ctx.body = {'error': 'You are not logged in.'}
+    if(!(await auctionExists(ctx))) {
         return Promise.resolve();
     }
-    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    const auction = ctx.state.auction;
     ctx.body = {'administrator': ctx.req.user.id === auction.owner.id}
     ctx.status = 200;
     return Promise.resolve();
@@ -166,15 +166,12 @@ router.get('Item List', '/:auction/items', async (ctx: any) => { //I have to dec
     // ctx.body = [...json];
     // ctx.status = 200;
     // return Promise.resolve();
-    if(!ctx.isAuthenticated()) {
-        ctx.status = 401;
-        ctx.body = {'error': 'You are not logged in.'}
+    if(!(await auctionExists(ctx))) {
         return Promise.resolve();
     }
+    const auction = ctx.state.auction;
     const user = ctx.state.user;
-    const auction = await Auction.fromDatabaseURL(ctx.params.auction);
-    const members = await auction.members;
-    const member = members.some(it => it.user.id === user.id);
+    const member = ctx.state.membership !== undefined;
     if(!member && auction.hidden) {
         ctx.status = 403;
         ctx.body = {'error': 'You do not have access to this auction.'}
@@ -187,9 +184,7 @@ router.get('Item List', '/:auction/items', async (ctx: any) => { //I have to dec
 });
 
 router.get('Item List', '/:auction/items/all', async (ctx: any) => { //I have to declare this so ts is happy.
-    if(!ctx.isAuthenticated()) {
-        ctx.status = 401;
-        ctx.body = {'error': 'You are not logged in.'}
+    if(!(await auctionExists(ctx))) {
         return Promise.resolve();
     }
     const user : User = ctx.state.user;
@@ -211,33 +206,10 @@ router.get('Item List', '/:auction/items/all', async (ctx: any) => { //I have to
 
 //List the details of an auction
 router.get('Auction Detail', '/:auction', async (ctx: any) => {
-    let auction : Auction;
-    const user : User = ctx.state.user;
-    try{
-        auction = await Auction.fromDatabaseURL(ctx.params.auction);
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
     }
-    catch(ex) {
-        ctx.status = 404;
-    }
-    if(auction.hidden) {
-        if(!ctx.isAuthenticated()) {
-            ctx.status = 401;
-            ctx.body = {'error': 'You do not have access to this auction.'};
-            return Promise.resolve();
-        }
-        const member = await AuctionMembership.isMember(user.id, auction.id);
-        if(!member) {
-            ctx.status = 403;
-            ctx.body = {'error': 'You do not have access to this auction.'};
-            return Promise.resolve();
-        }
-    }
-    const res = auction.toJson();
-    // TODO: Perm Check.
-    if(user === undefined || user.id !== auction.owner.id) {
-        delete res['invite_code'];
-    }
-    ctx.body = res;
+    ctx.body = ctx.state.auction.toJsonPublic();
     ctx.status = 200;
     return Promise.resolve();
 });
