@@ -67,7 +67,8 @@
                     bg-blue-400 text-white font-bold rounded
                     px-4 py-2 mb-4"
                     type="button"
-                    v-on:click="addItem('/api/v1/item',nm,dsc,sbid,binc,sil)"
+                    v-on:click="addItem(`/api/v1/auctions/${$route.params.auctionUrl}/items`,nm,dsc,
+                    sbid,binc,sil)"
                     >Add Item </button>
                 </div>
             <!--</form>-->
@@ -101,6 +102,7 @@ export default {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
       });
+      console.log(response.json());
       return response.json();
     },
   },
