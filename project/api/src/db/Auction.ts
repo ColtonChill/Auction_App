@@ -130,6 +130,16 @@ export default class Auction {
         }
     }
 
+    public toJsonPublic() : Object {
+        return {
+            "name": this._name,
+            "owner": this._owner.toJsonPublic(),
+            "url": this._url,
+            "description": this._description,
+            "location": this._location
+        }
+    }
+
     public async save(): Promise<void> {
         if (this._dirty) {
             await connection('auctions').where({ "id": this._id }).update({
@@ -147,45 +157,40 @@ export default class Auction {
     }
 
     //Method toggles the privacy of the auction.
-    public async togglePrivacy(user: User): Promise<void> {
-        if (user.id == this.owner.id) {
-
-            if (this._hidden == true) {
-                this._hidden = false;
-            }
-            else {
-                this._hidden = true;
-            }
+    public async togglePrivacy(): Promise<void> {
+        if (this._hidden === true) {
+            this._hidden = false;
+            this._dirty = true;
+        }
+        else {
+            await this.resetPin();
+            this._hidden = true;
+            this._dirty = true;
         }
     }
 
     //Method where an "Admin" can kick a user from an auction
-    public async kick(admin: User, target: User): Promise<void> {
+    public async kick(target: User): Promise<void> {
         if (target.id == this.owner.id) {
             return Promise.resolve();
         }
-        if (admin.id == this.owner.id) {
-            const membership = await AuctionMembership.getMembership(target, this)
-            if (membership === null) {
-                return Promise.resolve();
-
-            }
-            return membership.delete();
+        const membership = await AuctionMembership.getMembership(target, this)
+        if (membership === null) {
+            return Promise.resolve();
         }
+        return membership.delete();
     }
 
     //Method where an "Admin" can ban a user from all auctions
-    public async ban(admin: User, target: User): Promise<void> {
+    public async ban(target: User): Promise<void> {
         if (target.id == this.owner.id) {
             return Promise.resolve();
         }
-        if (admin.id == this.owner.id) {
-            let membership = await AuctionMembership.getMembership(target, this)
-            if (membership === null) {
-                membership = await AuctionMembership.createMembership(target, this);
-            }
-            return membership.setBanned(true);
+        let membership = await AuctionMembership.getMembership(target, this)
+        if (membership === null) {
+            membership = await AuctionMembership.createMembership(target, this);
         }
+        return membership.setBanned(true);
     }
 
     public async load(): Promise<void> {
@@ -200,13 +205,11 @@ export default class Auction {
         this._dirty = false;
     }
 
-    public async resetPin(user: User): Promise<String> {
-        if (user.id == this.owner.id) {
-            const pin = await genPin();
-            this._inviteCode = pin;
-            this._dirty = true;
-            return pin;
-        }
+    public async resetPin(): Promise<String> {
+        const pin = genPin();
+        this._inviteCode = pin;
+        this._dirty = true;
+        return pin;
     }
 
     public async addMember(user: User): Promise<void> {
@@ -258,6 +261,10 @@ export default class Auction {
     }
     public set owner(value: User) {
         this._owner = value;
+        this._dirty = true;
+    }
+    public set url(value: string) {
+        this._url = value;
         this._dirty = true;
     }
     public set hidden(value: boolean) {

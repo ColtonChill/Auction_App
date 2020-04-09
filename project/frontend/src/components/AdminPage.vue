@@ -58,7 +58,7 @@
       </label>
     </div>
     <div class="flex-1">
-      <input v-model="checkbox" id="public" type="checkbox">
+      <input v-model="privacy" id="public" type="checkbox">
     </div>
   </div>
 
@@ -87,7 +87,7 @@
       <router-link to="/">
       <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-8 rounded mb-4" @click="handleReg('api/v1/auth/register', first, last, eml, pass)"
+      py-2 px-8 rounded mb-4" @click="changeCode()"
       >Regen Code</button>
       </router-link>
     </div>
@@ -98,7 +98,7 @@
       <router-link to="/">
       <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-4 rounded mb-4"
+      py-2 px-4 rounded mb-4" @click="handleSave()"
       >Save</button>
       </router-link>
     </div>
@@ -109,32 +109,27 @@
 
 </template>
 
-<script lang="ts">
+<script>
 
 export default {
   name: 'AuctionSettings',
   data() {
     return {
-      name: '',
-      description: '',
-      location: '',
-      checkbox: '',
-      url: '',
-      code: '',
+      name: undefined,
+      description: undefined,
+      location: undefined,
+      url: undefined,
+      privacy: undefined,
+
     };
   },
+  mounted() {
+    this.getAuctionData();
+  },
   methods: {
-    async handleSave(url = '', first = '', last = '', eml = '', pass = '') {
-      /* eslint-disable */
-      console.log(first, last, eml, pass);
-      const data = {
-        firstName: first,
-        lastName: last,
-        email: eml,
-        password: pass,
-      };
-      const response = await fetch(url, {
-        method: 'POST',
+    async handleSave() {
+      const response = await fetch(`/api/v1/auctions/${this.url}`, {
+        method: 'PUT',
         mode: 'cors',
         cache: 'no-cache',
         credentials: 'same-origin',
@@ -143,11 +138,46 @@ export default {
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
-        body: JSON.stringify(data),
+        body: JSON.stringify(this),
       });
       return response.json();
     },
-    
+    async togglePrivacy() {
+      const response = await fetch(`/api/v1/auctions/${this.url}/toggle-privacy`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+
+
+      });
+      return response.json();
+    },
+    async regenCode() {
+      const response = await fetch(`/api/v1/auctions/${this.url}/regen-code`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+
+      });
+      return response.json();
+    },
+    async getAuctionData() {
+      /*eslint-disable*/
+      const response = await fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}`, {
+
+
+      });
+      Object.assign(this, response.json());
+    },
+
   },
 };
 </script>
