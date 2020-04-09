@@ -11,7 +11,7 @@
             <!-- The addition of the items api is needed here
             we still need whether it is a silent or a live auction
             and the bid increment item /items-->
-            <form class="mx-12" action = "/api/v1/auctions/{{ $route.params.auctionUrl }}+/items">
+            <!--<form class="mx-12" action = "/api/v1/auctions/{{ $route.params.auctionUrl }}+/items">-->
                 <div class = "md:items-center">
                     <label for = "name" class="text-gray-500 font-bold">Item Name: </label>
                     <input v-model="nm" id = "name" name="name" class="border-2 bg-gray-200"
@@ -66,7 +66,7 @@
                     bg-blue-400 text-white font-bold rounded px-4 py-2 mb-4"
                     type="button" on-click = addItem(nm,dsc,sbid,binc,sil)>Add Item </button>
                 </div>
-            </form>
+            <!--</form>-->
         </div>
     </div>
 </template>
@@ -86,6 +86,7 @@ export default {
         binc: "",
         sil: "", 
       }
+      fetch(`/api/v1/item/${ $route.params.auctionUrl}`)
     }
   },
   
