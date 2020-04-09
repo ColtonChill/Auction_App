@@ -11,7 +11,8 @@
             <!-- The addition of the items api is needed here
             we still need whether it is a silent or a live auction
             and the bid increment item /items-->
-            <!--<form class="mx-12" action = "/api/v1/auctions/{{ $route.params.auctionUrl }}+/items">-->
+            <!--<form class="mx-12" action =
+            "/api/v1/auctions/{{ $route.params.auctionUrl }}+/items">-->
                 <div class = "md:items-center">
                     <label for = "name" class="text-gray-500 font-bold">Item Name: </label>
                     <input v-model="nm" id = "name" name="name" class="border-2 bg-gray-200"
@@ -63,8 +64,11 @@
                     <!--<p name="buLabel" id="buLabel" class="text-red-500 font-bold"
                     >{{$route.params}}</p>-->
                     <button class ="md:items-center center
-                    bg-blue-400 text-white font-bold rounded px-4 py-2 mb-4"
-                    type="button" on-click = addItem(nm,dsc,sbid,binc,sil)>Add Item </button>
+                    bg-blue-400 text-white font-bold rounded
+                    px-4 py-2 mb-4"
+                    type="button"
+                    v-on:click="addItem('/api/v1/item',nm,dsc,sbid,binc,sil)"
+                    >Add Item </button>
                 </div>
             <!--</form>-->
         </div>
@@ -76,19 +80,29 @@
 export default {
   name: 'AddItem',
   methods: {
-    
-    async addItem(url = "", name = '', descrip = '', startBid = '', bidInc = "", silence = ''){
+    async addItem(url = '', name = '', descrip = '', startBid = '', bidInc = '', silence = '') {
       const data = {
-        nm: "",
-        dsc: "",
+        nm: '',
+        dsc: '',
         // pic: "",
-        sbid: "",
-        binc: "",
-        sil: "", 
-      }
-      fetch(`/api/v1/item/${ $route.params.auctionUrl}`)
-    }
+        sbid: '',
+        binc: '',
+        sil: '',
+      };
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
   },
-  
 };
 </script>
