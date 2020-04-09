@@ -6,8 +6,8 @@ import LoginPage from '@/components/LoginPage.vue';
 import AddItem from '@/components/AddItem.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
 import ItemPage from '@/components/ItemPage.vue';
-import ItemWinner from '@/components/ItemWinner.vue';
-import BidderCommitment from '@/components/BidderCommitment.vue';
+// import ItemWinner from '@/components/ItemWinner.vue';
+// import BidderCommitment from '@/components/BidderCommitment.vue';
 import AuctionContainer from '@/components/AuctionContainer.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 // import AdminPage from '@components/AdminPage.vue';
@@ -35,11 +35,11 @@ export default new Router({
       name: 'LoginPage',
       component: LoginPage,
     },
-    {
+    /* {
       path: '/:auction/addItem',
       name: 'AddItem',
       component: AddItem,
-    },
+    }, */
     {
       path: '/auctions/:auctionUrl',
       name: 'AuctionContainer',
@@ -48,6 +48,11 @@ export default new Router({
         {
           path: '',
           component: AuctionPage,
+        },
+        {
+          path: 'addItem',
+          name: 'AddItem',
+          component: AddItem,
         },
         {
           path: 'items/:itemId',
