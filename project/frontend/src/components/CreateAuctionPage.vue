@@ -101,7 +101,7 @@ export default {
       description: undefined,
       location: undefined,
       url: undefined,
-      hidden: undefined,
+      hidden: true,
       inviteCode: undefined,
     };
   },
