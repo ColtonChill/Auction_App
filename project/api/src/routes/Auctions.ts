@@ -103,7 +103,7 @@ router.post('/', async (ctx: any) => {
         ctx.status = 400;
         return Promise.resolve();
     }
-    const newAuction = await Auction.createAuction(name, ctx.request.body.description, location, ctx.state.user, url, ctx.request.body.hidden || true)
+    const newAuction = await Auction.createAuction(name, ctx.request.body.description, location, ctx.state.user, url, ctx.request.body.hidden !== undefined ? ctx.request.body.hidden : true)
     ctx.status = 201;
     ctx.set('Location', ctx.request.url + '/' + newAuction.url);
     return Promise.resolve();
