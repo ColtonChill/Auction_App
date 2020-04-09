@@ -74,13 +74,7 @@
     </div>
   </div>
 
-  <div class="md:flex md:items-center">
-    <div class="w-32 flex-0">
-      <label class="block text-gray-600 font-bold
-      mb-1 md:mb-0 pr-4" for="code">
-        Join Code
-      </label>
-    </div>
+  
 
   <div class="md:flex md:items-center">
     <div class="md:w-1/2"></div>
@@ -101,7 +95,7 @@
 import slugify from 'slugify';
 
 export default {
-  name: 'AuctionSettings',
+  name: 'CreateAuction',
   data() {
     return {
       initUrl: undefined,
