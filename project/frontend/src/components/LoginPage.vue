@@ -1,6 +1,7 @@
 <template>
 
 <!-- signUp/login form...  -->
+<div v-if="!userIsLoggedIn">
 <div class="flex col">
 <div class="max-w-md rounded overflow-hidden shadow-lg my-2 object-center mx-auto">
 <form class="mx-12">
@@ -53,15 +54,37 @@
 </form>
 </div>
 </div>
+</div>
 
 </template>
 
 
-<script lang="ts">
+<script>
 
 export default {
   name: 'LoginPage',
+  data() {
+    return {
+      userIsLoggedIn: false,
+    };
+  },
+  mounted() {
+    this.checkIfLoggedIn();
+  },
   methods: {
+    checkIfLoggedIn() {
+      /* eslint-disable */
+      fetch('/api/v1/auth/@me').then((response) => {   
+        if (response.status === 401) {
+          console.log(this.userIsLoggedIn);
+        }
+        else{
+          console.log('user is logged in... should go to profile..')
+          this.userIsLoggedIn = true;
+          this.$router.push('/profile');
+        }
+  });
+},
     async handleLogin(url = 'coo', eml = '', pass = '') {
       /* eslint-disable */
       console.log(eml, pass);

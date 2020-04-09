@@ -66,7 +66,7 @@
   <div class="md:flex md:items-center">
     <div class="md:w-1/3"></div>
     <div class="md:w-2/3">
-      <router-link to="/">
+      <router-link to="/login">
       <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
       py-2 px-4 rounded mb-4" @click="handleReg('api/v1/auth/register', first, last, eml, pass)"

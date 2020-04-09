@@ -14,7 +14,7 @@
       </label>
     </div>
     <div class="">
-      <input v-model="first" class="bg-gray-200 appearance-none border-2
+      <input v-model="code" class="bg-gray-200 appearance-none border-2
       border-gray-200 rounded w-full py-2 px-4 text-gray-700
       leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
       id="first" type="text">
@@ -24,15 +24,14 @@
   <div class="md:flex md:items-center">
     <div class="md:w-1/3"></div>
     <div class="md:w-2/3">
-      <router-link to="/">
       <button type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
-      py-2 px-4 rounded mb-4" @click="handleReg('api/v1/auth/register', first, last, eml, pass)"
+      py-2 px-4 rounded mb-4" @click="sendJoinToApi(code)"
       >Join!</button>
-      </router-link>
     </div>
   </div>
 </form>
+<h3 class="text-red"> {{this.joinFailureText}}</h3>
 </div>
 </div>
 
@@ -44,10 +43,12 @@ export default {
   name: 'JoinPage',
   data() {
     return {
+      joinFailureText: '',
     };
   },
   mounted() {
     this.checkIfLoggedIn();
+    this.updateQueryCode();
   },
 
   methods: {
@@ -62,6 +63,38 @@ export default {
         }
   });
 },
+    updateQueryCode() {
+        if (this.$route.query.code != undefined){
+            this.sendJoinToApi(this.$route.query.code);
+        }
+    },
+    async sendJoinToApi(joinCode) {
+      const url = `/api/v1/auctions/${this.$route.params.auctionUrl}/member/@me/`;
+      const data = {
+        pin: joinCode,
+      };
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data),
+      });
+      console.log("the response for join code is: " + response.status);
+      if (response.status === 201){
+          alert("successful join");
+          this.$router.push(`/auctions/${this.$route.params.auctionUrl}`);
+      }
+      else {
+          alert("Invalid join code.");
+      }
+    //   return response.json();
+    },
 }
 }
 </script>
