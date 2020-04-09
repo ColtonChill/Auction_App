@@ -36,6 +36,7 @@ const auctionExists = async function(ctx: any) : Promise<boolean> {
         ctx.body = {'error': 'You do not have access to that auction.'};
         return Promise.resolve(false);
     }
+    ctx.state.auction = auction;
     return Promise.resolve(true);
 }
 
