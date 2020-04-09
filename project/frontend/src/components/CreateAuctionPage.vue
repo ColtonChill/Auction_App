@@ -74,7 +74,6 @@
     </div>
   </div>
 
-  
 
   <div class="md:flex md:items-center">
     <div class="md:w-1/2"></div>
@@ -98,7 +97,6 @@ export default {
   name: 'CreateAuction',
   data() {
     return {
-      initUrl: undefined,
       name: undefined,
       description: undefined,
       location: undefined,
@@ -110,7 +108,7 @@ export default {
 
   methods: {
     async handleSave() {
-      const response = await fetch(`/api/v1/auctions/${this.initUrl}`, {
+      const response = await fetch('/api/v1/auctions', {
         method: 'Post',
         mode: 'cors',
         cache: 'no-cache',

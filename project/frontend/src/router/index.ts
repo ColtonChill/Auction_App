@@ -36,7 +36,7 @@ export default new Router({
       component: LoginPage,
     },
     {
-      path: 'create-auction',
+      path: '/create-auction',
       name: 'CreateAuctionPage',
       component: CreateAuctionPage,
     },
