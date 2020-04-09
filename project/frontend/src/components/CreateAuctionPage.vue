@@ -107,8 +107,8 @@ export default {
   },
 
   methods: {
-    async handleSave() {
-      const response = await fetch('/api/v1/auctions', {
+    handleSave() {
+      fetch('/api/v1/auctions', {
         method: 'Post',
         mode: 'cors',
         cache: 'no-cache',
@@ -125,10 +125,11 @@ export default {
           url: this.url,
           location: this.location,
         }),
+      }).then((response) => {
+        if (response.status === 201) {
+          this.$router.push(`/auctions/${this.url}`);
+        }
       });
-      if (this.url !== this.initUrl && response.status === 200) {
-        this.$router.push(`/auctions/${this.url}`);
-      }
     },
 
 
