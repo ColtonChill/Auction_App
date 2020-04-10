@@ -121,7 +121,7 @@ export default class Auction {
     public toJson(): Object {
         return {
             "name": this._name,
-            "invite_code": this._inviteCode,
+            "inviteCode": this._inviteCode,
             "owner": this._owner.toJsonPublic(),
             "url": this._url,
             "hidden": this._hidden,
