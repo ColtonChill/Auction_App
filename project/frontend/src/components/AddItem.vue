@@ -1,13 +1,14 @@
 <template>
     <div class="flex col">
         <!-- Page to add an item on if you are an admin-->
-        <div class = "mx-12 max-w-md shadow-lg rounded object-center my-2 mx-auto md:items-center">
+        <div class = "max-w-md shadow-lg rounded object-center my-2 mx-auto md:items-center">
             <h1 class = "font-bold text-center text-gray-500
              underline text-3xl">
              Add an Item</h1>
             <h2 class = "font-bold text-center text-gray-500
              text-2xl">{{ $route.params.auctionUrl }}</h2>
              <br>
+             <div class = "mx-12">
             <!-- The addition of the items api is needed here
             we still need whether it is a silent or a live auction
             and the bid increment item /items-->
@@ -15,7 +16,7 @@
             "/api/v1/auctions/{{ $route.params.auctionUrl }}+/items">-->
                 <div class = "md:items-center">
                     <label for = "name" class="text-gray-500 font-bold">Item Name: </label>
-                    <input v-model="nm" id = "name" name="name" class="border-2 bg-gray-200"
+                    <input v-model="name" id = "name" name="name" class="border-2 bg-gray-200"
                     maxlength="70"
                     size="30">
                 </div>
@@ -24,7 +25,7 @@
                     <label for = "description"
                     class="block text-gray-500 font-bold"
                     >Description: </label>
-                    <textarea v-model="dsc" rows='5' cols="45" id = "description"
+                    <textarea v-model="description" rows='5' cols="45" id = "description"
                     class="border-2 bg-gray-200" size ="50"
                     name="description"
                     >Enter your description Here!</textarea>
@@ -40,25 +41,24 @@
                 <div class="object-center">
                     <label for = "startingPrice" class="text-gray-500 font-bold"
                     >Starting Bid: </label>
-                    <input v-model="sbid" id = "startingPrice" type="number" name="startingPrice"
-                    class="border-2 bg-gray-200 font-bold" size = 35>
+                    <input v-model="startingBid" id = "startingPrice" type="number"
+                    name="startingPrice" class="border-2 bg-gray-200 font-bold" size = 35>
                 </div>
                 <br>
                 <div class="object-center">
                     <label for="bidIncrement" class="text-gray-500 font-bold"
                     >Bid Increment: </label>
-                    <input v-model="binc" id = "bidIncrement" type="number" name="bidIncrement"
-                    class="border-2 bg-gray-200 font-bold" size = 35>
+                    <input v-model="bidIncrement" id = "bidIncrement" type="number"
+                    name="bidIncrement" class="border-2 bg-gray-200 font-bold" size = 35>
                 </div>
                 <br>
                 <div class="object-center">
-                    <label for="silentA" class="text-gray-500 font-bold"
+                    <label for="silent" class="text-gray-500 font-bold"
                     >Silent </label>
-                    <input v-model="sil" type="radio" id = "silentA" name="silent"
-                    checked value="true">
+                    <input v-model="silent" type="radio" id="silent" name="silent" value="silent">
                     <label for="live" class="text-gray-500 font-bold"
                     >Live </label>
-                    <input v-model="sil" type="radio" id="live" name="silent" value="false">
+                    <input v-model="silent" type="radio" id="live" name="silent" value="live">
                 </div>
                 <br>
                 <div class="object-center md:items-center">
@@ -68,10 +68,10 @@
                     bg-blue-400 text-white font-bold rounded
                     px-4 py-2 mb-4"
                     type="button"
-                    v-on:click="addItem(`/api/v1/auctions/${$route.params.auctionUrl}/items`,
-                    nm,dsc,sbid,binc,sil)"
+                    v-on:click="addItem()"
                     >Add Item </button>
                 </div>
+              </div>
             <!--</form>-->
         </div>
     </div>
@@ -81,17 +81,30 @@
 <script>
 export default {
   name: 'AddItem',
+  data() {
+    return {
+      name: '',
+      description: '',
+      startingBid: 0,
+      bidIncrement: 0,
+      type: 'silent',
+      image: {},
+    };
+  },
   methods: {
-    async addItem(url = '', nm = '', descrip = '', startBid = '', bidInc = '', silence = '') {
+    addItem() {
       const data = {
-        name: nm,
-        description: descrip,
-        // pic: "",
-        startingPrice: startBid,
-        bidIncrement: bidInc,
-        silent: silence,
+        name: this.name,
+        description: this.description,
       };
-      const response = await fetch(url, {
+      if (this.type === 'silent') {
+        data.startingPrice = this.startingBid;
+        data.bidIncrement = this.bidIncrement;
+        data.silent = true;
+      } else {
+        data.silent = false;
+      }
+      fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/items`, {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -102,9 +115,11 @@ export default {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
+      }).then((res) => {
+        if (res.status === 200) {
+          this.$router.push({ name: 'AuctionPage' });
+        }
       });
-      // console.log(response);
-      return response.json();
     },
   },
 };
