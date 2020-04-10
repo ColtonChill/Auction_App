@@ -55,10 +55,10 @@
                     <label for="silentA" class="text-gray-500 font-bold"
                     >Silent </label>
                     <input v-model="sil" type="radio" id = "silentA" name="silent"
-                    checked value=true>
+                    checked value="true">
                     <label for="live" class="text-gray-500 font-bold"
                     >Live </label>
-                    <input v-model="sil" type="radio" id="live" name="silent" value=false>
+                    <input v-model="sil" type="radio" id="live" name="silent" value="false">
                 </div>
                 <br>
                 <div class="object-center md:items-center">
@@ -78,7 +78,7 @@
 </template>
 
 <!--How do I add code that checks itself? -->
-<script lang="ts">
+<script>
 export default {
   name: 'AddItem',
   methods: {
