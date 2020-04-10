@@ -90,10 +90,10 @@ router.post('/', async (ctx: any) => {
     if(location === undefined || location === "") {
         ctx.body = {'error': `'location' is required. Got ${location} instead.`}
     }
-    const url = slugify(ctx.request.body.url, {
+    const url = ctx.request.body.url ? slugify(ctx.request.body.url, {
         lower: true,
         remove: /[^\w ]/g
-    }) || slugify(ctx.request.body.name, {
+    }) : slugify(ctx.request.body.name, {
         lower: true,
         remove: /[^\w ]/g
     });
