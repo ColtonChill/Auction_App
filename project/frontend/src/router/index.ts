@@ -86,7 +86,7 @@ export default new Router({
         //     }
         //   ]
         // }
-      {
+        {
           path: 'admin',
           component: AdminPage,
           // children: [

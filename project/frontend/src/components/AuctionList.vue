@@ -1,7 +1,7 @@
 <template>
   <div>
 
-  <div v-if="auctions.length === 0" class="items-center">
+  <div v-if="auctions.length === 0 || this.unauthorized === true" class="items-center">
     <hr>
     <h3>No auctions to view...   </h3>
     <!-- the links below do not actually work yet! they are not in router yet -->
@@ -37,6 +37,7 @@ export default {
       auctions: [],
       more: true,
       page: 1,
+      unauthorized: true,
     };
   },
   components: {
@@ -54,10 +55,10 @@ export default {
         return;
       }
       this.isLoading = true;
-      fetch('/api/v1/auctions').then((data) => data.json()).then((json) => {
-        console.table(json);
+      fetch('/api/v1/auctions/@mine').then((data) => data.json()).then((json) => {
+        // console.table(json);
         this.auctions = this.auctions.concat(json);
-      });
+      }).catch(this.unauthorized = true);
     },
   },
 };
