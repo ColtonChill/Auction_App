@@ -82,6 +82,31 @@ export default class Bid {
         return Promise.resolve(this.fromObject(res[0]));
     }
 
+    public static async fromDatabaseWinningBids(auction: number) : Promise<Bid[]> {
+        const res = await connection('bids').where({auction}).orderBy('money', 'desc');
+        let uniqueItems = Array<number>();
+        let results = [];
+        for (let it of res) {
+            if(uniqueItems.indexOf(it.item) === -1) {
+                uniqueItems.push(it.item);
+                results.push((await this.fromObject(it)));
+            }
+        }
+        return results;
+    }
+
+    public static async fromDatabaseCommitment(auction: number, user: number) : Promise<Bid[]> {
+        const res = await connection('bids').where({auction}).orderBy('money', 'desc');
+        let uniqueItems = Array<number>();
+        let results = {};
+        for (let it of res) {
+            if(uniqueItems.indexOf(it.item) === -1) {
+                uniqueItems.push(it.item);
+                results[it.user] += it.money;
+            }
+        }
+        return Object.keys(results).map(it => results[it]);
+    }
     /**
      * Get the bid of all items associated with an auction.
      *  
@@ -236,6 +261,17 @@ export default class Bid {
             'auction': this._auction.id,
             'user': this._user.id,
             'item': this._item.id,
+            'money': this._money,
+            'time': this._time,
+        }
+    }
+
+    public toJsonDetailed() : Object {
+        return {
+            'id': this._id,
+            'auction': this._auction.toJsonPublic(),
+            'user': this._user.toJsonPublic(),
+            'item': this._item.toJson(),
             'money': this._money,
             'time': this._time,
         }
