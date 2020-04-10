@@ -1,7 +1,7 @@
 <template>
     <div class="flex col">
         <!-- Page to add an item on if you are an admin-->
-        <div class = "max-w-md shadow-lg rounded object-center my-2 mx-auto md:items-center">
+        <div class = "mx-12 max-w-md shadow-lg rounded object-center my-2 mx-auto md:items-center">
             <h1 class = "font-bold text-center text-gray-500
              underline text-3xl">
              Add an Item</h1>
@@ -54,7 +54,8 @@
                 <div class="object-center">
                     <label for="silentA" class="text-gray-500 font-bold"
                     >Silent </label>
-                    <input v-model="sil" type="radio" id = "silentA" name="silent" value=true>
+                    <input v-model="sil" type="radio" id = "silentA" name="silent"
+                    checked value=true>
                     <label for="live" class="text-gray-500 font-bold"
                     >Live </label>
                     <input v-model="sil" type="radio" id="live" name="silent" value=false>
@@ -67,7 +68,7 @@
                     bg-blue-400 text-white font-bold rounded
                     px-4 py-2 mb-4"
                     type="button"
-                    v-on:click="addItem(`/api/v1/auctions/${$route.params.auctionUrl}/items`,nm,dsc,
+                    v-on:click="addItem(`/api/v1/item`,nm,dsc,
                     sbid,binc,sil)"
                     >Add Item </button>
                 </div>
@@ -81,14 +82,14 @@
 export default {
   name: 'AddItem',
   methods: {
-    async addItem(url = '', name = '', descrip = '', startBid = '', bidInc = '', silence = '') {
+    async addItem(url = '', nm = '', descrip = '', startBid = '', bidInc = '', silence = '') {
       const data = {
-        nm: '',
-        dsc: '',
+        name: nm,
+        description: descrip,
         // pic: "",
-        sbid: '',
-        binc: '',
-        sil: '',
+        startingPrice: startBid,
+        bidIncrement: bidInc,
+        silent: silence,
       };
       const response = await fetch(url, {
         method: 'POST',
@@ -102,7 +103,7 @@ export default {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
       });
-      console.log(response.json());
+      console.log(response);
       return response.json();
     },
   },
