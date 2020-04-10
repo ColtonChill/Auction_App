@@ -159,6 +159,17 @@ router.get('/:auction/@me', async (ctx: any) => {
     return Promise.resolve();
 });
 
+router.get('', '/:auction/results', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction = ctx.state.auction;
+    const results = await Bid.fromDatabaseWinningBids(auction.id);
+    ctx.body = results.map(it => it.toJsonDetailed());
+    ctx.status = 200;
+    return Promise.resolve(); 
+})
+
 //List all the items of an auction
 router.get('Item List', '/:auction/items', async (ctx: any) => { //I have to declare this so ts is happy.
     // const objects = await Auction.fromDatabasePublicAuctions();
@@ -433,12 +444,12 @@ router.get('Get Bids by Auction', '/:auctionURL/bids', async (ctx:any) => {
             return Promise.resolve();
         }else{
             ctx.status = 404;
-            ctx.body = {'error': 'Quiry returned undefined.'}
+            ctx.body = {'error': 'Query returned undefined.'}
             return Promise.resolve();
         }
     } catch (error) {
         ctx.status = 404;
-        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        ctx.body = {'error': `Query failed with error: ${error}`}
         return Promise.resolve();
     }
 });
@@ -462,12 +473,12 @@ router.get('Get Bids by Item', '/:auctionID/items/:itemID/bids', async (ctx:any)
             return Promise.resolve();
         }else{
             ctx.status = 404;
-            ctx.body = {'error': 'Quiry returned undefined.'}
+            ctx.body = {'error': 'Query returned undefined.'}
             return Promise.resolve();
         }
     } catch (error) {
         ctx.status = 404;
-        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        ctx.body = {'error': `Query failed with error: ${error}`}
         return Promise.resolve();
     }
 });
@@ -497,12 +508,12 @@ router.get('Get Bids by User for an Item', '/:auctionURL/items/:itemID/bids/high
             return Promise.resolve();
         }else{
             ctx.status = 404;
-            ctx.body = {'error': 'Quiry returned undefined.'}
+            ctx.body = {'error': 'Query returned undefined.'}
             return Promise.resolve();
         }
     } catch (error) {
         ctx.status = 404;
-        ctx.body = {'error': `Quiry failed with error: ${error}`}
+        ctx.body = {'error': `Query failed with error: ${error}`}
         return Promise.resolve();
     }
 });
