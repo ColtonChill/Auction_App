@@ -6,6 +6,7 @@ import LoginPage from '@/components/LoginPage.vue';
 import AddItem from '@/components/AddItem.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
 import ItemPage from '@/components/ItemPage.vue';
+import Dashboard from '@/components/AuctionDashboard.vue';
 // import ItemWinner from '@/components/ItemWinner.vue';
 // import BidderCommitment from '@/components/BidderCommitment.vue';
 import AuctionContainer from '@/components/AuctionContainer.vue';
@@ -57,6 +58,11 @@ export default new Router({
         {
           path: 'items/:itemId',
           component: ItemPage,
+        },
+        {
+          path: 'dashboard',
+          name: 'Dashboard',
+          component: Dashboard,
         },
         // {
         //   path: 'admin',
