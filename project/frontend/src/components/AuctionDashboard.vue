@@ -17,9 +17,6 @@
 export default {
   name: 'AuctionDashboard',
   methods: {
-    itemSend() {
-      window.location.href(`/auctions/${this.$route.params.auctionUrl}/addItem`);
-    },
   },
 };
 </script>
