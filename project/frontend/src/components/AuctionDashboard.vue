@@ -6,10 +6,10 @@
         <h2 class="text-xl text-semibold text-center
         pt-6 pb-6 text-midBlue">{{this.$route.params.auctionUrl}}</h2>
         <div class="md:flex md:items-center align-content:center">
-            <router-link to="/auctions/{{$route.params.auctionUrl}}/addItem"
+            <button v-on:click="toItem()"
             tag="button" class="bg-blue-400 text-white font-bold
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center align-content:center"
-            >Add Item</router-link>
+            >Add Item</button>
         </div>
     </div>
 </template>
@@ -17,6 +17,9 @@
 export default {
   name: 'AuctionDashboard',
   methods: {
+    toItem() {
+      this.$router.push({ name: 'AddItem' });
+    },
   },
 };
 </script>
