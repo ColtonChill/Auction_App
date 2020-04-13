@@ -20,5 +20,7 @@ export default {
   },
 };
 </script>
-
+<!--Is there a reason I can't dynamic route inside of html?
+Is there a way to use vue to get to that page withour this?
+Why is it adding the weird digit!?!?!?!?-->
 <style src="@/assets/tailwind.css"></style>
