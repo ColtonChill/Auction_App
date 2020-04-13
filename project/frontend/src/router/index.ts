@@ -11,6 +11,7 @@ import AuctionContainer from '@/components/AuctionContainer.vue';
 import JoinPage from '@/components/JoinPage.vue';
 import ProfilePage from '@/components/ProfilePage.vue';
 import CreateAuctionPage from '@/components/CreateAuctionPage.vue';
+import BrowsePublicPage from '@/components/BrowsePublicPage.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 import AdminPage from '@/components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
@@ -46,6 +47,11 @@ export default new Router({
       path: '/create-auction',
       name: 'CreateAuctionPage',
       component: CreateAuctionPage,
+    },
+    {
+      path: '/browse',
+      name: 'BrowsePublicPage',
+      component: BrowsePublicPage,
     },
     {
       path: '/auctions/:auctionUrl',

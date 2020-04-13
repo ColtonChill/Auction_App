@@ -1,5 +1,7 @@
 <template>
   <div>
+      <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-darkBlue">
+        Public Auctions </h2>
 
   <div v-if="auctions.length === 0 || this.unauthorized === true" class="items-center">
     <hr>
@@ -56,7 +58,7 @@ export default {
         return;
       }
       this.isLoading = true;
-      fetch('/api/v1/auctions/@mine').then((data) => {
+      fetch('/api/v1/auctions/').then((data) => {
         if (data.response != 200) {
           this.unauthorized = true;
           console.log("user isn't logged in.")
