@@ -89,10 +89,8 @@ export default {
       /* eslint-disable */
       fetch('/api/v1/auth/@me').then((response) => {   
         if (response.status === 401) {
-          console.log(this.userIsLoggedIn);
         }
         else{
-          console.log('user is logged in... should go to profile..')
           this.userIsLoggedIn = true;
           this.$router.push('/profile');
         }
@@ -102,8 +100,6 @@ export default {
       this.error = !this.error;
     },
     async handleLogin(url = 'coo', eml = '', pass = '') {
-      /* eslint-disable */
-      console.log(eml, pass);
       const data = {
         email: eml,
         password: pass,

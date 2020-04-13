@@ -29,7 +29,6 @@ export default {
       fetch('api/v1/auth/@me').then((data) => data.json()).then((json) => {
       console.table(json);
       Object.assign(this, json)
-      console.log(this);
       });
       }
   }

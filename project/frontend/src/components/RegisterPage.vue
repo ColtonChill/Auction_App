@@ -111,7 +111,6 @@ export default {
   methods: {
     async handleReg(url = '', first = '', last = '', eml = '', pass = '') {
       /* eslint-disable */
-      console.log(first, last, eml, pass);
       const data = {
         firstName: first,
         lastName: last,
@@ -130,10 +129,8 @@ export default {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
       });
-      console.log(response.status)
       if (response.status != 200){
         this.error = true;
-        console.log('got in here')
       }
       if (response.status == 200) {
         this.$router.push('/login');

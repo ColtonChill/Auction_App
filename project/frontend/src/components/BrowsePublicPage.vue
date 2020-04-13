@@ -3,18 +3,14 @@
       <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-darkBlue">
         Public Auctions </h2>
 
-  <div v-if="auctions.length === 0 || this.unauthorized === true" class="items-center">
+  <div v-if="auctions.length === 0" class="items-center">
     <hr>
     <h3>No auctions to view...   </h3>
     <!-- the links below do not actually work yet! they are not in router yet -->
-    <router-link to="/browse"> <p class="hover:underline text-blue-600">
-    Browse public auctions</p> </router-link>
-    <!-- <router-link to="/join"> <p class="hover:underline text-blue-600">
-    Join with a QR code</p> </router-link> -->
   </div>
   <div v-else>
-  <h2 class="pl-8">My Auctions</h2>
-    <AuctionItem
+  <h2 class="pl-8">Auctions</h2>
+    <AuctionItemWJoin
         v-for="auction in auctions"
         :key="auction.id"
         :id="auction.id"
@@ -29,7 +25,7 @@
 </template>
 
 <script>
-import AuctionItem from './AuctionItem.vue';
+import AuctionItemWJoin from './AuctionItemWJoin.vue';
 
 export default {
   name: 'AuctionList',
@@ -39,11 +35,10 @@ export default {
       auctions: [],
       more: true,
       page: 1,
-      unauthorized: true,
     };
   },
   components: {
-    AuctionItem,
+    AuctionItemWJoin,
   },
   mounted() {
     this.getAuctions();
@@ -59,11 +54,10 @@ export default {
       }
       this.isLoading = true;
       fetch('/api/v1/auctions/').then((data) => {
-        if (data.response != 200) {
-          this.unauthorized = true;
-          console.log("user isn't logged in.")
+        if (data.status != 200) {
+          console.log("could not load the public auctions, code: " + data.status);
         }
-        return data.json()}).catch((er) => {console.log("uh oh")}).then((json) => {
+        return data.json()}).catch((er) => {console.log(er)}).then((json) => {
         // console.table(json);
         this.auctions = this.auctions.concat(json);
       });

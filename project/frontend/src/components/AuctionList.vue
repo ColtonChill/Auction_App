@@ -1,9 +1,9 @@
 <template>
   <div>
 
-  <div v-if="auctions.length === 0 || this.unauthorized === true" class="items-center">
+  <div v-if="auctions.length === 0 || this.unauthorized === true" class="items-center mb-10">
     <hr>
-    <h3>No auctions to view...   </h3>
+    <h3>No auctions to view...  </h3>
     <!-- the links below do not actually work yet! they are not in router yet -->
     <router-link to="/browse"> <p class="hover:underline text-blue-600">
     Browse public auctions</p> </router-link>
@@ -11,7 +11,6 @@
     Join with a QR code</p> </router-link> -->
   </div>
   <div v-else>
-  <h2 class="pl-8">My Auctions</h2>
     <AuctionItem
         v-for="auction in auctions"
         :key="auction.id"
@@ -57,11 +56,11 @@ export default {
       }
       this.isLoading = true;
       fetch('/api/v1/auctions/@mine').then((data) => {
-        if (data.response != 200) {
+        if (data.status != 200) {
           this.unauthorized = true;
           console.log("user isn't logged in.")
         }
-        return data.json()}).catch((er) => {console.log("uh oh")}).then((json) => {
+        return data.json()}).catch((er) => {console.log(er)}).then((json) => {
         // console.table(json);
         this.auctions = this.auctions.concat(json);
       });
