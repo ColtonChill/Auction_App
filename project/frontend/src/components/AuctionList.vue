@@ -47,6 +47,7 @@ export default {
     this.getAuctions();
   },
   methods: {
+    /* eslint-disable */
     getAuctions() {
       if (!this.more) {
         return;
@@ -55,10 +56,15 @@ export default {
         return;
       }
       this.isLoading = true;
-      fetch('/api/v1/auctions/@mine').then((data) => data.json()).then((json) => {
+      fetch('/api/v1/auctions/@mine').then((data) => {
+        if (data.response != 200) {
+          this.unauthorized = true;
+          console.log("user isn't logged in.")
+        }
+        return data.json()}).catch((er) => {console.log("uh oh")}).then((json) => {
         // console.table(json);
         this.auctions = this.auctions.concat(json);
-      }).catch(this.unauthorized = true);
+      });
     },
   },
 };
