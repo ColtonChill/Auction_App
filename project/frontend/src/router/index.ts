@@ -13,6 +13,7 @@ import AuctionContainer from '@/components/AuctionContainer.vue';
 import JoinPage from '@/components/JoinPage.vue';
 import ProfilePage from '@/components/ProfilePage.vue';
 import CreateAuctionPage from '@/components/CreateAuctionPage.vue';
+import NotFound from '@/components/404.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 import AdminPage from '@/components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
@@ -21,6 +22,7 @@ import AdminPage from '@/components/AdminPage.vue';
 
 Vue.use(Router);
 
+// @ts-ignore
 export default new Router({
   mode: 'history',
   routes: [
@@ -56,11 +58,11 @@ export default new Router({
     },
     {
       path: '/auctions/:auctionUrl',
-      name: 'AuctionContainer',
       component: AuctionContainer,
       children: [
         {
           path: '',
+          name: 'AuctionHome',
           component: AuctionPage,
         },
         {
@@ -70,9 +72,11 @@ export default new Router({
         },
         {
           path: 'items/:itemId',
+          name: 'ItemPage',
           component: ItemPage,
         },
         {
+          name: 'JoinPage',
           path: 'join',
           component: JoinPage,
         },
@@ -104,6 +108,7 @@ export default new Router({
         //   ]
         // }
         {
+          name: 'AdminPage',
           path: 'admin',
           component: AdminPage,
           // children: [
@@ -142,5 +147,14 @@ export default new Router({
     //   name: 'BidderCommitment',
     //   component: BidderCommitment,
     // },
+    {
+      path: '/404',
+      component: NotFound,
+      name: '404',
+    },
+    {
+      path: '*',
+      redirect: '/404',
+    },
   ],
 });

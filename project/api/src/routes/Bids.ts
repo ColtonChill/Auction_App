@@ -61,7 +61,7 @@ router.get('Get a Bid by ID', '/:id/', async (ctx:any) => {
     try {
         const res = await Bid.fromDatabaseId(ctx.params.id);
         if(res !== undefined) {
-            ctx.body = res.toJson();
+            ctx.body = res.toJsonDetailed();
             ctx.status = 200;
             return Promise.resolve();
         }else{

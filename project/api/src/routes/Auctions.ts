@@ -15,12 +15,6 @@ const router = new Router();
 const upload = multer();
 
 const auctionExists = async function(ctx: any) : Promise<boolean> {
-    if(!ctx.isAuthenticated()) {
-        ctx.status = 401;
-        ctx.body = {'error': 'You are not logged in.'}
-        return Promise.resolve(false);
-    }
-    const user = ctx.state.user;
     let auction;
     try{
         auction = await Auction.fromDatabaseURL(ctx.params.auction);
@@ -30,6 +24,12 @@ const auctionExists = async function(ctx: any) : Promise<boolean> {
         ctx.body = {'error': 'An auction with that URL does not exist.'};
         return Promise.resolve(false);
     }
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve(false);
+    }
+    const user = ctx.state.user;
     ctx.state.auction = auction;
     const membership = await AuctionMembership.getMembership(user, auction);
     ctx.state.membership = membership;
@@ -355,6 +355,8 @@ router.post('Add Item Image', '/:auction/item-image', upload.single('image'), as
     }
     fs.mkdirSync(path.join('/user', item.auction.url));
     fs.writeFileSync(path.join('/user', item.auction.url, ctx.request.body['itemId'] + "." + mt.extension(ctx.request.file.mimetype)), ctx.file.buffer);
+    item.imageName = item.id + '.' + mt.extension(ctx.request.file.mimetype);
+    await item.save();
     ctx.status = 200;
 });
 
@@ -411,11 +413,13 @@ router.post('Create Item', '/:auction/items', async (ctx: any) => {
     if(ctx.request.body.silent) {
         const item = await auction.addSilentItem(ctx.request.body.name, ctx.request.body.description, ctx.request.body.imagePath, ctx.request.body.startingPrice, ctx.request.body.bidIncrement);
         console.log(item);
+        ctx.body = item.toJson();
         ctx.set('Location', ctx.request.url + '/' + item.id);
     }
     else {
         const item = await auction.addLiveItem(ctx.request.body.name, ctx.request.body.description, ctx.request.body.imagePath, 0)
         console.log(item);
+        ctx.body = item.toJson();
         ctx.set('Location', ctx.request.url + '/' + item.id);
     }
     ctx.status = 200;

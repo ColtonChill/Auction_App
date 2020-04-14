@@ -35,7 +35,7 @@
                 <div class="object-center">
                     <label for = "picture" class="text-gray-500 font-bold">Picture: </label>
                     <input type = 'file' accept = "image/*" id="picture" name="picture"
-                    class="bg-green-400">
+                    @change="setImage($event)" class="bg-green-400">
                 </div>
                 <br>
                 <div class="object-center">
@@ -92,6 +92,12 @@ export default {
     };
   },
   methods: {
+    setImage(event) {
+      /* eslint-disable-next-line */
+      console.log(event.target.files[0]);
+      /* eslint-disable-next-line */
+      this.image = event.target.files[0];
+    },
     addItem() {
       const data = {
         name: this.name,
@@ -115,9 +121,18 @@ export default {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
-      }).then((res) => {
+      }).then(async (res) => {
         if (res.status === 200) {
-          this.$router.push({ name: 'AuctionPage' });
+          const json = await res.json();
+          const fd = new FormData();
+          fd.append('image', this.image);
+          fd.append('itemId', json.id);
+          fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/item-image`, {
+            method: 'POST',
+            body: fd,
+          }).then((ignored) => {
+            this.$router.push({ name: 'AuctionPage', params: { auctionUrl: this.$route.params.auctionUrl } });
+          });
         }
       });
     },

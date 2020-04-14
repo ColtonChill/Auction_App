@@ -135,6 +135,7 @@ export default class Auction {
             "name": this._name,
             "owner": this._owner.toJsonPublic(),
             "url": this._url,
+            "hidden": this._hidden,
             "description": this._description,
             "location": this._location
         }

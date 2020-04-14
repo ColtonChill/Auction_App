@@ -97,6 +97,7 @@ export default {
   name: 'CreateAuction',
   data() {
     return {
+      loggedIn: undefined,
       name: undefined,
       description: undefined,
       location: undefined,
@@ -105,8 +106,17 @@ export default {
       inviteCode: undefined,
     };
   },
-
+  mounted() {
+    this.checkIfLoggedIn();
+  },
   methods: {
+    checkIfLoggedIn() {
+      fetch('/api/v1/auth/@me').then((response) => {
+        if (response.status === 401) {
+          this.$router.push('/login');
+        }
+      });
+    },
     handleSave() {
       fetch('/api/v1/auctions', {
         method: 'Post',
@@ -122,7 +132,6 @@ export default {
           name: this.name,
           description: this.description,
           hidden: this.hidden,
-          url: this.url,
           location: this.location,
         }),
       }).then((response) => {

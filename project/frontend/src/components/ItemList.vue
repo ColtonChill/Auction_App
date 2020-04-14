@@ -57,6 +57,8 @@ export default {
       fetch(`/api/v1/auctions/${this.auctionIBelongTo}/items`).then((data) => data.json()).then((json) => {
         console.table(json);
         this.items = this.items.concat(json);
+      }).catch((ex) => {
+        console.log(JSON.stringify(ex));
       });
     },
   },

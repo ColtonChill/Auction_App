@@ -86,11 +86,30 @@ export default {
       console.log("the auction before stringify: " + this.$route.params.auctionName);
       console.log("the auction after: " + auctionString);
       console.log("but in the url fetch it appears as an object... ")
-      fetch(`/api/v1/auctions/${auctionString}/items/${itemString}`).then((data) => data.json()).then((json) => {
-      console.table(json);
-      Object.assign(this, json)
-      console.log(this);
-      });
+      fetch(`/api/v1/auctions/${auctionString}/items/${itemString}`)
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+          throw new APIError(res.json(), res.status);
+        })
+        .then((json) => {
+          Object.assign(this, json)
+        })
+        .catch((ex) => {
+          if (ex.status === 404) {
+            this.$router.push('/404');
+          } else if (ex.status === 401) {
+            this.$router.push('/login');
+          } else if (ex.status === 403) {
+            this.$router.push(`${this.$route.path}/join`);
+          } else {
+            /* eslint-disable-next-line */
+            console.log(ex);
+            this.$router.push('/');
+          }
+        });
+
     },
   },
 };
