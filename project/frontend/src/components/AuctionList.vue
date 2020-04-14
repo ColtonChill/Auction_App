@@ -1,6 +1,5 @@
 <template>
   <div>
-  <h2 class="pl-8">My Auctions</h2>
   <div v-if="auctions" class="items-center">
     <AuctionItem
         v-for="auction in auctions"
