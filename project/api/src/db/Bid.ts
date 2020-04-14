@@ -95,7 +95,7 @@ export default class Bid {
         return results;
     }
 
-    public static async fromDatabaseCommitment(auction: number, user: number) : Promise<Bid[]> {
+    public static async fromDatabaseCommitment(auction: number) : Promise<Bid[]> {
         const res = await connection('bids').where({auction}).orderBy('money', 'desc');
         let uniqueItems = Array<number>();
         let results = {};

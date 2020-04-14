@@ -170,6 +170,17 @@ router.get('', '/:auction/results', async (ctx: any) => {
     return Promise.resolve(); 
 })
 
+router.get('', '/:auction/commitment', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction = ctx.state.auction;
+    const results = await Bid.fromDatabaseCommitment(auction.id);
+    ctx.body = results.map(it => it.toJson());
+    ctx.status = 200;
+    return Promise.resolve(); 
+})
+
 //List all the items of an auction
 router.get('Item List', '/:auction/items', async (ctx: any) => { //I have to declare this so ts is happy.
     // const objects = await Auction.fromDatabasePublicAuctions();
