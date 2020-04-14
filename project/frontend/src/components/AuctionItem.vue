@@ -1,10 +1,8 @@
 <template>
   <div class="lg:flex px-6 pb-2" >
   <router-link :to="'/auctions/' + auction.url">
-    <div class="border border-gray-500
-    lg:border-t lg:border-gray-400 bg-white
-    rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
-    justify-between leading-normal">
+    <div class="bg-white rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
+    justify-between leading-normal shadow-md">
    <div class="flex-shrink-0 flex-grow-1 h-12 ">
       <img class="w-12 h-12 rounded-full mr-4" src="/img/school.jpg">
       </div>

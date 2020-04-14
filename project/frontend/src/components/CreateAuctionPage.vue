@@ -113,7 +113,7 @@ export default {
     checkIfLoggedIn() {
       fetch('/api/v1/auth/@me').then((response) => {
         if (response.status === 401) {
-          this.$router.push('/login');
+          this.$router.push({ name: 'LoginPage', query: { redir: this.$router.path } });
         }
       });
     },

@@ -104,7 +104,15 @@ export default {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
       });
-      return response.json();
+      if(response.status === 200) {
+        if(this.$route.query.redir) {
+          this.$router.push(redir);
+        }
+        this.$router.push('/profile');
+      }
+      else {
+        this.error = "Failed to login with that username/password combination.";
+      }
     },
   },
 };

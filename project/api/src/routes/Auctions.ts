@@ -278,6 +278,9 @@ router.put('Auction Edit', '/:auction', async (ctx: any) => {
     return Promise.resolve();
 });
 
+router.post('Auction Open', '/:auction/open', async (ctx:any) => {
+
+});
 //
 router.get('Auction membership','/:auction/member/@me/', async (ctx:any)=>{
     if(!ctx.isAuthenticated()) {

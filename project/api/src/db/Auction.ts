@@ -23,7 +23,7 @@ export default class Auction {
     private _inviteCode: String;
     private _dirty: boolean;
 
-    private constructor(id: number, name: String, description: String, location: String, owner: User, url: string, hidden: boolean, inviteCode: String) {
+    private constructor(id: number, name: String, description: String, location: String, owner: User, url: string, hidden: boolean, inviteCode: String, private _open: boolean) {
         this._id = id;
         this._name = name;
         this._description = description;
@@ -114,7 +114,7 @@ export default class Auction {
     private static async fromObject(object: Object): Promise<Auction> {
         const user = await User.fromDatabaseId(object["owner"]);
         const auction = new Auction(object["id"], object["name"], object["description"], object["location"],
-            user, object["url"], object["hidden"], object["invite_code"])
+            user, object["url"], object["hidden"], object["invite_code"], object["open"]);
         return auction;
     }
 
