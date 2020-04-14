@@ -11,7 +11,7 @@
     <div class="flex-shrink-1 flex-grow-4">
       <div class="text-gray-900 font-bold text-l mb-1">
         {{ auction.name }}
-        <svg class=" svg text-gray-500 w-3 h-3 mr-2"
+        <svg v-if="auction.hidden" class=" svg text-gray-500 w-3 h-3 mr-2"
         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
           <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2
           2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5

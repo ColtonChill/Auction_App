@@ -73,7 +73,7 @@ export default class Item {
         if(size < 1) {
             return Promise.resolve([])
         }
-        const objects = await connection('items').orderBy('id').limit(size).offset((page - 1) * size).where({'id': auction});
+        const objects = await connection('items').orderBy('id').limit(size).offset((page - 1) * size).where({'auction': auction});
         return Promise.all(objects.map(this.fromObject));
     }
     /**

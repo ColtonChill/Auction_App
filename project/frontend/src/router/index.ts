@@ -3,15 +3,18 @@ import Router from 'vue-router';
 import LandingPage from '@/components/LandingPage.vue';
 import RegisterPage from '@/components/RegisterPage.vue';
 import LoginPage from '@/components/LoginPage.vue';
+import AddItem from '@/components/AddItem.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
 import ItemPage from '@/components/ItemPage.vue';
-import ItemWinner from '@/components/ItemWinner.vue';
-import BidderCommitment from '@/components/BidderCommitment.vue';
+import Dashboard from '@/components/AuctionDashboard.vue';
+// import ItemWinner from '@/components/ItemWinner.vue';
+// import BidderCommitment from '@/components/BidderCommitment.vue';
 import AuctionContainer from '@/components/AuctionContainer.vue';
 import JoinPage from '@/components/JoinPage.vue';
 import ProfilePage from '@/components/ProfilePage.vue';
 import CreateAuctionPage from '@/components/CreateAuctionPage.vue';
 import BrowsePublicPage from '@/components/BrowsePublicPage.vue';
+import NotFound from '@/components/404.vue';
 // import AdminItemsPage from '@components/AdminItemsPage.vue';
 import AdminPage from '@/components/AdminPage.vue';
 // import AdminPermissionsPage from '@components/AdminPermissionsPage.vue';
@@ -20,6 +23,7 @@ import AdminPage from '@/components/AdminPage.vue';
 
 Vue.use(Router);
 
+// @ts-ignore
 export default new Router({
   mode: 'history',
   routes: [
@@ -38,6 +42,11 @@ export default new Router({
       name: 'LoginPage',
       component: LoginPage,
     },
+    /* {
+      path: '/:auction/addItem',
+      name: 'AddItem',
+      component: AddItem,
+    }, */
     {
       path: '/profile',
       name: 'ProfilePage',
@@ -55,20 +64,32 @@ export default new Router({
     },
     {
       path: '/auctions/:auctionUrl',
-      name: 'AuctionContainer',
       component: AuctionContainer,
       children: [
         {
           path: '',
+          name: 'AuctionHome',
           component: AuctionPage,
         },
         {
+          path: 'addItem',
+          name: 'AddItem',
+          component: AddItem,
+        },
+        {
           path: 'items/:itemId',
+          name: 'ItemPage',
           component: ItemPage,
         },
         {
+          name: 'JoinPage',
           path: 'join',
           component: JoinPage,
+        },
+        {
+          path: 'dashboard',
+          name: 'Dashboard',
+          component: Dashboard,
         },
         // {
         //   path: 'admin',
@@ -93,6 +114,7 @@ export default new Router({
         //   ]
         // }
         {
+          name: 'AdminPage',
           path: 'admin',
           component: AdminPage,
           // children: [
@@ -131,5 +153,14 @@ export default new Router({
     //   name: 'BidderCommitment',
     //   component: BidderCommitment,
     // },
+    {
+      path: '/404',
+      component: NotFound,
+      name: '404',
+    },
+    {
+      path: '*',
+      redirect: '/404',
+    },
   ],
 });
