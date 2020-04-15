@@ -56,7 +56,6 @@ export default {
       /* eslint-disable */
       fetch('/api/v1/auth/@me').then((response) => {   
         if (response.status === 401) {
-          console.log(this.userIsLoggedIn);
           this.$router.push('/login');
           //probably need a way to tell the login page that they were
           //trying to join so it redirects them there after... 
