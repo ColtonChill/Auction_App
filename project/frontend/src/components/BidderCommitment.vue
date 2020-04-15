@@ -14,7 +14,7 @@
     <td class="border px-4 py-2">{{user.commitment}}</td>
 
   </tr>
-    <table>
+    </table>
     </div>
 </template>
 
