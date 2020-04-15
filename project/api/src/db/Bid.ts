@@ -170,6 +170,19 @@ export default class Bid {
             .orderBy("money",'desc').first();
     }
 
+         /**
+     * Get the bids of a user on an item
+     * @param item The auction to lookup.
+     * @returns A bid between the two if it exists.
+     */
+    public static async DatabaseItemFirst(id_item: number,id_auction: number) : Promise<Bid> {
+        const item = await Item.fromDatabaseId(id_item);
+        const auction = await Auction.fromDatabaseID(id_auction);
+        return await connection('bids')
+            .where({'auction': auction.id, 'item': item.id})
+            .orderBy("money",'desc').first();
+    }
+
     /**@DOTO Ask Hunter if this is even necessary for the admin page, and if so, do we need an auction wide search as well?
      */ 
     /**

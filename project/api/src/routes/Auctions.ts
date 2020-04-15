@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import Item from '../db/Item';
+import Item, { LiveItem, SilentItem } from '../db/Item';
 import Auction from '../db/Auction';
 import User from '../db/User';
 import Bid from '../db/Bid';
@@ -198,13 +198,15 @@ router.get('Auction membership','/:auction/member/@me/', async (ctx:any)=>{
     
 });
 
-router.post('/:auction/member/@me/', async (ctx:any)=>{
+//join auction
+router.post('Join auction','/:auction/member/@me/', async (ctx:any)=>{
     if(!ctx.isAuthenticated()) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    if(Auction.urlExists(ctx.params.auction)){
+    console.log("AuctionURL: " + await Auction.urlExists(ctx.params.auction))
+    if(await Auction.urlExists(ctx.params.auction)){
         const auction = await Auction.fromDatabaseURL(ctx.params.auction);
         if(auction.hidden){
             console.log("LOG_body: "+ctx.request.body.pin);
@@ -215,6 +217,53 @@ router.post('/:auction/member/@me/', async (ctx:any)=>{
             }
             console.log(auction.pin);
             if(ctx.request.body.pin != auction.pin){
+                ctx.status = 401;
+                ctx.body = {'error': 'Invalid password'}
+                return Promise.resolve();
+            }
+        }
+        const exitsingMembership = await AuctionMembership.getMembership(ctx.req.user,auction);
+        if(exitsingMembership == undefined){
+            const membership = await AuctionMembership.createMembership(ctx.req.user,auction);
+            ctx.status = 201;
+            ctx.body = membership.toJson();
+            return Promise.resolve();
+        }else{
+            ctx.status = 400;
+            ctx.body = {'error': 'User already a member of auction'}
+            return Promise.resolve();
+        }
+    }else{
+        ctx.status = 404;
+        ctx.body = {'error': 'Auction is not found'}
+        return Promise.resolve();
+    }
+    
+});
+
+//join auction via QR code
+router.post('Join auction','/:auction/join', async (ctx:any)=>{
+    // console.log("log: "+ctx.query.code);
+    // ctx.status = 401;
+    // ctx.body = {'error': `${ctx.request.code}`}
+    // return Promise.resolve();
+    if(!ctx.isAuthenticated()) {
+        ctx.status = 401;
+        ctx.body = {'error': 'You are not logged in.'}
+        return Promise.resolve();
+    }
+    console.log("AuctionURL: " + await Auction.urlExists(ctx.params.auction))
+    if(await Auction.urlExists(ctx.params.auction)){
+        const auction = await Auction.fromDatabaseURL(ctx.params.auction);
+        if(auction.hidden){
+            console.log("LOG_body: "+ctx.request.body.pin);
+            if(ctx.request.body.pin == undefined){
+                ctx.status = 401;
+                ctx.body = {'error': 'No password provided'}
+                return Promise.resolve();
+            }
+            console.log(auction.pin);
+            if(ctx.query.code != auction.pin){
                 ctx.status = 401;
                 ctx.body = {'error': 'Invalid password'}
                 return Promise.resolve();
@@ -392,9 +441,16 @@ router.get('Get Bids by User for an Item', '/:auctionURL/items/:itemID/bids/high
         ctx.body={'error':`'User' is required, Got ${ctx.params.userID} instead.`}
         return Promise.resolve();
     }
+    const isAuction = await Auction.urlExists(ctx.params.auctionURL)
+    if(!isAuction){
+        ctx.status=400;
+        ctx.body={'error':`'Auction "${ctx.params.auctionURL}" is not found`}
+        return Promise.resolve();
+    }
+    const auction = await Auction.fromDatabaseURL(ctx.params.auctionURL);
     try {
         console.log("try block");
-        const res = await Bid.DatabaseItemUserFirst(ctx.params.itemID,ctx.req.user.id);
+        const res = await Bid.DatabaseItemFirst(ctx.params.itemID,auction.id);
         if(res !== undefined) {
             ctx.body = res;
             ctx.status = 200;
@@ -470,10 +526,54 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.body = {'error': 'Invalid number format for item.'};
         return Promise.resolve();
     }
-    if(data.money === undefined) {//TODO: how do I check if it is a SilentItem
-        ctx.status = 400;
-        ctx.body = {'error': 'No Money specified.'}
+    if(data.money === undefined) {
+        //look up bid increment
+        const itemOb = await Item.fromDatabaseId(item);
+        const amount = itemOb.toJson()['bid_increment'];
+        console.log("amount: " + amount);
+        const highest = (await Bid.DatabaseItemFirst(item,auction)).money;
+        const bid = await Bid.createBid(auction,user,item,amount+highest);
+        ctx.set('bid', `${ctx.request.url}/${bid.id}`);
+        ctx.body = {"responce" : `Auto bid, ${amount+highest} implemented`};
+        ctx.status = 201;        
         return Promise.resolve();
+        // try {
+        //     console.log("Log silentItem: atempted");
+        //     const itemOb = await SilentItem.fromDatabaseId(item);
+        //     console.log("Log silentItem: Passed");
+        //     console.log(itemOb.toJson());
+        // } catch (error) {// ctx.request.body.bidIncrement
+        //     try {
+        //         console.log("Log silentItem: Failed");    
+        //         console.log("Log liveItem: atempted");
+        //         const itemOb = await SilentItem.fromDatabaseId(item);
+        //         console.log("Log liveItem: Passed");   
+        //         console.log(itemOb.toJson());   
+        //     } catch (error) {
+        //         ctx.status = 400;
+        //         ctx.body = {'error': 'No Money specified and no item found.'}
+        //         return Promise.resolve();
+        //     }        
+        // }
+
+        // try {
+        //     console.log("Log liveItem: atempted");
+        //     const itemOb = await LiveItem.fromDatabaseId(item);
+        //     console.log("Log liveItem: Passed");
+        //     console.log(itemOb.toJson());   
+        // } catch (error) {// ctx.request.body.bidIncrement
+        //     try {
+        //         console.log("Log liveItem: Failed"); 
+        //         console.log("Log silentItem: atempted");
+        //         const itemOb = await SilentItem.fromDatabaseId(item);
+        //         console.log("Log silentItem: Passed");
+        //         console.log(itemOb.toJson());   
+        //     } catch (error) {
+        //         ctx.status = 400;
+        //         ctx.body = {'error': 'No Money specified and no item found.'}
+        //         return Promise.resolve();
+        //     }        
+        // }
     }else{
         money = parseInt(data.money);
     }
