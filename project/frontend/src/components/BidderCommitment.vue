@@ -1,4 +1,9 @@
 <template>
+  <div>
+  <div v-if="this.users.length === 0">
+    <p>There have been no bids in this auction yet.</p>
+  </div>
+
     <div>
         <table class="table-auto">
   <tr>
@@ -8,35 +13,49 @@
   </tr>
   <tr v-for="user in users" :key="user.id">
     <td class="border px-4 py-2">
-    {{user.firstName }} {{user.lastName }}
+    {{user.user.firstName }} {{user.user.lastName }}
     </td>
-    <td class="border px-4 py-2">{{user.email}}</td>
-    <td class="border px-4 py-2">{{user.commitment}}</td>
+    <td class="border px-4 py-2">{{user.user.email}}</td>
+    <td class="border px-4 py-2">{{user.amount}}</td>
 
   </tr>
     </table>
     </div>
+  </div>
 </template>
 
 <script>
+import APIError from '../Errors';
+
 export default {
   name: 'BidderCommitment',
   data() {
     return {
       users: [
-        {
-          firstName: 'Hunter1', lastName: 'Henrichsen', email: 'hunter1.henrichsen@gmail.com', commitment: 4202134,
-        },
-        {
-          firstName: 'Hunter2', lastName: 'Henrichsen', email: 'hunter2.henrichsen@gmail.com', commitment: 4206234,
-        },
-        {
-          firstName: 'Hunter3', lastName: 'Henrichsen', email: 'hunter3.henrichsen@gmail.com', commitment: 42012,
-        },
-
-
       ],
     };
+  },
+  mounted() {
+    this.getResults();
+  },
+  methods: {
+    getResults() {
+      fetch(`/api/v1/auctions/${this.auctionUrl}/commitment`).then((data) => {
+        if (data.ok) {
+          return data.json();
+        }
+        throw new APIError(data.json(), data.status, 'Failed to get auction results.');
+      }).then((json) => {
+        this.users = this.users.concat(json);
+      }).catch((ignored) => {
+        this.items = undefined;
+      });
+    },
+  },
+  props: {
+    auctionUrl: {
+      required: true,
+    },
   },
 };
 </script>
