@@ -42,11 +42,6 @@ export default new Router({
       name: 'LoginPage',
       component: LoginPage,
     },
-    /* {
-      path: '/:auction/addItem',
-      name: 'AddItem',
-      component: AddItem,
-    }, */
     {
       path: '/profile',
       name: 'ProfilePage',
@@ -91,58 +86,13 @@ export default new Router({
           name: 'Dashboard',
           component: Dashboard,
         },
-        // {
-        //   path: 'admin',
-        //   component: AdminPage,
-        //   children: [
-        //     {
-        //       path: 'items',
-        //       component: AdminItemsPage,
-        //     },
-        //     {
-        //       path: 'permissions',
-        //       component: AdminPermissionsPage,
-        //     },
-        //     {
-        //       path: 'settings',
-        //       component: AdminSettingsPage,
-        //     },
-        //     {
-        //       path: 'results',
-        //       component: ResultsPage,
-        //     }
-        //   ]
-        // }
         {
-          name: 'AdminPage',
           path: 'admin',
+          name: 'AdminPage',
           component: AdminPage,
-          // children: [
-          //   {
-          //     path: 'items',
-          //     component: AdminItemsPage,
-          //   },
-          //   {
-          //     path: 'permissions',
-          //     component: AdminPermissionsPage,
-          //   },
-          //   {
-          //     path: 'settings',
-          //     component: AdminSettingsPage,
-          //   },
-          //   {
-          //     path: 'results',
-          //     component: ResultsPage,
-          //   }
-          // ]
         },
       ],
     },
-    // {
-    //   path: '/auction/:auctionName/items/:itemId',
-    //   name: 'ItemPage',
-    //   component: ItemPage,
-    // },
     // {
     //   path: '/results',
     //   name: 'ItemWinner',

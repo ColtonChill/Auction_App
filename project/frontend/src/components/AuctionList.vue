@@ -1,17 +1,5 @@
 <template>
   <div>
-
-  <div v-if="auctions.length === 0 || this.unauthorized === true" class="items-center mb-10">
-    <hr>
-    <h3>No auctions to view...  </h3>
-    <!-- the links below do not actually work yet! they are not in router yet -->
-    <router-link to="/browse"> <p class="hover:underline text-blue-600">
-    Browse public auctions</p> </router-link>
-    <!-- <router-link to="/join"> <p class="hover:underline text-blue-600">
-    Join with a QR code</p> </router-link> -->
-  </div>
-  <div v-else>
-  <h2 class="pl-8">My Auctions</h2>
   <div v-if="auctions" class="items-center">
     <AuctionItem
         v-for="auction in auctions"
@@ -39,11 +27,11 @@
       </p>
     </div>
     <!-- the links below do not actually work yet! they are not in router yet -->
-    <router-link to="/browsePublic"> <p class="hover:underline text-blue-600">
-    Browse public auctions</p> </router-link>
     <!-- <router-link to="/join"> <p class="hover:underline text-blue-600">
     Join with a QR code</p> </router-link> -->
   </div>
+    <router-link to="/browse"> <p class="my-4 ml-4 hover:underline text-midBlue">
+    Browse public auctions</p> </router-link>
 </div>
 </template>
 
@@ -59,7 +47,6 @@ export default {
       auctions: [],
       more: true,
       page: 1,
-      unauthorized: true,
     };
   },
   components: {

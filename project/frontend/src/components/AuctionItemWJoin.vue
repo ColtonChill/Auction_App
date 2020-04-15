@@ -1,16 +1,14 @@
 <template>
   <div class="lg:flex px-6 pb-2" >
-    <div class="border border-gray-500
-    lg:border-t lg:border-gray-400 bg-white
-    rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
-    justify-between leading-normal">
+    <div class="bg-white rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
+    justify-between leading-normal shadow-md">
    <div class="flex-shrink-0 flex-grow-1 h-12 ">
       <img class="w-12 h-12 rounded-full mr-4" src="/img/school.jpg">
       </div>
     <div class="flex-shrink-1 flex-grow-4">
       <div class="text-gray-900 font-bold text-l mb-1">
         {{ auction.name }}
-        <svg class=" svg text-gray-500 w-3 h-3 mr-2"
+        <svg v-if="auction.hidden" class=" svg text-gray-500 w-3 h-3 mr-2"
         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
           <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2
           2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5
@@ -19,13 +17,12 @@
       </div>
       <p class="text-gray-900 leading-none text-xs">{{ auction.location }}</p>
       <p class="text-gray-700 text-xs"> {{ auction.description }} </p>
+    </div>
       <button id="myButton" type="button" class="center shadow bg-blue-400 hover:bg-blue-600
       focus:shadow-outline focus:outline-none text-white font-bold
       py-2 px-4 rounded mb-4" v-on:click="handleJoin(auction.url)"
       >Join!</button>
-    </div>
   </div>
-
 </div>
 </template>
 
@@ -82,7 +79,7 @@ export default {
           alert("Successful join");
           this.$router.push(`/auctions/${auctionUrl}`);
       }
-      else {
+      else if (response.status === 400) {
           alert("You are already a member of this auction.");
       }
     //   return response.json();

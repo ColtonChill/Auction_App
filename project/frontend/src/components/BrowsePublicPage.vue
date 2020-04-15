@@ -1,6 +1,6 @@
 <template>
   <div>
-      <h2 class="text-xl text-semibold text-center pt-6 pb-6 text-darkBlue">
+      <h2 class="text-xxl text-semibold text-center pt-6 pb-6 text-darkBlue">
         Public Auctions </h2>
 
   <div v-if="auctions.length === 0" class="items-center">
@@ -9,17 +9,11 @@
     <!-- the links below do not actually work yet! they are not in router yet -->
   </div>
   <div v-else>
-  <h2 class="pl-8">Auctions</h2>
     <AuctionItemWJoin
         v-for="auction in auctions"
         :key="auction.id"
         :id="auction.id"
         :auction="auction" />
-
-        <!-- I thought this object-center would center it... but no....  -->
-        <div class="flex col">
-          <button class="mx-auto text-md object-center mb-6">Load More...</button>
-        </div>
   </div>
 </div>
 </template>
