@@ -159,7 +159,7 @@ router.get('/:auction/@me', async (ctx: any) => {
     return Promise.resolve();
 });
 
-router.get('', '/:auction/results', async (ctx: any) => {
+router.get('Auction Results', '/:auction/results', async (ctx: any) => {
     if(!(await auctionPermCheck(ctx))) {
         return Promise.resolve();
     }
@@ -170,13 +170,13 @@ router.get('', '/:auction/results', async (ctx: any) => {
     return Promise.resolve(); 
 })
 
-router.get('', '/:auction/commitment', async (ctx: any) => {
+router.get('Auction Commitment', '/:auction/commitment', async (ctx: any) => {
     if(!(await auctionPermCheck(ctx))) {
         return Promise.resolve();
     }
     const auction = ctx.state.auction;
     const results = await Bid.fromDatabaseCommitment(auction.id);
-    ctx.body = results.map(it => it.toJson());
+    ctx.body = results;
     ctx.status = 200;
     return Promise.resolve(); 
 })

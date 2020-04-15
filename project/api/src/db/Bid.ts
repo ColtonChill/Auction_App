@@ -5,6 +5,11 @@ import AuctionMembership from "./AuctionMembership";
 import { connection } from "../services/Database";
 import InvalidKeyError from "./InvalidKeyError";
 
+interface Commitment {
+    user: Object,
+    amount: number
+};
+
 /**
  * some way to represent a "bid" in our database.
  * 
@@ -94,18 +99,28 @@ export default class Bid {
         }
         return results;
     }
-
-    public static async fromDatabaseCommitment(auction: number) : Promise<Bid[]> {
+    
+    public static async fromDatabaseCommitment(auction: number) : Promise<Commitment[]> {
         const res = await connection('bids').where({auction}).orderBy('money', 'desc');
         let uniqueItems = Array<number>();
         let results = {};
         for (let it of res) {
             if(uniqueItems.indexOf(it.item) === -1) {
                 uniqueItems.push(it.item);
-                results[it.user] += it.money;
+                if(results[it.user] !== undefined) {
+                    results[it.user] += it.money;
+                }
+                else {
+                    results[it.user] = it.money;
+                }
             }
         }
-        return Object.keys(results).map(it => results[it]);
+        return Promise.all(Object.keys(results).map(async it => {
+            return {
+                user: await (await User.fromDatabaseId(parseInt(it))).toJson(),
+                amount: results[it]
+            }
+        }));
     }
     /**
      * Get the bid of all items associated with an auction.
