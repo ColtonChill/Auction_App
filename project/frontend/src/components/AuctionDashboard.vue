@@ -1,19 +1,23 @@
 <template>
-    <div class="mx-auto
+    <div v-if="this.auction" class="mx-auto
     object-center my-2 md:items-center">
         <h1 class="text-4xl text-semibold
         text-center pt-4 text-darkBlue">Admin Dashboard</h1>
         <p class="text-center text-md text-darkBlue">for</p>
         <h2 class="text-xl text-semibold text-center
-        pt-2 pb-4 text-blue-500">{{this.$route.params.auctionUrl}}</h2>
-        <div class="md:flex md:items-center align-content:center">
+        pt-2 pb-4 text-blue-500">{{auction.name}}</h2>
+        <div class="flex sm:flex-col md:flex-row md:items-center content-center">
             <button v-on:click="toEdit()"
-            tag="button" class="mx-4 bg-blue-400 text-white font-bold
-            rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center align-content:center"
+            tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
+            rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >Edit auction details</button>
+            <button v-on:click="openAuction()"
+            tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
+            rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
+            >{{this.auction.open ? "Close Bidding" : "Open Bidding"}}</button>
             <button v-on:click="toItem()"
-            tag="button" class="mx-4 bg-blue-400 text-white font-bold
-            rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center align-content:center"
+            tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
+            rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >Add Item</button>
         </div>
         <hr>
@@ -30,6 +34,7 @@
 <script>
 import BidderCommitment from './BidderCommitment.vue';
 import ItemWinnerList from './ItemWinner.vue';
+import APIError from '../Errors';
 
 export default {
   name: 'AuctionDashboard',
@@ -37,12 +42,54 @@ export default {
     BidderCommitment,
     ItemWinnerList,
   },
+  data() {
+    return {
+      auction: undefined,
+    };
+  },
+  created() {
+    fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}`).then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new APIError(res.json(), res.status);
+    }).then((json) => {
+      if (json.inviteCode === undefined) {
+        this.$router.push({ name: 'AuctionPage' });
+      }
+      this.auction = json;
+    }).catch((err) => {
+      if (err.status === 404) {
+        this.$router.push('404');
+      } else if (err.status === 403) {
+        this.$router.push({
+          name: 'JoinPage',
+          params: { auctionUrl: this.$route.params.auctionUrl },
+        });
+      }
+    });
+  },
   methods: {
     toItem() {
       this.$router.push({ name: 'AddItem' });
     },
     toEdit() {
       this.$router.push({ name: 'AdminPage' });
+    },
+    openAuction() {
+      fetch(`/api/v1/auctions/${this.auction.url}/open`, {
+        method: 'POST',
+        body: JSON.stringify({
+          open: !this.auction.open,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(async (res) => {
+        if (res.ok) {
+          this.auction = await res.json();
+        }
+      });
     },
   },
 };

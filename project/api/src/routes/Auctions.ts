@@ -429,7 +429,9 @@ router.post('Add Item Image', '/:auction/item-image', upload.single('image'), as
         ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
         return Promise.resolve();
     }
-    fs.mkdirSync(path.join('/user', item.auction.url));
+    if(fs.existsSync(path.join('/user', item.auction.url))) {
+        fs.mkdirSync(path.join('/user', item.auction.url));
+    }
     fs.writeFileSync(path.join('/user', item.auction.url, ctx.request.body['itemId'] + "." + mt.extension(ctx.request.file.mimetype)), ctx.file.buffer);
     item.imageName = item.id + '.' + mt.extension(ctx.request.file.mimetype);
     await item.save();
