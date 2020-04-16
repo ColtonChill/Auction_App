@@ -165,6 +165,7 @@ export default class Item {
      * Deletes this object in the database.
      */
     public async delete() : Promise<void> {
+        await connection('bids').where({'item': this._id}).delete();
         return connection('items').where({'id': this._id}).limit(1).delete();
     }
 
