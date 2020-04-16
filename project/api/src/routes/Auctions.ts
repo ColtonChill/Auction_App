@@ -290,7 +290,20 @@ router.put('Auction Edit', '/:auction', async (ctx: any) => {
 });
 
 router.post('Auction Open', '/:auction/open', async (ctx:any) => {
-
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction: Auction = ctx.state.auction;
+    const data = ctx.request.body;
+    if(data.open === undefined) {
+        ctx.status = 400;
+        ctx.body = {'error': '\'open\' is required.'};
+        return Promise.resolve();
+    }
+    auction.open = data.open;
+    await auction.save();
+    ctx.status = 200;
+    ctx.body = auction.toJson();
 });
 //
 router.get('Auction membership','/:auction/member/@me/', async (ctx:any)=>{
