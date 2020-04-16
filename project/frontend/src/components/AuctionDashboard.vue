@@ -66,8 +66,8 @@ export default {
   },
   computed: {
     value() {
-      return `${window.hostname}/auctions/${this.auction.url}
-      /join?code=${this.auction.inviteCode}`;
+      /* eslint-ignore-next-line */
+      return `${document.location.origin}/auctions/${this.auction.url}/join?code=${this.auction.inviteCode}`;
     },
   },
   data() {
