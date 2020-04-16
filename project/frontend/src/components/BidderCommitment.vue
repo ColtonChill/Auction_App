@@ -4,7 +4,7 @@
     <p>There have been no bids in this auction yet.</p>
   </div>
 
-    <div>
+    <div v-else>
         <table class="table-auto">
   <tr>
     <th class="px-4 py-2">Name</th>

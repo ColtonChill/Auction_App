@@ -19,7 +19,10 @@
             tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >Add Item</button>
-            <qrcode-vue :value="value" :size="size" level="H"></qrcode-vue>
+        </div>
+        <div style="text-align: center">
+        <qrcode-vue style="position: relative; display: block; margin: 0px"
+        :value="value" :size="size" level="H"></qrcode-vue>
         </div>
         <hr>
         <div class="mx-auto">
@@ -33,26 +36,28 @@
     </div>
 </template>
 <script>
+import QrcodeVue from 'qrcode.vue';
 import BidderCommitment from './BidderCommitment.vue';
 import ItemWinnerList from './ItemWinner.vue';
-import QrcodeVue from 'qrcode.vue';
 import APIError from '../Errors';
 
 export default {
   name: 'AuctionDashboard',
-  data() {
-    return {
-      value: `${window.hostname}/auctions/${this.auction.url}/join?code=${this.auction.inviteCode}`,
-      size: 300,
-    }
-  },
   components: {
     BidderCommitment,
     ItemWinnerList,
+    QrcodeVue,
+  },
+  computed: {
+    value() {
+      return `${window.hostname}/auctions/${this.auction.url}
+      /join?code=${this.auction.inviteCode}`;
+    },
   },
   data() {
     return {
       auction: undefined,
+      size: 140,
     };
   },
   created() {

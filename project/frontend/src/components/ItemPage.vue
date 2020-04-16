@@ -16,7 +16,7 @@
             <button id="myButton" type="button" class="center shadow bg-darkBlue hover:bg-blue-300
                 focus:shadow-outline focus:outline-none text-white font-bold
                 py-2 px-4 rounded mb-4" @click="showModal"
-                >Bid ${{this.current_bid.money === undefined ? this.starting_price 
+                >Bid ${{this.current_bid.money === undefined ? this.starting_price
                 : this.current_bid.money + this.bid_increment}}
                 </button>
             </div>
