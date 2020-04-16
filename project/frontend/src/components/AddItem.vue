@@ -79,6 +79,7 @@
 
 <!--How do I add code that checks itself? -->
 <script>
+
 export default {
   name: 'AddItem',
   data() {
@@ -131,7 +132,8 @@ export default {
             method: 'POST',
             body: fd,
           }).then((ignored) => {
-            this.$router.push({ name: 'AuctionPage', params: { auctionUrl: this.$route.params.auctionUrl } });
+            // const newRoute = 'auctions/'.concat(this.$route.params.auctionUrl);
+            this.$router.push({ name: 'AuctionHome', params: { auctionUrl: this.$route.params.auctionUrl } });
           });
         }
       });

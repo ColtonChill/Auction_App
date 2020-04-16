@@ -83,9 +83,6 @@ export default {
       const auctionString = this.$route.params.auctionUrl;
       const itemString = this.$route.params.itemId;
       /* eslint-disable */
-      console.log("the auction before stringify: " + this.$route.params.auctionName);
-      console.log("the auction after: " + auctionString);
-      console.log("but in the url fetch it appears as an object... ")
       fetch(`/api/v1/auctions/${auctionString}/items/${itemString}`)
         .then((res) => {
           if (res.ok) {

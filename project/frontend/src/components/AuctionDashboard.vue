@@ -15,6 +15,7 @@
             tag="button" class="mx-4 bg-blue-400 text-white font-bold
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center align-content:center"
             >Add Item</button>
+            <qrcode-vue :value="value" :size="size" level="H"></qrcode-vue>
         </div>
         <hr>
         <div class="mx-auto">
@@ -30,9 +31,16 @@
 <script>
 import BidderCommitment from './BidderCommitment.vue';
 import ItemWinnerList from './ItemWinner.vue';
+import QrcodeVue from 'qrcode.vue';
 
 export default {
   name: 'AuctionDashboard',
+  data() {
+    return {
+      value: `${window.hostname}/auctions/${this.auction.url}/join?code=${this.auction.inviteCode}`,
+      size: 300,
+    }
+  },
   components: {
     BidderCommitment,
     ItemWinnerList,
