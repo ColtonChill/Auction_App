@@ -19,7 +19,7 @@
         <hr>
         <div class="mx-auto">
         <p class="text-lg text-darkBlue underline"> Commitments by user: </p>
-      <BidderCommitment class="mt-2 mb-6"/>
+      <BidderCommitment class="mt-2 mb-6" v-bind:auctionUrl=this.$route.params.auctionUrl />
       </div>
         <div class="mx-auto">
         <p class="text-lg text-darkBlue underline"> Winners by item: </p>
