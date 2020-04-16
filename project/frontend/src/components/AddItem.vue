@@ -55,10 +55,10 @@
                 <div class="object-center">
                     <label for="silent" class="text-gray-500 font-bold"
                     >Silent </label>
-                    <input v-model="silent" type="radio" id="silent" name="silent" value="silent">
+                    <input v-model="type" type="radio" id="silent" name="silent" value="silent">
                     <label for="live" class="text-gray-500 font-bold"
                     >Live </label>
-                    <input v-model="silent" type="radio" id="live" name="silent" value="live">
+                    <input v-model="type" type="radio" id="live" name="live" value="live">
                 </div>
                 <br>
                 <div class="object-center md:items-center">
@@ -85,8 +85,8 @@ export default {
     return {
       name: '',
       description: '',
-      startingBid: 0,
-      bidIncrement: 0,
+      startingBid: 1,
+      bidIncrement: 1,
       type: 'silent',
       image: {},
     };
@@ -131,7 +131,7 @@ export default {
             method: 'POST',
             body: fd,
           }).then((ignored) => {
-            this.$router.push({ name: 'AuctionPage', params: { auctionUrl: this.$route.params.auctionUrl } });
+            this.$router.push({ name: 'AuctionHome' });
           });
         }
       });
