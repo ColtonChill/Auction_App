@@ -135,6 +135,7 @@ export default class User {
         return {
             'firstName': this._firstName,
             'lastName': this._lastName,
+            'id': this._id,
         }
     }
 

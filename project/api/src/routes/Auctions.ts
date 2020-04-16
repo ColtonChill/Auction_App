@@ -21,7 +21,7 @@ const auctionExists = async function(ctx: any) : Promise<boolean> {
     }
     catch(ex) {
         ctx.status = 404;
-        ctx.body = {'error': 'An auction with that URL does not exist.'};
+        ctx.body = {'error': `An auction with the URL ${ctx.params.auction} does not exist.`};
         return Promise.resolve(false);
     }
     if(!ctx.isAuthenticated()) {
@@ -531,7 +531,7 @@ router.get('Get Bids by Auction', '/:auctionURL/bids', async (ctx:any) => {
     }
 });
 
-router.get('Get Bids by Item', '/:auctionID/items/:itemID/bids', async (ctx:any) => {
+router.get('Get Bids by Item', '/:auction/items/:itemID/bids', async (ctx:any) => {
     if(!(await auctionExists(ctx))) {
         return Promise.resolve();
     }
@@ -657,8 +657,8 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
             return Promise.resolve();
         }
         const amount = itemOb.toJson()['bid_increment'];
-        const highest = (await Bid.DatabaseItemFirst(item,auction)).money;
-        const bid = await Bid.createBid(auction,user,item,amount+highest);
+        const highest = (await Bid.DatabaseItemFirst(item,auction.id)).money;
+        const bid = await Bid.createBid(auction.id,user,item,amount+highest);
         ctx.set('bid', `${ctx.request.url}/${bid.id}`);
         ctx.body = {"responce" : `Auto bid, ${amount+highest} implemented`};
         ctx.status = 201;        
@@ -708,7 +708,7 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.body = {'error': 'Invalid number format for money.'};
         return Promise.resolve();
     }
-    const membership = await AuctionMembership.isMember(user,auction);
+    const membership = await AuctionMembership.isMember(user,auction.id);
     if(!membership){
         ctx.status = 400;
         ctx.body = {'error': "Not a member of this auction"};
@@ -720,7 +720,7 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         console.log("bid item: "+typeof(item)+item)
         console.log("bid money: "+typeof(money)+money);
         
-        const bid = await Bid.createBid(auction,user,item,money);
+        const bid = await Bid.createBid(auction.id,user,item,money);
         ctx.set('bid', `${ctx.request.url}/${bid.id}`);
         ctx.status = 201;        
     } catch (error) {

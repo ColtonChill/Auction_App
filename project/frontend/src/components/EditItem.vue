@@ -81,7 +81,7 @@
                     px-4 py-2 mb-4"
                     type="button"
                     v-on:click="addItem()"
-                    >Add Item </button>
+                    >Save</button>
                     <button class ="md:items-center center
                     bg-red-400 text-white font-bold rounded
                     px-4 py-2 mb-4"

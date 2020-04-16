@@ -1,14 +1,12 @@
 <template>
-    <div class="border border-gray-500 lg:border-t lg:border-gray-400 bg-white
-    rounded-t rounded-b lg:rounded-b-noone lg:rounded-r p-4 flex row
-    justify-between leading-normal">
-        <div class="bidder">
-             {{ this.user.id }}
-        </div>
-        <div class="amount text-gray-900 font-bold text-1 mb-1">
-            {{ this.money }}
-        </div>
-    </div>
+      <div v-if="user" class="flex shadow-lg w-64 mx-auto p-4 mb-8 rounded-lg">
+          <div class="bidder flex-1 inline">
+              {{ this.user.id }}
+          </div>
+          <div class="amount text-gray-900 font-bold text-1 mb-1 flex-1 inline text-right">
+              {{ this.money }}$
+          </div>
+      </div>
 </template>
 
 <script>
@@ -16,19 +14,23 @@ export default {
   name: 'ItemBidItem',
   data() {
     return {
+      item: undefined,
       user: undefined,
       money: undefined,
       auction: undefined,
     };
+  },
+  props: {
+    id: Number,
   },
   mounted() {
     this.init();
   },
   methods: {
     init() {
-      fetch(`/api/v1/bids/${this.params.id}`).then((res) => {
-        if (res.status === 200) {
-          Object.assign(this, res.json());
+      fetch(`/api/v1/bids/${this.id}`).then(async (res) => {
+        if (res.ok) {
+          Object.assign(this, await res.json());
         } else {
           this.user = {
             id: `null ${res.status}`,

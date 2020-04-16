@@ -23,7 +23,7 @@ export default {
       const data = {
         money: newBid,
       };
-      const response = await fetch(url, {
+      fetch(url, {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -34,8 +34,13 @@ export default {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
-      });
-      return response.json();
+      }).then(async (response) => {
+        if(!response.ok) {
+          this.$parent.error = await response.json().error;
+          return;
+        }
+        this.$parent.getItemDetails();
+      }).catch((_) => {});
     },
   },
   props: {
