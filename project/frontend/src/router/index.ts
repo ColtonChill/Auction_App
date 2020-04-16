@@ -6,6 +6,7 @@ import LoginPage from '@/components/LoginPage.vue';
 import AddItem from '@/components/AddItem.vue';
 import AuctionPage from '@/components/AuctionPage.vue';
 import ItemPage from '@/components/ItemPage.vue';
+import EditItem from '@/components/EditItem.vue';
 import Dashboard from '@/components/AuctionDashboard.vue';
 // import ItemWinner from '@/components/ItemWinner.vue';
 // import BidderCommitment from '@/components/BidderCommitment.vue';
@@ -75,6 +76,11 @@ export default new Router({
           path: 'items/:itemId',
           name: 'ItemPage',
           component: ItemPage,
+        },
+        {
+          path: 'edit-item/:itemId',
+          name: 'EditItem',
+          component: EditItem,
         },
         {
           name: 'JoinPage',

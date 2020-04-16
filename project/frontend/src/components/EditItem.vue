@@ -1,10 +1,10 @@
+
 <template>
     <div class="flex col">
         <!-- Page to add an item on if you are an admin-->
         <div class = "max-w-md shadow-lg rounded object-center my-2 mx-auto md:items-center">
-            <h1 class = "font-bold text-center text-gray-500
-             text-3xl">
-             Add an Item</h1>
+            <h1 class = "font-bold text-center text-gray-500 text-3xl">
+             Edit an Item</h1>
              <br>
              <div class = "mx-12">
             <!-- The addition of the items api is needed here
@@ -53,10 +53,10 @@
                 <div class="object-center">
                     <label for="silent" class="text-gray-500 font-bold"
                     >Silent </label>
-                    <input v-model="type" type="radio" id="silent" name="silent" value="silent">
+                    <input v-model="silent" type="radio" id="silent" name="silent" value="silent">
                     <label for="live" class="text-gray-500 font-bold"
                     >Live </label>
-                    <input v-model="type" type="radio" id="live" name="live" value="live">
+                    <input v-model="silent" type="radio" id="live" name="silent" value="live">
                 </div>
                 <br>
                 <div class="object-center md:items-center">
@@ -68,6 +68,12 @@
                     type="button"
                     v-on:click="addItem()"
                     >Add Item </button>
+                    <button class ="md:items-center center
+                    bg-red-400 text-white font-bold rounded
+                    px-4 py-2 mb-4"
+                    type="button"
+                    v-on:click="deleteItem()"
+                    >Delete Item</button>
                 </div>
               </div>
             <!--</form>-->
@@ -77,10 +83,13 @@
 
 <!--How do I add code that checks itself? -->
 <script>
+import APIError from '../Errors';
+
 export default {
-  name: 'AddItem',
+  name: 'EditItem',
   data() {
     return {
+      id: undefined,
       name: '',
       description: '',
       startingBid: 1,
@@ -89,7 +98,42 @@ export default {
       image: {},
     };
   },
+  created() {
+    this.init();
+  },
   methods: {
+    init() {
+      fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/items/${this.$route.params.itemId}`).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        throw new APIError(res.json(), res.status);
+      })
+        .then((json) => {
+          Object.assign(this, json);
+        })
+        .catch((err) => {
+          if (err.status === 404) {
+            this.$router.push({ name: 'Dashboard' });
+          }
+          if (err.status === 403) {
+            this.$router.push({ name: 'AuctionHome' });
+          }
+          if (err.status === 401) {
+            this.$router.push({ name: 'Login' });
+          }
+        });
+    },
+    deleteItem() {
+      fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/items/${this.id}`, {
+        method: 'DELETE',
+      }).then((res) => {
+        if (res.ok) {
+            this.$router.push({ name: 'AuctionHome' });
+        }
+        throw new APIError(res.json(), res.status);
+      });
+    },
     setImage(event) {
       /* eslint-disable-next-line */
       console.log(event.target.files[0]);
@@ -108,8 +152,8 @@ export default {
       } else {
         data.silent = false;
       }
-      fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/items`, {
-        method: 'POST',
+      fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/items/${this.id}`, {
+        method: 'PUT',
         mode: 'cors',
         cache: 'no-cache',
         credentials: 'same-origin',

@@ -6,6 +6,9 @@
   </li>
   <li class="flex-grow-1">
   </li>
+  <li v-if="adminOnThisAuction === true" class="mx-6 mt-2 flex-grow-0">
+    <a @click="toAdmin()" class="text-white hover:text-blue-400">Admin </a>
+  </li>
   <li class="mx-6 mt-2 flex-grow-0">
     <router-link to="/login" class="text-white hover:text-blue-400">Profile </router-link>
   </li>
@@ -25,10 +28,46 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 
 export default {
   name: 'App',
+  data() {
+    return {
+      adminOnThisAuction: false,
+    };
+  },
+  created() {
+    this.init();
+  },
+  methods: {
+    toAdmin() {
+      this.$router.push({
+        name: 'Dashboard',
+      });
+    },
+    beforeRouteUpdate() {
+      this.init();
+    },
+    init() {
+      /* eslint-disable-next-line */
+      console.log('Checking for auction...');
+      if (this.$route.params.auctionUrl !== undefined) {
+        fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/@me`).then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+          throw new Error();
+        })
+          .then((json) => {
+            this.adminOnThisAuction = json.administrator;
+          })
+          .catch((err) => {
+            this.adminOnThisAuction = false;
+          });
+      }
+    },
+  },
 };
 </script>
 

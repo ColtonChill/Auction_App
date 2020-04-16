@@ -1,7 +1,8 @@
 <template>
     <div v-if="id">
     <h2 class="text-4xl text-semibold text-center pt-4 text-darkBlue">
-      {{this.name}}</h2>
+      {{this.name}} <a class="text-base text-gray-500" v-if="isAdmin" @click="editItem()">(edit)</a>
+    </h2>
     <h3 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
       {{this.description}}</h3>
     <h2 class="text-center"> </h2>
@@ -44,11 +45,13 @@
 
 <script>
 import ConfirmationModal from './ConfirmationModal.vue';
+import APIError from '../Errors';
 
 export default {
   name: 'ItemPage',
   data() {
     return {
+      isAdmin: false,
       /* eslint-disable */
       isModalVisible: false,
       id: undefined,
@@ -81,6 +84,9 @@ export default {
     }
   },
   methods: {
+    editItem() {
+      this.$router.push({ name: 'EditItem', params: { itemId: this.$route.params.itemId } });
+    },
     showModal() {
       this.isModalVisible = true;
     },
@@ -90,6 +96,24 @@ export default {
     getItemDetails() {
       const auctionString = this.$route.params.auctionUrl;
       const itemString = this.$route.params.itemId;
+      fetch(`/api/v1/auctions/${auctionString}/@me`).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        throw new APIError(res.json(), res.status);
+      }).then((json) => {
+        this.isAdmin = json.administrator;
+      }).catch((err) => {
+        if (err.status === 401) {
+          this.$router.push({ name: 'LoginPage' });
+        }
+        if (err.status === 403) {
+          this.$router.push({ name: 'JoinPage'});
+        }
+        if (err.status === 404) {
+          this.$router.push({ name: 'LandingPage' });
+        }
+      })
       /* eslint-disable */
       console.log("the auction before stringify: " + this.$route.params.auctionName);
       console.log("the auction after: " + auctionString);

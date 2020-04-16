@@ -429,7 +429,7 @@ router.post('Add Item Image', '/:auction/item-image', upload.single('image'), as
         ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
         return Promise.resolve();
     }
-    if(fs.existsSync(path.join('/user', item.auction.url))) {
+    if(!fs.existsSync(path.join('/user', item.auction.url))) {
         fs.mkdirSync(path.join('/user', item.auction.url));
     }
     fs.writeFileSync(path.join('/user', item.auction.url, ctx.request.body['itemId'] + "." + mt.extension(ctx.request.file.mimetype)), ctx.file.buffer);
@@ -646,6 +646,7 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
     if(!dbAuction.open) {
         ctx.status = 400;
         ctx.body = {'error': 'You cannot bid on this auction because it is closed.'}
+        return Promise.resolve();
     }
     let auction = dbAuction.id;
     let user = parseInt(ctx.req.user.id);
@@ -756,7 +757,7 @@ router.delete('Delete Item', '/:auction/items/:item', async (ctx: any) => {
         return Promise.resolve();
     }
     const item = await Item.fromDatabaseId(ctx.params.item);
-    if(item.auction.id !== ctx.params.auction) {
+    if(item.auction.url !== ctx.params.auction) {
         ctx.status = 404;
         ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
         return Promise.resolve();
@@ -781,7 +782,7 @@ router.put('Modify Item', '/:auction/items/:item', async (ctx: any) => {
         return Promise.resolve();
     }
     const item = await Item.fromDatabaseId(ctx.params.item);
-    if(item.auction.id !== ctx.params.auction) {
+    if(item.auction.url !== (ctx.params.auction)) {
         ctx.status = 404;
         ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
         return Promise.resolve();
