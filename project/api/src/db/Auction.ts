@@ -126,7 +126,8 @@ export default class Auction {
             "url": this._url,
             "hidden": this._hidden,
             "description": this._description,
-            "location": this._location
+            "location": this._location,
+            "open": this._open,
         }
     }
 
@@ -137,7 +138,8 @@ export default class Auction {
             "url": this._url,
             "hidden": this._hidden,
             "description": this._description,
-            "location": this._location
+            "location": this._location,
+            "open": this._open,
         }
     }
 
@@ -150,7 +152,8 @@ export default class Auction {
                 "url": this._url,
                 "hidden": this._hidden,
                 "description": this._description,
-                "location": this._location
+                "location": this._location,
+                "open": this._open,
             }).then(_ => this._dirty = false);
         } else {
             return Promise.resolve();
@@ -275,6 +278,12 @@ export default class Auction {
         this._hidden = value;
         this._dirty = true;
     }
+    public set open(value: boolean) {
+        if(value !== this._open) {
+            this._open = value;
+            this._dirty = true;
+        }
+    }
 
     public get pin() {
         return this._inviteCode;
@@ -302,5 +311,8 @@ export default class Auction {
     }
     public get hidden() {
         return this._hidden;
+    }
+    public get open() {
+        return this._open;
     }
 }

@@ -290,7 +290,20 @@ router.put('Auction Edit', '/:auction', async (ctx: any) => {
 });
 
 router.post('Auction Open', '/:auction/open', async (ctx:any) => {
-
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    const auction: Auction = ctx.state.auction;
+    const data = ctx.request.body;
+    if(data.open === undefined) {
+        ctx.status = 400;
+        ctx.body = {'error': '\'open\' is required.'};
+        return Promise.resolve();
+    }
+    auction.open = data.open;
+    await auction.save();
+    ctx.status = 200;
+    ctx.body = auction.toJson();
 });
 //
 router.get('Auction membership','/:auction/member/@me/', async (ctx:any)=>{
@@ -416,7 +429,9 @@ router.post('Add Item Image', '/:auction/item-image', upload.single('image'), as
         ctx.body = {'error': 'An item does not exist with that ID on this auction.'}
         return Promise.resolve();
     }
-    fs.mkdirSync(path.join('/user', item.auction.url));
+    if(fs.existsSync(path.join('/user', item.auction.url))) {
+        fs.mkdirSync(path.join('/user', item.auction.url));
+    }
     fs.writeFileSync(path.join('/user', item.auction.url, ctx.request.body['itemId'] + "." + mt.extension(ctx.request.file.mimetype)), ctx.file.buffer);
     item.imageName = item.id + '.' + mt.extension(ctx.request.file.mimetype);
     await item.save();
@@ -599,10 +614,6 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         return Promise.resolve();
     }
     const data = ctx.request.body;
-    console.log("auction "+ctx.params.auction);
-    console.log("user "+ctx.req.user);
-    console.log("item "+ctx.params.item);
-    console.log("money "+data.money);
     if(data === undefined) {
         ctx.status = 400;
         ctx.body = {'error': 'No data sent.'};
@@ -624,23 +635,23 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         return Promise.resolve();
     }
 
+    let dbAuction;
     try {
-        var dbAuction = await Auction.fromDatabaseURL(ctx.params.auction);
+        dbAuction = await Auction.fromDatabaseURL(ctx.params.auction);
     } catch (error) {
-        ctx.status = 400;
-        ctx.body = {'error': `${error}`};
+        ctx.status = 404;
+        ctx.body = {'error': `An auction with that url does not exist.`};
         return Promise.resolve();
+    }
+    if(!dbAuction.open) {
+        ctx.status = 400;
+        ctx.body = {'error': 'You cannot bid on this auction because it is closed.'}
     }
     let auction = dbAuction.id;
     let user = parseInt(ctx.req.user.id);
     let item = parseInt(ctx.params.item);
     let money = 0;
 
-    if (auction === NaN) {
-        ctx.status = 400;
-        ctx.body = {'error': 'Invalid number format for auction.'};
-        return Promise.resolve();
-    }
     if (user === NaN) {
         ctx.status = 400;
         ctx.body = {'error': 'Invalid number format for user.'};

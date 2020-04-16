@@ -7,6 +7,6 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
     return knex.schema.table('auctions', table => {
-        table.dropColumnt('open');
+        table.dropColumn('open');
     })
 };
