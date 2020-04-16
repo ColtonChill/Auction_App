@@ -20,6 +20,10 @@
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >Add Item</button>
         </div>
+        <div style="text-align: center">
+        <qrcode-vue style="position: relative; display: block; margin: 0px"
+        :value="value" :size="size" level="H"></qrcode-vue>
+        </div>
         <hr>
         <div class="mx-auto">
         <p class="text-lg text-darkBlue underline"> Commitments by user: </p>
@@ -32,6 +36,7 @@
     </div>
 </template>
 <script>
+import QrcodeVue from 'qrcode.vue';
 import BidderCommitment from './BidderCommitment.vue';
 import ItemWinnerList from './ItemWinner.vue';
 import APIError from '../Errors';
@@ -41,10 +46,18 @@ export default {
   components: {
     BidderCommitment,
     ItemWinnerList,
+    QrcodeVue,
+  },
+  computed: {
+    value() {
+      return `${window.hostname}/auctions/${this.auction.url}
+      /join?code=${this.auction.inviteCode}`;
+    },
   },
   data() {
     return {
       auction: undefined,
+      size: 140,
     };
   },
   created() {
