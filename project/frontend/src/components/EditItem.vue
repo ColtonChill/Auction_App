@@ -129,7 +129,7 @@ export default {
         method: 'DELETE',
       }).then((res) => {
         if (res.ok) {
-            this.$router.push({ name: 'AuctionHome' });
+          this.$router.push({ name: 'AuctionHome' });
         }
         throw new APIError(res.json(), res.status);
       });
