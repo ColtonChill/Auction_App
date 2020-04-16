@@ -6,16 +6,11 @@
   </div>
 
   <div v-else>
-  <h2 class="pl-8">All items</h2>
     <ItemItem v-bind:auctionIBelongTo=auctionIBelongTo
         v-for="item in items"
         :key="item.id"
         :id="item.id"
         :item="item" />
-
-        <div class="flex col">
-          <button class="mx-auto text-md object-center mb-6">Load More...</button>
-        </div>
   </div>
 </div>
 </template>

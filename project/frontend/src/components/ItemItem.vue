@@ -1,11 +1,11 @@
 <template>
-  <div class="lg:flex px-6 pb-2 w-5/6">
-  <router-link :to="'/auctions/' + auctionIBelongTo + '/items/' + item.id">
-    <div class="border border-gray-500
-    lg:border-t lg:border-gray-400 bg-white
+  <div v-if="item" class="flex px-6 pb-2">
+  <router-link :to="'/auctions/' + auctionIBelongTo + '/items/' + item.id"
+    class="sm:w-10/12 lg:w-768 mx-auto">
+    <div class="bg-white shadow-lg
     rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
-    justify-between leading-normal">
-   <div class="flex-shrink-0 flex-grow-1 h-12 ">
+    justify-between leading-normal w-full">
+   <div class="flex-shrink-0 flex-grow-0 h-12">
       <img class="w-12 h-12 rounded-full mr-4" :src=imageLocation>
       </div>
     <div class="flex-shrink-1 flex-grow-4">
@@ -30,7 +30,10 @@
 export default {
   computed: {
     imageLocation() {
-      return `/user/${this.auctionIBelongTo}/${this.item.imageName}`;
+      if (this.item.imageName !== null) {
+        return `/user/${this.auctionIBelongTo}/${this.item.imageName}`;
+      }
+      return '/static/noimage.png';
     },
   },
   props: {

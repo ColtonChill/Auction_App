@@ -11,9 +11,13 @@
         <div class="flex col">
           <p class="mx-auto text-md object-center mb-6">
             Not seeing what you want?
-            <button class="text-midBlue" @click="createAuction()">
-              Create one.
+            <button class="text-midBlue hover:underline" @click="createAuction()">
+              Create an auction
             </button>
+            or
+            <router-link to="/browse" class="hover:underline text-midBlue">
+              browse public auctions.
+            </router-link>
           </p>
         </div>
   </div>
@@ -21,17 +25,19 @@
     <div class="flex col">
       <p class="mx-auto text-md object-center mb-6">
         You're not a part of any auctions.
-        <button class="text-midBlue" @click="createAuction()">
-          Create one?
+        <button class="text-midBlue hover:underline" @click="createAuction()">
+          Create an auction
         </button>
+        or
+        <router-link to="/browse" class="hover:underline text-midBlue">
+          browse public auctions.
+        </router-link>
       </p>
     </div>
     <!-- the links below do not actually work yet! they are not in router yet -->
     <!-- <router-link to="/join"> <p class="hover:underline text-blue-600">
     Join with a QR code</p> </router-link> -->
   </div>
-    <router-link to="/browse"> <p class="my-4 ml-4 hover:underline text-midBlue">
-    Browse public auctions</p> </router-link>
 </div>
 </template>
 

@@ -80,8 +80,11 @@ export default {
   },
   computed: {
     imageLocation() {
-      return `/user/${this.$route.params.auctionUrl}/${this.imageName}`;
-    }
+      if (this.imageName !== null) {
+        return `/user/${this.auction.url}/${this.imageName}`;
+      }
+      return '/static/noimage.png';
+    },
   },
   methods: {
     editItem() {

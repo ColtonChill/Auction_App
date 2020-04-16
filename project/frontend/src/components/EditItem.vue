@@ -1,5 +1,21 @@
 
 <template>
+    <div>
+    <div v-if="error" class="ml-8 mr-8">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+        role="alert">
+        <span class="block sm:inline">{{error}}</span>
+        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+            <svg class="fill-current h-6 w-6 text-red-500" role="button"
+            @click="changeErrorShow()"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title>
+            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0
+            1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10
+            8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2
+            1.2 0 0 1 0 1.698z"/></svg>
+        </span>
+        </div>
+    </div>
     <div class="flex col">
         <!-- Page to add an item on if you are an admin-->
         <div class = "max-w-md shadow-lg rounded object-center my-2 mx-auto md:items-center">
@@ -50,13 +66,11 @@
                     name="bidIncrement" class="border-2 bg-gray-200 font-bold" size = 35>
                 </div>
                 <br>
-                <div class="object-center">
-                    <label for="silent" class="text-gray-500 font-bold"
-                    >Silent </label>
-                    <input v-model="silent" type="radio" id="silent" name="silent" value="silent">
-                    <label for="live" class="text-gray-500 font-bold"
-                    >Live </label>
-                    <input v-model="silent" type="radio" id="live" name="silent" value="live">
+                <div v-if="type === 'live'" class="object-center">
+                    <label for="winner" class="text-gray-500 font-bold"
+                    >Winner: </label>
+                    <input v-model="winner" id = "winner" type="number"
+                    name="winner" class="border-2 bg-gray-200 font-bold" size = 35>
                 </div>
                 <br>
                 <div class="object-center md:items-center">
@@ -79,6 +93,7 @@
             <!--</form>-->
         </div>
     </div>
+    </div>
 </template>
 
 <!--How do I add code that checks itself? -->
@@ -96,6 +111,8 @@ export default {
       bidIncrement: 1,
       type: 'silent',
       image: {},
+      winner: -1,
+      error: undefined,
     };
   },
   created() {
@@ -124,6 +141,9 @@ export default {
           }
         });
     },
+    changeErrorShow() {
+      this.error = undefined;
+    },
     deleteItem() {
       fetch(`/api/v1/auctions/${this.$route.params.auctionUrl}/items/${this.id}`, {
         method: 'DELETE',
@@ -135,8 +155,10 @@ export default {
       });
     },
     setImage(event) {
-      /* eslint-disable-next-line */
-      console.log(event.target.files[0]);
+      if (event.target.files[0].size > 1000000) {
+        this.error = 'That file is too large.';
+        return;
+      }
       /* eslint-disable-next-line */
       this.image = event.target.files[0];
     },

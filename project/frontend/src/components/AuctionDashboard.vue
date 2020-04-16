@@ -1,44 +1,59 @@
 <template>
-    <div v-if="this.auction" class="mx-auto
+  <div v-if="this.auction" class="mx-auto
     object-center my-2 md:items-center">
         <h1 class="text-4xl text-semibold
-        text-center pt-4 text-darkBlue">Admin Dashboard</h1>
-        <p class="text-center text-md text-darkBlue">for</p>
-        <h2 class="text-xl text-semibold text-center
-        pt-2 pb-4 text-blue-500">{{auction.name}}</h2>
-        <div class="flex sm:flex-col md:flex-row md:items-center content-center">
+        text-center pt-4 text-darkBlue">{{auction.name}}</h1>
+        <div class="flex sm:flex-col md:flex-row md:items-center content-between">
+          <div class="flex-1 text-center">
             <button v-on:click="toEdit()"
             tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >Edit auction details</button>
+          </div>
+          <div class="flex-1 text-center">
             <button v-on:click="openAuction()"
             tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >{{this.auction.open ? "Close Bidding" : "Open Bidding"}}</button>
+          </div>
+          <div class="flex-1 text-center">
             <button v-on:click="toItem()"
             tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
             rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
             >Add Item</button>
+          </div>
+          <div class="flex-1 text-center">
+            <button v-on:click="goHome()"
+            tag="button" class="sm:mt-4 mx-4 bg-blue-400 text-white font-bold
+            rounded px-4 py-2 mb-4 items-center mx-auto center md:items-center content-center"
+            >Auction Home</button>
+          </div>
         </div>
-        <div style="text-align: center">
-        <qrcode-vue style="position: relative; display: block; margin: 0px"
-        :value="value" :size="size" level="H"></qrcode-vue>
-        </div>
-        <hr>
-        <div class="mx-auto">
-        <p class="text-lg text-darkBlue underline"> Commitments by user: </p>
-      <BidderCommitment class="mt-2 mb-6" v-bind:auctionUrl=this.$route.params.auctionUrl />
+    <div class="content-start row flex-wrap inline items-start">
+      <div class="flex-0 rounded-lg shadow-lg p-4 inline m-8" style="text-align: center">
+        <p class="text-lg text-darkBlue underline">Join by QR Code:</p>
+        <qrcode-vue :value="value" :size="size" :renderAs="svg" level="H"/>
       </div>
-        <div class="mx-auto">
-        <p class="text-lg text-darkBlue underline"> Winners by item: </p>
-      <ItemWinnerList class="mt-2 mb-6" v-bind:auctionUrl=this.$route.params.auctionUrl />
+      <div class="flex-0 rounded-lg shadow-lg p-4 inline m-8">
+        <p class="text-lg text-darkBlue underline">Commitments by user: </p>
+        <BidderCommitment class="mt-2 mb-6" v-bind:auctionUrl=this.$route.params.auctionUrl />
+      </div>
+      <div class="flex-0 rounded-lg shadow-lg p-4 inline m-8">
+        <p class="text-lg text-darkBlue underline">Winners by item: </p>
+        <ItemWinnerList class="mt-2 mb-6" v-bind:auctionUrl=this.$route.params.auctionUrl />
+      </div>
+      <div class="flex-0 rounded-lg shadow-lg p-4 inline m-8">
+        <p class="text-lg text-darkBlue">All Members: </p>
+        <UserList class="mt-2 mb-6" :auctionUrl=this.$route.params.auctionUrl />
       </div>
     </div>
+  </div>
 </template>
 <script>
 import QrcodeVue from 'qrcode.vue';
 import BidderCommitment from './BidderCommitment.vue';
 import ItemWinnerList from './ItemWinner.vue';
+import UserList from './UserList.vue';
 import APIError from '../Errors';
 
 export default {
@@ -47,6 +62,7 @@ export default {
     BidderCommitment,
     ItemWinnerList,
     QrcodeVue,
+    UserList,
   },
   computed: {
     value() {
@@ -85,6 +101,9 @@ export default {
   methods: {
     toItem() {
       this.$router.push({ name: 'AddItem' });
+    },
+    goHome() {
+      this.$router.push({ name: 'AuctionHome' });
     },
     toEdit() {
       this.$router.push({ name: 'AdminPage' });

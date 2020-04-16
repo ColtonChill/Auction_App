@@ -148,6 +148,42 @@ router.get('Get Auction', '/:auction', async (ctx: any) => {
     return Promise.resolve();
 });
 
+router.get('Auction Members', '/:auction/members', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    let members = AuctionMembership.getAuctionMembers(ctx.state.auction);
+    let individuals = (await members).reduce((a: Object[], i: AuctionMembership) => {
+        if(!i.banned) {
+            a.push(i.user.toJson());
+        }
+        return a;
+    }, []);
+    ctx.body = individuals;
+    ctx.status = 200;
+    return Promise.resolve();
+});
+
+router.post('Kick Member', '/:auction/members/:memberId/kick', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    let member = await User.fromDatabaseId(parseInt(ctx.params.memberId));
+    let auction : Auction = ctx.state.auction;
+    await auction.kick(member);
+    ctx.status = 200;
+});
+
+router.post('Ban Member', '/:auction/members/:memberId/ban', async (ctx: any) => {
+    if(!(await auctionPermCheck(ctx))) {
+        return Promise.resolve();
+    }
+    let member = await User.fromDatabaseId(parseInt(ctx.params.memberId));
+    let auction : Auction = ctx.state.auction;
+    await auction.ban(member);
+    ctx.status = 200;
+});
+
 //check if @me is administator of auction
 router.get('/:auction/@me', async (ctx: any) => {
     if(!(await auctionExists(ctx))) {
@@ -218,8 +254,6 @@ router.get('Item List', '/:auction/items/all', async (ctx: any) => { //I have to
         return Promise.resolve();
     }
     const items = await Item.fromDatabaseAuction(auction.id);
-    console.log("item size from route: "+items.length);
-    console.log(items);
     const json = items.map(it => it.toJson());
     ctx.body = [...json];
     ctx.status = 200;
@@ -241,7 +275,6 @@ router.post('Auction Toggle Privacy', '/:auction/toggle-privacy', async (ctx: an
         return Promise.resolve();
     }
     const auction : Auction = ctx.state.auction;
-    console.log(auction);
     await auction.togglePrivacy();
     await auction.save();
     ctx.body = auction.toJson();
@@ -339,17 +372,14 @@ router.post('Join auction','/:auction/member/@me/', async (ctx:any)=>{
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    console.log("AuctionURL: " + await Auction.urlExists(ctx.params.auction))
     if(await Auction.urlExists(ctx.params.auction)){
         const auction = await Auction.fromDatabaseURL(ctx.params.auction);
         if(auction.hidden){
-            console.log("LOG_body: "+ctx.request.body.pin);
             if(ctx.request.body.pin == undefined){
                 ctx.status = 401;
                 ctx.body = {'error': 'No password provided'}
                 return Promise.resolve();
             }
-            console.log(auction.pin);
             if(ctx.request.body.pin != auction.pin){
                 ctx.status = 401;
                 ctx.body = {'error': 'Invalid password'}
@@ -386,17 +416,14 @@ router.post('Join auction','/:auction/join', async (ctx:any)=>{
         ctx.body = {'error': 'You are not logged in.'}
         return Promise.resolve();
     }
-    console.log("AuctionURL: " + await Auction.urlExists(ctx.params.auction))
     if(await Auction.urlExists(ctx.params.auction)){
         const auction = await Auction.fromDatabaseURL(ctx.params.auction);
         if(auction.hidden){
-            console.log("LOG_body: "+ctx.request.body.pin);
             if(ctx.request.body.pin == undefined){
                 ctx.status = 401;
                 ctx.body = {'error': 'No password provided'}
                 return Promise.resolve();
             }
-            console.log(auction.pin);
             if(ctx.query.code != auction.pin){
                 ctx.status = 401;
                 ctx.body = {'error': 'Invalid password'}
@@ -487,16 +514,13 @@ router.post('Create Item', '/:auction/items', async (ctx: any) => {
         return Promise.resolve();
     }
     //TODO: Validate.
-    console.log(ctx.request.body.silent);
     if(ctx.request.body.silent) {
         const item = await auction.addSilentItem(ctx.request.body.name, ctx.request.body.description, ctx.request.body.imagePath, ctx.request.body.startingPrice, ctx.request.body.bidIncrement);
-        console.log(item);
         ctx.body = item.toJson();
         ctx.set('Location', ctx.request.url + '/' + item.id);
     }
     else {
         const item = await auction.addLiveItem(ctx.request.body.name, ctx.request.body.description, ctx.request.body.imagePath, 0)
-        console.log(item);
         ctx.body = item.toJson();
         ctx.set('Location', ctx.request.url + '/' + item.id);
     }
@@ -506,7 +530,6 @@ router.post('Create Item', '/:auction/items', async (ctx: any) => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\//\\//\\//\//\\//\\//\\//
 router.get('Get Bids by Auction', '/:auctionURL/bids', async (ctx:any) => {
-    console.log("FIRST option");
     if(!ctx.isAuthenticated()) {
         ctx.status = 401;
         ctx.body = {'error': 'You are not logged in.'}
@@ -589,7 +612,6 @@ router.get('Get Bids by User for an Item', '/:auctionURL/items/:itemID/bids/high
     }
     const auction = await Auction.fromDatabaseURL(ctx.params.auctionURL);
     try {
-        console.log("try block");
         const res = await Bid.DatabaseItemFirst(ctx.params.itemID,auction.id);
         if(res !== undefined) {
             ctx.body = res;
@@ -667,7 +689,6 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         //look up bid increment
         const itemOb = await Item.fromDatabaseId(item);
         const amount = itemOb.toJson()['bid_increment'];
-        console.log("amount: " + amount);
         const highest = (await Bid.DatabaseItemFirst(item,auction)).money;
         const bid = await Bid.createBid(auction,user,item,amount+highest);
         ctx.set('bid', `${ctx.request.url}/${bid.id}`);

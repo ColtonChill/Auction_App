@@ -37,6 +37,11 @@ export default {
       adminOnThisAuction: false,
     };
   },
+  watch: {
+    $route() {
+      this.init();
+    },
+  },
   created() {
     this.init();
   },
