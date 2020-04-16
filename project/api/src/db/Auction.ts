@@ -126,7 +126,8 @@ export default class Auction {
             "url": this._url,
             "hidden": this._hidden,
             "description": this._description,
-            "location": this._location
+            "location": this._location,
+            "open": this._open,
         }
     }
 
@@ -137,7 +138,8 @@ export default class Auction {
             "url": this._url,
             "hidden": this._hidden,
             "description": this._description,
-            "location": this._location
+            "location": this._location,
+            "open": this._open,
         }
     }
 
