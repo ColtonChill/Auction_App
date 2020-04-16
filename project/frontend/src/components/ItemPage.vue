@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="id">
     <h2 class="text-4xl text-semibold text-center pt-4 text-darkBlue">
       {{this.name}}</h2>
     <h3 class="text-xl text-semibold text-center pt-6 pb-6 text-midBlue">
@@ -7,19 +7,22 @@
     <h2 class="text-center"> </h2>
     <div class="row">
         <div class="column p-4 ">
-            <img class="w-28 h-28" src="/img/bike.jpg">
+            <img class="w-28 h-28" :src="imageLocation">
         </div>
-        <div class="column p-10 "> Current bid: $
+        <div v-if="starting_price" class="column p-10 "> Current bid: $
           {{ this.current_bid.money === undefined ? 0
           : this.current_bid.money }}<br>
             <div class="pt-8">
             <button id="myButton" type="button" class="center shadow bg-darkBlue hover:bg-blue-300
                 focus:shadow-outline focus:outline-none text-white font-bold
                 py-2 px-4 rounded mb-4" @click="showModal"
-                >Bid ${{this.current_bid.money === undefined ? this.starting_price 
+                >Bid ${{this.current_bid.money === undefined ? this.starting_price
                 : this.current_bid.money + this.bid_increment}}
                 </button>
             </div>
+        </div>
+        <div v-else class="column p-10 ">
+          This is a live item!
         </div>
     </div>
 
@@ -71,6 +74,11 @@ export default {
   },
   mounted() {
     this.getItemDetails();
+  },
+  computed: {
+    imageLocation() {
+      return `/user/${this.$route.params.auctionUrl}/${this.imageName}`;
+    }
   },
   methods: {
     showModal() {
