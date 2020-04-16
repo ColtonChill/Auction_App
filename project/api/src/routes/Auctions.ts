@@ -612,10 +612,6 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         return Promise.resolve();
     }
     const data = ctx.request.body;
-    console.log("auction "+ctx.params.auction);
-    console.log("user "+ctx.req.user);
-    console.log("item "+ctx.params.item);
-    console.log("money "+data.money);
     if(data === undefined) {
         ctx.status = 400;
         ctx.body = {'error': 'No data sent.'};
@@ -637,23 +633,23 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         return Promise.resolve();
     }
 
+    let dbAuction;
     try {
-        var dbAuction = await Auction.fromDatabaseURL(ctx.params.auction);
+        dbAuction = await Auction.fromDatabaseURL(ctx.params.auction);
     } catch (error) {
-        ctx.status = 400;
-        ctx.body = {'error': `${error}`};
+        ctx.status = 404;
+        ctx.body = {'error': `An auction with that url does not exist.`};
         return Promise.resolve();
+    }
+    if(!dbAuction.open) {
+        ctx.status = 400;
+        ctx.body = {'error': 'You cannot bid on this auction because it is closed.'}
     }
     let auction = dbAuction.id;
     let user = parseInt(ctx.req.user.id);
     let item = parseInt(ctx.params.item);
     let money = 0;
 
-    if (auction === NaN) {
-        ctx.status = 400;
-        ctx.body = {'error': 'Invalid number format for auction.'};
-        return Promise.resolve();
-    }
     if (user === NaN) {
         ctx.status = 400;
         ctx.body = {'error': 'Invalid number format for user.'};
