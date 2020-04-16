@@ -85,12 +85,24 @@ export default {
         body: JSON.stringify(data),
       });
       console.log("the response for join code is: " + response.status);
-      if (response.status === 201){
-          alert("successful join");
-          this.$router.push(`/auctions/${this.$route.params.auctionUrl}`);
+      if (response.status === 201 || response.status === 200){
+        if(this.$route.query.redir) {
+          this.$router.push(redir);
+        }
+          alert("Successful join");
+          this.$router.push(`/auctions/${auctionUrl}`);
+      }
+      else if (response.status === 400 || response.status === 404) {
+          alert(response.json().error);
+          this.$router.push('/');
+      }
+      else if (response.status === 401) {
+        // alert("You must be logged in to join an auction");
+        this.$router.push('/login');
       }
       else {
-          alert("Invalid join code.");
+        alert(response.json().error);
+        this.$router.push('/');
       }
     //   return response.json();
     },

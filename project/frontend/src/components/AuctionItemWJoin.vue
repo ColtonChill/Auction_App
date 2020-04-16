@@ -3,7 +3,7 @@
     <div class="bg-white rounded-t rounded-b lg:rounded-b-none lg:rounded-r p-4 flex row
     justify-between leading-normal shadow-md">
    <div class="flex-shrink-0 flex-grow-1 h-12 ">
-      <img class="w-12 h-12 rounded-full mr-4" src="/img/school.jpg">
+      <img class="w-12 h-12 mr-4" src="/static/auction.png">
       </div>
     <div class="flex-shrink-1 flex-grow-4">
       <div class="text-gray-900 font-bold text-l mb-1">
@@ -45,23 +45,26 @@ export default {
   },
   methods: {
     /* eslint-disable */
-    checkIfLoggedIn() {
-      fetch('/api/v1/auth/@me').then((response) => {
-        if (response.status === 401) {
-          this.isLoggedIn = false;
-          alert("You must log in before joining an auction");
-          this.$router.push('/login');
-    }
-    });
-  },
+  //   checkIfLoggedIn() {
+  //     fetch('/api/v1/auth/@me').then((response) => {
+  //       if (response.status === 401) {
+  //         this.isLoggedIn = false;
+  //         alert("You must log in before joining an auction");
+  //         this.$router.push('/login');
+  //   }
+  //   });
+  // },
+  //  200 if they're a member, 201 if they're new,
+  //  and 400 if they're banned/entered a wrong code.
+  //  401 if not logged in, 404 if bad auction.
+
     handleJoin(auctionUrl) {
-    this.checkIfLoggedIn();
+    // this.checkIfLoggedIn();
     this.sendJoinToApi(auctionUrl);
     },
     async sendJoinToApi(auctionUrl) {
       const url = `/api/v1/auctions/${auctionUrl}/member/@me/`;
-      const data = {
-      };
+      const data = {};
       const response = await fetch(url, {
         method: 'POST',
         mode: 'cors',
@@ -75,12 +78,24 @@ export default {
         body: JSON.stringify(data),
       });
       // console.log("the response for join is: " + response.status);
-      if (response.status === 201){
-          alert("Successful join");
+      if (response.status === 201 || response.status === 200){
+        if(this.$route.query.redir) {
+          this.$router.push(redir);
+        }
+          // alert("Successful join");
           this.$router.push(`/auctions/${auctionUrl}`);
       }
-      else if (response.status === 400) {
-          alert("You are already a member of this auction.");
+      else if (response.status === 400 || response.status === 404) {
+          alert(response.json().error);
+          this.$router.push('/');
+      }
+      else if (response.status === 401) {
+        // alert("You must be logged in to join an auction");
+        this.$router.push('/login');
+      }
+      else {
+        alert(response.json().error);
+        this.$router.push('/');
       }
     //   return response.json();
     },
