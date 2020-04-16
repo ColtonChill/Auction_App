@@ -74,7 +74,7 @@ export default {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data),
       });
-      console.log("the response for join is: " + response.status);
+      // console.log("the response for join is: " + response.status);
       if (response.status === 201){
           alert("Successful join");
           this.$router.push(`/auctions/${auctionUrl}`);

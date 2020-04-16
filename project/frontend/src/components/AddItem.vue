@@ -77,6 +77,7 @@
 
 <!--How do I add code that checks itself? -->
 <script>
+
 export default {
   name: 'AddItem',
   data() {
