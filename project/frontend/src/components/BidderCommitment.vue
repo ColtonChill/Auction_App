@@ -7,11 +7,15 @@
     <div>
         <table class="table-auto">
   <tr>
+    <th class="px-4 py-2">ID</th>
     <th class="px-4 py-2">Name</th>
     <th class="px-4 py-2">Email</th>
     <th class="px-4 py-2">Total Commitment</th>
   </tr>
   <tr v-for="user in users" :key="user.id">
+    <td class="border px-4 py-2">
+    {{user.user.id }}
+    </td>
     <td class="border px-4 py-2">
     {{user.user.firstName }} {{user.user.lastName }}
     </td>
