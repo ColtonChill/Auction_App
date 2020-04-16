@@ -376,26 +376,31 @@ router.post('Join auction','/:auction/member/@me/', async (ctx:any)=>{
         const auction = await Auction.fromDatabaseURL(ctx.params.auction);
         if(auction.hidden){
             if(ctx.request.body.pin == undefined){
-                ctx.status = 401;
-                ctx.body = {'error': 'No password provided'}
+                ctx.status = 400;
+                ctx.body = {'error': 'No code provided'}
                 return Promise.resolve();
             }
             if(ctx.request.body.pin != auction.pin){
-                ctx.status = 401;
-                ctx.body = {'error': 'Invalid password'}
+                ctx.status = 400;
+                ctx.body = {'error': 'Invalid code'}
                 return Promise.resolve();
             }
         }
         const exitsingMembership = await AuctionMembership.getMembership(ctx.req.user,auction);
-        if(exitsingMembership == undefined){
+        if(exitsingMembership === undefined){
             const membership = await AuctionMembership.createMembership(ctx.req.user,auction);
             ctx.status = 201;
             ctx.body = membership.toJson();
             return Promise.resolve();
         }else{
-            ctx.status = 400;
-            ctx.body = {'error': 'User already a member of auction'}
-            return Promise.resolve();
+            if(exitsingMembership.banned === true) {
+                ctx.status = 400;
+                ctx.body = {'error': 'You are banned from this auction.'}
+                return Promise.resolve();
+            } else {
+                ctx.status = 200;
+                return Promise.resolve();
+            }
         }
     }else{
         ctx.status = 404;
