@@ -60,7 +60,7 @@
     <div class="mx-auto pb-8 text-center">
         <span> Don't have an account?  </span>
             <span class="text-midBlue">
-             <router-link to="/register">Sign up! </router-link>
+             <p v-on:click="registerRedirect()">Sign up! </p>
         </span>
     </div>
 </form>
@@ -79,6 +79,8 @@ export default {
     return {
       userIsLoggedIn: false,
       error: false,
+      auction: this.$route.query.auction,
+      code: this.$route.query.code,
     };
   },
   mounted() {
@@ -96,6 +98,14 @@ export default {
         }
   });
 },
+    registerRedirect(){
+      if(this.code === undefined){
+        this.$router.push("/register");
+      }else{
+        // alert("redirecting to register with " + `/register?auction=${this.auction}?code=${this.code}`);
+        this.$router.push(`/register?auction=${this.auction}&code=${this.code}`);
+      }
+    },
     changeErrorShow() {
       this.error = !this.error;
     },
@@ -117,10 +127,11 @@ export default {
         body: JSON.stringify(data),
       });
       if(response.status === 200) {
-        if(this.$route.query.redir) {
-          this.$router.push(redir);
+        if(this.code === undefined) {
+          this.$router.push("/profile");
+        }else{
+          this.$router.push(`/auctions/${this.auction}/join?code=${this.code}`);
         }
-        this.$router.push('/profile');
       }
       else {
         this.error = "Failed to login with that username/password combination.";

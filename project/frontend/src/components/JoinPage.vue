@@ -56,7 +56,10 @@ export default {
       /* eslint-disable */
       fetch('/api/v1/auth/@me').then((response) => {   
         if (response.status === 401) {
-          this.$router.push('/login');
+          // alert("Test information encodeURI "+`/login?auction=${this.$route.params.auctionUrl}&code=${this.$route.query.code}`);
+          // this.$router.push(decodeURI(this.$route.query.redir));
+          this.$router.push(`/login?auction=${this.$route.params.auctionUrl}&code=${this.$route.query.code}`);
+          // this.$router.push(`/login?redir=${this.$route.params.auctionUrl+","+this.$route.query.code}`);
           //probably need a way to tell the login page that they were
           //trying to join so it redirects them there after... 
         }
@@ -89,19 +92,19 @@ export default {
         if(this.$route.query.redir) {
           this.$router.push(redir);
         }
-          alert("Successful join");
-          this.$router.push(`/auctions/${auctionUrl}`);
+          // alert("Successful join");
+          this.$router.push(`/auctions/${this.$route.params.auctionUrl}`);
       }
       else if (response.status === 400 || response.status === 404) {
-          alert(response.json().error);
+          // alert(response.json().error);
           this.$router.push('/');
       }
       else if (response.status === 401) {
-        // alert("You must be logged in to join an auction");
-        this.$router.push('/login');
+        // alert("Test information to send to Login: "+`/login?auction=${this.$route.query.auction}&code=${this.$route.query.code}`);
+        this.$router.push(`/login?auction=${this.$route.query.auction}&code=${this.$route.query.code}`);
       }
       else {
-        alert(response.json().error);
+        // alert(response.json().error);
         this.$router.push('/');
       }
     //   return response.json();

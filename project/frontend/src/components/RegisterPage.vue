@@ -106,6 +106,8 @@ export default {
       eml: '',
       pass: '',
       error: false,
+      auction: this.$route.query.auction,
+      code: this.$route.query.code,
     };
   },
   methods: {
@@ -133,7 +135,14 @@ export default {
         this.error = true;
       }
       if (response.status == 200) {
-        this.$router.push('/login');
+        // alert("status 200 confirmed");
+        if(this.code === undefined){
+          // alert("code undefined");
+          this.$route.push('/login');
+        }else{
+          // alert("code "+this.code);
+          this.$router.push(`/auctions/${this.auction}/join?code=${this.code}`);
+        }
       }
       // return response.json();
     },
