@@ -628,7 +628,7 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         return Promise.resolve();
     }
 
-    const auction = ctx.state.auction;
+    const auction : Auction = ctx.state.auction;
     if(!auction.open) {
         ctx.status = 400;
         ctx.body = {'error': 'You cannot bid on this auction because it is closed.'}
@@ -663,43 +663,6 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.body = {"responce" : `Auto bid, ${amount+highest} implemented`};
         ctx.status = 201;        
         return Promise.resolve();
-        // try {
-        //     console.log("Log silentItem: atempted");
-        //     const itemOb = await SilentItem.fromDatabaseId(item);
-        //     console.log("Log silentItem: Passed");
-        //     console.log(itemOb.toJson());
-        // } catch (error) {// ctx.request.body.bidIncrement
-        //     try {
-        //         console.log("Log silentItem: Failed");    
-        //         console.log("Log liveItem: atempted");
-        //         const itemOb = await SilentItem.fromDatabaseId(item);
-        //         console.log("Log liveItem: Passed");   
-        //         console.log(itemOb.toJson());   
-        //     } catch (error) {
-        //         ctx.status = 400;
-        //         ctx.body = {'error': 'No Money specified and no item found.'}
-        //         return Promise.resolve();
-        //     }        
-        // }
-
-        // try {
-        //     console.log("Log liveItem: atempted");
-        //     const itemOb = await LiveItem.fromDatabaseId(item);
-        //     console.log("Log liveItem: Passed");
-        //     console.log(itemOb.toJson());   
-        // } catch (error) {// ctx.request.body.bidIncrement
-        //     try {
-        //         console.log("Log liveItem: Failed"); 
-        //         console.log("Log silentItem: atempted");
-        //         const itemOb = await SilentItem.fromDatabaseId(item);
-        //         console.log("Log silentItem: Passed");
-        //         console.log(itemOb.toJson());   
-        //     } catch (error) {
-        //         ctx.status = 400;
-        //         ctx.body = {'error': 'No Money specified and no item found.'}
-        //         return Promise.resolve();
-        //     }        
-        // }
     }else{
         money = parseInt(data.money);
     }
@@ -707,12 +670,6 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.status = 400;
         ctx.body = {'error': 'Invalid number format for money.'};
         return Promise.resolve();
-    }
-    const membership = await AuctionMembership.isMember(user,auction.id);
-    if(!membership){
-        ctx.status = 400;
-        ctx.body = {'error': "Not a member of this auction"};
-        return Promise.resolve();   
     }
     try {
         console.log("bid auction: "+typeof(auction)+auction)
@@ -725,7 +682,7 @@ router.post('Place bid', '/:auction/items/:item/bid', async (ctx:any) => {
         ctx.status = 201;        
     } catch (error) {
         ctx.status = 400;
-        ctx.body = {'error': error};
+        ctx.body = {'error': "A higher bid has already been placed. Please try again."};
         return Promise.resolve();   
     }
 });

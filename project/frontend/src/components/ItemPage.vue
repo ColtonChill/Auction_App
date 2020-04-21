@@ -44,12 +44,12 @@
     </div>
 
     <div v-if="this.current_bid.money === undefined">
-      <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
+      <ConfirmationModal v-show ='isModalVisible' @close="closeModal" :onAccept="sendBid"
       v-bind:currentBid=starting_price v-bind:bidIncrement=bid_increment
       />
     </div>
     <div v-else>
-      <ConfirmationModal v-show ='isModalVisible' @close="closeModal"
+      <ConfirmationModal v-show ='isModalVisible' @close="closeModal" :onAccept="sendBid"
       v-bind:currentBid=current_bid.money v-bind:bidIncrement=bid_increment
       />
        </div>
@@ -115,6 +115,26 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false;
+    },
+    sendBid(amount) {
+      const data = {
+        money: amount,
+      };
+      fetch(`/api/v1/auctions/${this.auction.url}/items/${this.id}/bid`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then(async (response) => {
+        if(!response.ok) {
+          /* eslint-disable-next-line */
+          throw new APIError(await response.json(), response.status);
+        }
+        this.getItemDetails();
+      }).catch((error) => {
+        this.error = error.body.error;
+      });
     },
     getItemDetails() {
       const auctionString = this.$route.params.auctionUrl;

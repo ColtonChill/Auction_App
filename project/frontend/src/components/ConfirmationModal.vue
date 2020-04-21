@@ -1,4 +1,6 @@
 <script>
+import APIError from '../Errors';
+
 export default {
   name: 'ConfirmationModal',
   methods: {
@@ -8,39 +10,13 @@ export default {
     handleBidIncrement() {
       /* eslint-disable */
       if (this.$parent.current_bid.money === undefined) {
-        console.log("$parents currentbid.money before: " + this.$parent.current_bid.money)
         this.$parent.current_bid.money = this.bidIncrement;
-        console.log("$parents currentbid.money after: " + this.$parent.current_bid.money)
       }
       else {
-      this.$parent.current_bid.money += this.bidIncrement;
+        this.$parent.current_bid.money += this.bidIncrement;
       }
-      this.sendBidToApi(this.$parent.current_bid.money);
+      this.onAccept(this.$parent.current_bid.money);
       this.close();
-    },
-    async sendBidToApi(newBid) {
-      const url = `/api/v1/auctions/${this.$parent.auction.url}/items/${this.$parent.id}/bid`;
-      const data = {
-        money: newBid,
-      };
-      fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify(data),
-      }).then(async (response) => {
-        if(!response.ok) {
-          this.$parent.error = await response.json().error;
-          return;
-        }
-        this.$parent.getItemDetails();
-      }).catch((_) => {});
     },
   },
   props: {
@@ -49,6 +25,9 @@ export default {
     },
     bidIncrement: {
       required: true,
+    },
+    onAccept(amount) {
+
     },
   },
 };
